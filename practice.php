@@ -10,36 +10,47 @@
 <body>
 
 
-   <?php
 
-       $price = $_GET['price'];
 
-       if (! empty($_GET['price'])) {
+<?php
 
-           $totalPrice = @(int) $_GET['price'] * 50;
+    $text = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam odio corrupti aut sapiente maxime esse dolorum eos maiores veritatis asperiores? Rerum voluptatum quis veritatis. Quam molestias vero facere libero minima, nostrum vitae accusamus eum delectus reprehenderit veniam, ea sapiente cum quis non eius, consequatur odio at inventore veritatis perferendis neque.
+Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam odio corrupti aut sapiente maxime esse dolorum eos maiores veritatis asperiores? Rerum voluptatum quis veritatis. Quam molestias vero facere libero minima, nostrum vitae accusamus eum delectus reprehenderit veniam, ea sapiente cum quis non eius, consequatur odio at inventore veritatis perferendis neque.
+Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam odio corrupti aut sapiente maxime esse dolorum eos maiores veritatis asperiores? Rerum voluptatum quis veritatis. Quam molestias vero facere libero minima, nostrum vitae accusamus eum delectus reprehenderit veniam, ea sapiente cum quis non eius, consequatur odio at inventore veritatis perferendis neque.";
 
-           echo $totalPrice;
-       }
+    // $splitted = explode('.', $text);
 
-       //    $user_details = [
+    // $joined = implode('...', $splitted);
 
-       //        [
-       //            'driver-licence' => 'Government issuesd Driver licences',
-       //            'passport'       => 'Government issuesd Passport',
-       //        ],
-       //        'name' => "Adeola",
+    // var_dump($joined);
 
-       //    ];
+    // foreach($splitted as $text) {
 
-       //    foreach ($user_details as $users) {
-       //        if (is_array($users)) {
-       //            echo $users['passport'];
-       //        } else {
-       //            echo $users;
-       //        }
-       //    }
-   ?>
+    //     echo "<p>{$text}</p>";
+    // }
 
+    // var_dump($splitted);
+
+?>
+
+
+
+<ul>
+
+
+ 
+
+</ul>
+
+
+
+
+
+<p>
+
+<?php echo str_replace('.', '</p><p>', $text) ?>
+
+</p>
 
 
 
