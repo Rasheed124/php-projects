@@ -17,11 +17,8 @@
     }
 
 ?>
-<pre style="height: 600px;">
 
 <?php
-   
-
 
     $file_name = null;
 
@@ -30,8 +27,8 @@
 
     foreach ($cities as $currentCity) {
         if ($currentCity['city'] === $city) {
-            $file_name = $currentCity['filename'];
-            $cityInformation =  $currentCity;
+            $file_name       = $currentCity['filename'];
+            $cityInformation = $currentCity;
             break;
         }
     }
@@ -39,9 +36,6 @@
 
     if (! empty($file_name)) {
     $results = json_decode(file_get_contents('compress.bzip2://' . __DIR__ . '/./data/singapore.json.bz2'), true)["results"];
-
-
-
 
     $units = [
         'pm10' => null,
@@ -84,17 +78,13 @@
 
     }
 
-    // var_dump($stats);
-
     }
 
 ?>
 
-</pre>
 
 <?php require __DIR__ . '/views/header.inc.php'; ?>
 
-<!-- <pre> -->
 <?php if (empty($city)): ?>
     <h2>No city available yet</h2>
 
@@ -102,7 +92,79 @@
 
     <h1><?php echo $cityInformation['city'] ?></h1>
 
-     <?php if (! empty($stats)): ?>
+    <canvas id="aqi-chart" style="width: 300px; height: 200px;"></canvas>
+        <?php if (! empty($stats)): ?>
+
+            <?php $labels = array_keys($stats);
+                sort($labels);
+
+                $pm25 = [];
+                $pm10 = [];
+                foreach ($labels as $label) {
+                    $measurement = $stats[$label];
+
+                    if (count($measurement['pm25']) !== 0) {
+                        $pm25[] = array_sum($measurement['pm25']) / count($measurement['pm25']);
+
+                    } else {
+                        $pm25[] = 0;
+                    }
+
+                    if (count($measurement['pm10']) !== 0) {
+                        $pm10[] = array_sum($measurement['pm10']) / count($measurement['pm10']);
+
+                    } else {
+                        $pm10[] = 0;
+                    }
+
+                }
+
+                $datatsets = [];
+
+                if (array_sum($pm25) > 0) {
+                    $datatsets[] = [
+                        'label' => "AQI, PM2.5 in {$units['pm25']}",
+                        'data'        => $pm25,
+                        'fill'        => false,
+                        'borderColor' => 'rgb(192, 192, 192)',
+                        'tension'     => 0.1,
+                    ];
+                }
+                if (array_sum($pm10) > 0) {
+                    $datatsets[] = [
+                        'label' => "AQI, PM1.5 in {$units['pm10']}",
+                        'data'        => $pm10,
+                        'fill'        => false,
+                        'borderColor' => 'rgb(164, 185, 29)',
+                        'tension'     => 0.1,
+                    ];
+                }
+
+            ?>
+
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js" integrity="sha512-Y51n9mtKTVBh3Jbx5pZSJNDDMyY+yGe77DGtBPzRlgsf/YLCh13kSZ3JmfHGzYFCmOndraf0sQgfM654b7dJ3w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+            <script>
+
+                document.addEventListener("DOMContentLoaded", function() {
+
+                    const ctx = document.getElementById("aqi-chart");
+
+                    const myChart = new Chart(ctx, {
+                    type: 'line',
+                    data:  {
+                    labels: <?php echo json_encode($labels) ?>,
+                    datasets: <?php echo json_encode($datatsets)  ?>
+                    }
+
+                  });
+                })
+
+            </script>
+
+           <?php endif?>
+        <?php if (! empty($stats)): ?>
              <table>
 
              <thead>
@@ -116,8 +178,21 @@
         <?php foreach ($stats as $month => $measure): ?>
                  <tr>
                       <th><?php echo e($month) ?></th>
-                      <td><?php echo e(round(array_sum($measure['pm10']) / count($measure['pm10']), 2)) ?> <?php echo $units['pm10'] ?></td>
-                      <td><?php echo e(round(array_sum($measure['pm25']) / count($measure['pm25']), 2)) ?> <?php echo $units['pm25'] ?></td>
+                      <td>
+                        <?php if (count($measurement['pm10']) !== 0): ?>
+                          <?php echo e(round(array_sum($measure['pm10']) / count($measure['pm10']), 2)) ?> <?php echo $units['pm10'] ?>
+                              <?php else: ?>
+                            <i>No data available</i>
+                        <?php endif; ?>
+                     </td>
+
+                    <td>
+                        <?php if (count($measurement['pm25']) !== 0): ?>
+                          <?php echo e(round(array_sum($measure['pm25']) / count($measure['pm25']), 2)) ?> <?php echo $units['pm25'] ?>
+                              <?php else: ?>
+                            <i>No data available</i>
+                        <?php endif; ?>
+                     </td>
                  </tr>
          <?php endforeach?>
 
@@ -126,7 +201,6 @@
      <?php endif?>
 <?php endif?>
 
-<!-- </pre> -->
 
 
 <?php require __DIR__ . '/views/footer.inc.php'; ?>
