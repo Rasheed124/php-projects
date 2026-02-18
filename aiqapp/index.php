@@ -1,7 +1,6 @@
 
 <?php
     require __DIR__ . '/inc/functions.inc.php';
-
 ?>
 
 <?php
@@ -11,7 +10,6 @@
 
 <?php require __DIR__ . '/views/header.inc.php'; ?>
 
-<!-- <pre> -->
 <?php if (! empty($cities)): ?>
 
     <ul>
@@ -29,7 +27,7 @@
     <h2>No city available yet</h2>
 <?php endif?>
 
-<!-- </pre> -->
+
 
 
 <?php require __DIR__ . '/views/footer.inc.php'; ?>
