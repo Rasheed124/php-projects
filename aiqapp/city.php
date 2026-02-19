@@ -34,7 +34,6 @@
     }
     }
 
-    // echo$file_name;
 
     if (! empty($file_name)) {
     $results = json_decode(file_get_contents('compress.bzip2://' . __DIR__ . "/./data/{$file_name}"), true)["results"];
