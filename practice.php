@@ -1,98 +1,87 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website <?php ?></title>
+    <title>Document</title>
 </head>
 <body>
 
-
-
+<pre>
 
 <?php
 
-    $text = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam odio corrupti aut sapiente maxime esse dolorum eos maiores veritatis asperiores? Rerum voluptatum quis veritatis. Quam molestias vero facere libero minima, nostrum vitae accusamus eum delectus reprehenderit veniam, ea sapiente cum quis non eius, consequatur odio at inventore veritatis perferendis neque.
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam odio corrupti aut sapiente maxime esse dolorum eos maiores veritatis asperiores? Rerum voluptatum quis veritatis. Quam molestias vero facere libero minima, nostrum vitae accusamus eum delectus reprehenderit veniam, ea sapiente cum quis non eius, consequatur odio at inventore veritatis perferendis neque.
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam odio corrupti aut sapiente maxime esse dolorum eos maiores veritatis asperiores? Rerum voluptatum quis veritatis. Quam molestias vero facere libero minima, nostrum vitae accusamus eum delectus reprehenderit veniam, ea sapiente cum quis non eius, consequatur odio at inventore veritatis perferendis neque.";
+    function e($value)
+    {
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    }
 
-    // $splitted = explode('.', $text);
+    $zip = new ZipArchive();
 
-    // $joined = implode('...', $splitted);
+    $zip->open(__DIR__ . '/Archive.zip');
 
-    // var_dump($joined);
+    // var_dump($zip->count());
 
-    // foreach($splitted as $text) {
+    $file_count = $zip->count();
 
-    //     echo "<p>{$text}</p>";
+    // for ($x = 0; $x < $file_count; $x++) {
+    // var_dump($zip->getNameIndex($x));
     // }
 
-    // var_dump($splitted);
+    // var_dump($zip->getFromName('message.txt'))
 
-    $students = [
-    [
-        "id"      => 1,
-        "name"    => "John Doe",
-        "courses" => [
-            [
-                "course_id"   => "CS101",
-                "course_name" => "Computer Science",
-                "grade"       => "A",
-            ],
-            [
-                "course_id"   => "MATH201",
-                "course_name" => "Mathematics",
-                "grade"       => "B+",
-            ],
-        ],
-    ],
-    [
-        "id"      => 2,
-        "name"    => "Jane Smith",
-        "courses" => [
-            [
-                "course_id"   => "ENG101",
-                "course_name" => "English Literature",
-                "grade"       => "A-",
-            ],
-            [
-                "course_id"   => "PHY101",
-                "course_name" => "Physics",
-                "grade"       => "B",
-            ],
-        ],
-    ],
-    ];
+    try {
+    $db = new PDO('mysql:host=localhost;dbname=note_app', 'root', '', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
+    } catch (PDOException $e) {
+    var_dump($e->getMessage());
+
+    echo 'A problem occured with the database connection';
+    die();
+    }
+
+    // $stmt = $db->prepare('SELECT * FROM `notes` WHERE `id` =  2 ORDER BY `id` ASC ');
+    // $id   = $_GET['id'];
+
+    $title   = "Being Kind";
+    $content = "Kindness creates positive relationships and builds trust. Simple acts like helping others or saying thank you can brighten someone’s day. Being kind also improves your own happiness.";
+
+    $id    = 8;
+    $title = "Morning Routine Editted";
+
+    $stmt = $db->prepare("DELETE FROM `notes` WHERE `id` = :id");
+    // $stmt = $db->prepare("UPDATE `notes` SET `title` = :title WHERE `id` =  :id");
+    // $stmt = $db->prepare("INSERT INTO `notes` (`title`, `content`) VALUES (:title, :content)");
+
+    // $stmt = $db->prepare('SELECT * FROM `notes` WHERE `id` =  :id');
+    $stmt->bindValue('id', $id);
+    // $stmt->bindValue('title', $title);
+
+    $stmt->execute();
+
+    // $results = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // var_dump($results);
+    // $results = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // var_dump($results);
+    // var_dump($stmt->fetch(PDO::FETCH_ASSOC));
+    // var_dump($stmt->fetch(PDO::FETCH_ASSOC));
+    // var_dump($stmt->fetch(PDO::FETCH_ASSOC));
+
+    // while(($result =  $stmt->fetch(PDO::FETCH_ASSOC)) !== false){
+    //     var_dump($result);
+    // }
 ?>
 
+</pre>
 
 
-<?php foreach ($students as $student): ?>
-    <h2><?php echo $student['name'] ?></h2>
-
-    <?php foreach ($student['courses'] as $courses): ?>
-        <p><?php echo $courses['course_name'] ?></p>
-    <?php endforeach?>
-    <?php endforeach?>
-
-    <!-- <table border="">
-
-    <tr>
-        <th>Name</th>
-    </tr>
-    <tr>
-        <th>Course</th>
-    </tr>
-
-    </table> -->
-
-
-
-
-
-
+  <?php foreach ($results as $result): ?>
+     <h2><?php echo e($result['title']) ?></h2>
+     <p><?php echo e($result['content']) ?></p>
+   <?php endforeach?>
 </body>
 </html>
