@@ -79,9 +79,6 @@
 </pre>
 
 
-  <?php foreach ($results as $result): ?>
-     <h2><?php echo e($result['title']) ?></h2>
-     <p><?php echo e($result['content']) ?></p>
-   <?php endforeach?>
+
 </body>
 </html>
