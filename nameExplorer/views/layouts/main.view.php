@@ -22,7 +22,6 @@
 
     </header>
     <main>
-
         <?php echo $contents ?>
     </main>
 
