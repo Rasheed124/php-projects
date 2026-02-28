@@ -1,3 +1,6 @@
+<?php
+ $alphabets = gen_alhabets();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,3 +16,8 @@
         <p>Explore and find names</p>
     </header>
     <main>
+
+    <?php foreach ($alphabets as $char): ?>
+        <a href="index.php?<?php echo http_build_query(['char' => $char]) ?>"><?php echo e($char) ?></a>
+    <?php endforeach; ?>
+
