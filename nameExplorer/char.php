@@ -8,7 +8,7 @@ $char = (string) ($_GET['char'] ?? '');
 if (strlen($char) > 1) {
     $char = $char[0];
 }
-$alphabet = gen_alphabet();
+$alphabet = gen_alhabets();
 if (strlen($char) === 0 OR 
     !in_array($char, $alphabet)) {
     header("Location: index.php");
