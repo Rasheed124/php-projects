@@ -1,5 +1,5 @@
  
- <h3>Statistics for the name: <?php echo e($char); ?></h3>
+ <h3>Statistics for the name: <?php echo e($name); ?></h3>
  
  <?php if (! empty($user_lists)): ?>
          <table>

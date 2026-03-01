@@ -1,22 +1,39 @@
 <?php
 declare (strict_types = 1);
 
-function fecth_all_names(string $char): array
-{
+
+
+
+function fecth_all_names(string $char, int $page = 1, int $perPage = 15): array {
     global $pdo;
 
-    $stmt = $pdo->prepare('SELECT DISTINCT `name` FROM `names` WHERE `name` LIKE :exp ORDER BY `name` ASC;');
-    $stmt->bindValue('exp', "{$char}%");
+    // Making sure that page is never 0 or even negative
+    $page = max(1, $page);
+
+    $stmt = $pdo->prepare('SELECT DISTINCT `name` FROM `names` WHERE `name` LIKE :expr ORDER BY `name` ASC LIMIT :limit OFFSET :offset');
+    $stmt->bindValue(':expr', "{$char}%");
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $perPage * ($page - 1), PDO::PARAM_INT);
     $stmt->execute();
     $names = [];
-
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($results as $result) {
+    foreach ($results AS $result) {
         $names[] = $result['name'];
     }
-
     return $names;
 }
+
+function count_names_by_initial(string $char): int {
+    global $pdo;
+
+    $stmt = $pdo->prepare('SELECT COUNT(DISTINCT `name`) AS `count` FROM `names` WHERE `name` LIKE :expr');
+    $stmt->bindValue(':expr', "{$char}%");
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+}
+
+
 
 function fecth_names_specifically(string $value): array
 {

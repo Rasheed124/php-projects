@@ -1,25 +1,38 @@
 <?php
 
-    require __DIR__ . '/inc/all.inc.php';
+require __DIR__ . '/inc/all.inc.php';
 ?>
 <?php
-    $char = (string) ($_GET['char'] ?? '');
+$char = (string) ($_GET['char'] ?? '');
 
-    if (strlen($char) > 1) {
+if (strlen($char) > 1) {
     $char = $char[0];
-    }
-
-    if (strlen($char) === 0) {
-    header("Location:index.php");
+}
+$alphabet = gen_alphabet();
+if (strlen($char) === 0 OR 
+    !in_array($char, $alphabet)) {
+    header("Location: index.php");
     die();
-    }
+}
 
-    $char  = strtoupper($char);
-    $names = fecth_all_names($char);
-?>
 
-<?php
-    render('char.view', [
-    'names' => $names,
+
+$char  = strtoupper($char);
+
+$page = (int) ($_GET['page'] ?? 1);
+
+$perPage = 5;
+
+$names = fecth_all_names($char, $page, $perPage);
+$count = count_names_by_initial($char);
+// var_dump($names);
+
+render('char.view', [
+    'names'      => $names,
+    'char'       => $char,
+    'pagination' => [
+        'page'    => $page,
+        'count'   => $count,
+        'perPage' => $perPage,
+    ],
 ]);
-?>

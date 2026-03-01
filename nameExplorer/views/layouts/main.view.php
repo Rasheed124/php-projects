@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="./styles/simple.css" />
-    <link rel="stylesheet" type="text/css" href="./styles/custom.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="./styles/custom.css" /> -->
+    <link rel="stylesheet" href="./styles/custom.css">
     <title>Name explorer</title>
 </head>
 <body>
@@ -16,8 +17,9 @@
         </h1>
         <p>Explore and find names</p>
 
-    <?php foreach ($alphabets as $char): ?>
-        <a href="char.php?<?php echo http_build_query(['char' => $char]) ?>"><?php echo e($char) ?></a>
+     
+    <?php foreach ($alphabets as $character): ?>
+        <a href="char.php?<?php echo http_build_query(['char' => $character]) ?>" <?php  if(!empty($char) && $char == $character) :?>class="selected"  <?php endif; ?>  ><?php echo e($character) ?></a>
     <?php endforeach; ?>
 
     </header>
