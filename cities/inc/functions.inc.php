@@ -29,3 +29,18 @@ function gen_alphabet() {
     }
     return $letters;
 }
+
+
+function get_flag_for_country(string $iso2): string {
+    $iso2 = strtolower(trim($iso2));
+
+    if (strlen($iso2) !== 2) {
+        return $iso2;
+    }
+
+    return mb_chr(127462 + ord($iso2[0]) - ord('a')) . 
+           mb_chr(127462 + ord($iso2[1]) - ord('a'));
+}
+
+
+    // echo get_flag_for_country('us');

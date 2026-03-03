@@ -1,9 +1,10 @@
 <?php
+
 /**
  * @var WorldCityModel $city
  */
 ?>
-<h1>City: <?php echo e($city->city); ?> (<?php echo e($city->country); ?>)</h1>
+<h1>City: <?php echo e($city->getCityWithCountry()); ?></h1>
 <table>
     <tbody>
         <tr>
@@ -17,6 +18,10 @@
         <tr>
             <th>Country:</th>
             <td><?php echo e($city->country); ?></td>
+        </tr>
+        <tr>
+            <th>Flag of the country:</th>
+            <td><?php echo e($city->getFlag()); ?></td>
         </tr>
         <tr>
             <th>ISO2 code of country:</th>

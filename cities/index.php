@@ -3,9 +3,23 @@
 require __DIR__ . '/inc/all.inc.php';
 
 $worldCityRepository = new WorldCityRepository($pdo);
-$entries = $worldCityRepository->fetch();
+// $entries             = $worldCityRepository->fetch();
+
+$page = (int) ($_GET['page'] ?? 1);
+$page = max(1, $page);
+
+$perPage = 15;
+
+$count = $worldCityRepository->count();
+$entries = $worldCityRepository->pagination($page, $perPage);
+
 
 
 render('index.view', [
-    'entries' => $entries
+    'entries' => $entries,
+    'pagination' => [
+        'count' => $count,
+        'perPage' => $perPage,
+        'page' => $page
+    ]
 ]);
