@@ -12,6 +12,8 @@ date_default_timezone_set('UTC');
 $fetcher = new RemoteWeatherFetcher();
 $info = $fetcher->fetch('New York City');
 
+var_dump($info);
+
 if (empty($info)) {
     echo "Weather could not be fetched.";
     die();
