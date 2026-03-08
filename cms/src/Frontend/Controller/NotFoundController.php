@@ -1,4 +1,5 @@
 <?php
+namespace App\Frontend\Controller;
 
 class NotFoundController
 {
@@ -6,7 +7,20 @@ class NotFoundController
     {
 
         http_response_code(404);
+        $this->render('notfound/error404', []);
 
-        echo "This is page is 404 page";
+    }
+
+    private function render($view, $params)
+    {
+
+        extract($params);
+
+        ob_start();
+        require __DIR__ . '/../../../views/frontend/' . $view . '.view.php';
+        $contents = ob_get_clean();
+
+        require __DIR__ . '/../../../views/frontend/layouts/main.view.php';
+
     }
 }
