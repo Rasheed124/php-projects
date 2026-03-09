@@ -1,3 +1,10 @@
+
+
+
 <h2>
-    SHow Page View
+    <?php echo $page->title; ?>
 </h2>
+
+<p>
+    <?php echo nl2br($page->content); ?>
+</p>
