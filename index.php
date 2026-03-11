@@ -1,62 +1,52 @@
 <?php
-header('Content-Type: text/plain');
 
-class PostRepository
-{
-    public function __construct(
-        private string $a,
-        private string $b,
-    ) {}
-}
+require __DIR__ . '/inc/all.inc.php';
 
-class PostController
-{
-    public function __construct(private PostRepository $postRepository)
-    {}
-}
+$container = new \App\Support\Container;
 
-class Container
-{
-
-    private array $instances = [];
-    private array $recipes   = [];
-
-    public function bind(string $what, \Closure $recipe)
-    {
-        $this->recipes[$what] = $recipe;
-    }
-
-    public function get($what)
-    {
-        if (empty($this->instances[$what])) {
-            if (empty($this->recipes[$what])) {
-                echo "Could not build {$what}.";
-                die();
-            }
-            $this->instances[$what] = $this->recipes[$what]();
-        }
-        return $this->instances[$what];
-
-    }
-
-}
-
-$container = new Container();
-$container->bind('postRepository', function () {
-    return new PostRepository('A', 'B');
+$container->bind('pdo', function () {
+    return require __DIR__ . '/inc/db-connect.inc.php';
 });
 
-$container->bind('postController', function () use ($container) {
-    $postRepository = $container->get('postRepository');
-    return new PostController($postRepository);
+$container->bind('pagesRespository', function () use ($container) {
+    $pdo = $container->get('pdo');
+    return new \App\Repository\PagesRespository($pdo);
+});
+$container->bind('pageController', function () use ($container) {
+    $pagesRepository = $container->get('pagesRespository');
+    return new \App\Frontend\Controller\PageController($pagesRepository);
+});
+$container->bind('notFoundController', function () use ($container) {
+    $pagesRepository = $container->get('pagesRespository');
+    return new \App\Frontend\Controller\NotFoundController($pagesRepository);
 });
 
-$postRepository  = $container->get('postRepository');
-$postRepository2 = $container->get('postRepository');
-var_dump($postRepository);
-var_dump($postRepository2);
+/* ==============================
+ADMIN CONTROLLER
+==================================
+*/
+$container->bind('pagesAdminController', function () use ($container) {
+    $pagesRepository = $container->get('pagesRespository');
 
-$postController = $container->get('postController');
-var_dump($postController);
-$postController2 = $container->get('postController');
-var_dump($postController2);
+    return new \App\Admin\Controller\PagesAdminController($pagesRepository);
+});
+
+$route = @(string) ($_GET['route'] ?? 'pages');
+
+if ($route === 'pages') {
+    $page           = @(string) ($_GET['page'] ?? 'index');
+    $pageController = $container->get('pageController');
+
+    $pageController->showPage($page);
+} else if ($route === 'admin/pages') {
+    $page = $container->get('pagesAdminController');
+    $page->index();
+} else {
+
+    http_response_code(404);
+
+    $notFoundPage = $container->get('notFoundController');
+
+    $notFoundPage->error404();
+
+}

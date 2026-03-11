@@ -1,3 +1,0 @@
-<h1>index.view.php</h1>
-
-

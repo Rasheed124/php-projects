@@ -11,6 +11,11 @@ class PagesRespository
 
     public function fetchNavigation(): array
     {
+        return $this->get();
+    }
+    
+    public function get(): array
+    {
         $stmt = $this->pageModel->prepare('SELECT * from `pages`  ORDER BY `id` ASC');
         $stmt->execute();
         $entry = $stmt->fetchAll(PDO::FETCH_CLASS, PageModel::class);

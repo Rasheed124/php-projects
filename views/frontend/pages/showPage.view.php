@@ -1,10 +1,4 @@
-
-
-
-<h2>
-    <?php echo $page->title; ?>
-</h2>
-
+<h1><?php echo e($page->title); ?></h1>
 <p>
-    <?php echo nl2br($page->content); ?>
+    <?php echo nl2br(e($page->content)); ?>
 </p>
