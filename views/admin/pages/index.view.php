@@ -16,7 +16,7 @@
                 
                 <td>
                    <a href="index.php?<?php echo http_build_query(['page' => strtolower(e($page->slug))]); ?>">View</a>
-                    <a href="index.php?<?php echo http_build_query(['route' => 'admin/pages/edit']); ?>">Edit</a>
+                    <a href="index.php?<?php echo http_build_query(['route' => 'admin/pages/edit' , 'id' => $page->id , 'slug' => $page->slug]); ?>">Edit</a>
                     <form style="display: inline;" method="POST" action="index.php?<?php echo http_build_query(['route' => 'admin/pages/delete']); ?>">
                         <input type="hidden" name="id" value="<?php echo e($page->id); ?>" />
                         <input type="submit" value="Delete!" class="btn-link" />
