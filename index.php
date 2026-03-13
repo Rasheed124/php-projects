@@ -41,12 +41,17 @@ if ($route === 'pages') {
 } else if ($route === 'admin/pages') {
     $page = $container->get('pagesAdminController');
     $page->index();
-} else {
-
-    http_response_code(404);
-
-    $notFoundPage = $container->get('notFoundController');
-
-    $notFoundPage->error404();
-
+}
+else if ($route === 'admin/pages/create') {
+    $pagesAdminController = $container->get('pagesAdminController');
+    $pagesAdminController->create();
+}
+else if ($route === 'admin/pages/delete') {
+    // $id = @(int) ($_GET['id'] || 0);
+    $pagesAdminController = $container->get('pagesAdminController');
+    $pagesAdminController->delete();
+}
+else {
+    $notFoundController = $container->get('notFoundController');
+    $notFoundController->error404();
 }

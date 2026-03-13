@@ -17,7 +17,7 @@ abstract class AbstractController
         require __DIR__ . '/../../../views/frontend/' . $view . '.view.php';
         $contents = ob_get_clean();
 
-        $navigations = $this->pagesRespository->fetchNavigation();
+        $navigation = $this->pagesRespository->fetchNavigation();
 
         require __DIR__ . '/../../../views/frontend/layouts/main.view.php';
 
