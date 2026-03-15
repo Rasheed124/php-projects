@@ -47,6 +47,13 @@ class AuthService
         return ! empty($_SESSION['adminUserId']);
     }
 
+    public function logout()
+    {
+        $this->ensureSession();
+        unset($_SESSION['adminUserId']);
+        session_regenerate_id();
+    }
+
     public function ensureIsLoggedIn()
     {
         $isLoggedIn = $this->isLoggedIn();

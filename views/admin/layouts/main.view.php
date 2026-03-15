@@ -15,8 +15,10 @@
         </h1>
         <p>Welcom to CMS: Admin system</p>
 
-        <nav>
-
+       <nav>
+            <?php if (! empty($isLoggedIn)): ?>
+                <a href="index.php?<?php echo http_build_query(['route' => 'admin/logout']); ?>">Logout</a>
+            <?php endif; ?>
         </nav>
     </header>
     <main>
