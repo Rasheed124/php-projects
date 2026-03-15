@@ -62,4 +62,29 @@ class PagesRespository
         $stmt->execute();
     }
 
+    public function fetchByID(int $id): ?PageModel
+    {
+        $stmt = $this->pdo->prepare('SELECT * from `pages` WHERE  `id` = :id');
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_CLASS, PageModel::class);
+        $entry = $stmt->fetch();
+        if (! empty($entry)) {
+            return $entry;
+        } else {
+            return null;
+        }
+
+    }
+
+    public function editPageTitleAndContent(int $id, string $title, string $content)
+    {
+        $stmt = $this->pdo->prepare("UPDATE `pages` SET `title` = :title,  `content` = :content WHERE `id` = :id");
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':title', $title);
+        $stmt->bindValue(':content', $content);
+        $stmt->execute();
+
+    }
+
 }

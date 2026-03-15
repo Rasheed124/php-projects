@@ -2,23 +2,24 @@
 
 
 
-<!-- Errroros -->
+<?php if (!empty($errors)): ?>
+    <ul>
+        <?php foreach($errors AS $error): ?>
+            <li><?php echo e($error); ?></li>
+        <?php endforeach; ?>
+    </ul>
+<?php endif; ?>
 
-<form method="POST" action="index.php?route=admin/pages/create">
+<form method="POST" action="index.php?<?php echo http_build_query(['route' => 'admin/pages/edit', 'id' => $editpage->id]); ?>">
     <label for="title">Title:</label>
-    <input type="text" 
+ <input type="text" 
         name="title" 
-        value="<?php if (!empty($editpage->title)) echo e($editpage->title); ?>" 
+        value="<?php if (isset($_POST['title'])) echo e($_POST['title']); else echo e($editpage->title);?>" 
         id="title" />
 
-    <label for="slug">Slug:</label>
-    <input type="text" 
-        name="slug" 
-        value="<?php if (!empty($editpage->slug)) echo e($editpage->slug); ?>" 
-        id="slug" />
 
     <label for="content">Content:</lable>
-    <textarea name="content" id="content"><?php if (!empty($editpage->content)) echo e($editpage->content); ?></textarea>
+    <textarea name="content" id="content"><?php if (isset($_POST['content'])) echo e($_POST['content']); else echo e($editpage->content);?></textarea>
 
     <input type="submit" value="Submit!" />
 </form>

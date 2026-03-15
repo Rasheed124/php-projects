@@ -8,6 +8,14 @@ $container->bind('pdo', function () {
     return require __DIR__ . '/inc/db-connect.inc.php';
 });
 
+$container->bind('authService', function () use ($container) {
+    $pdo = $container->get('pdo');
+    return new \App\Admin\Support\AuthService($pdo);
+});
+$container->bind('loginController', function () use ($container) {
+    $authService = $container->get('authService');
+    return new \App\Admin\Controller\LoginController($authService);
+});
 $container->bind('pagesRespository', function () use ($container) {
     $pdo = $container->get('pdo');
     return new \App\Repository\PagesRespository($pdo);
@@ -27,8 +35,9 @@ ADMIN CONTROLLER
 */
 $container->bind('pagesAdminController', function () use ($container) {
     $pagesRepository = $container->get('pagesRespository');
+    $authService = $container->get('authService');
 
-    return new \App\Admin\Controller\PagesAdminController($pagesRepository);
+    return new \App\Admin\Controller\PagesAdminController($pagesRepository, $authService);
 });
 
 $route = @(string) ($_GET['route'] ?? 'pages');
@@ -38,24 +47,36 @@ if ($route === 'pages') {
     $pageController = $container->get('pageController');
 
     $pageController->showPage($page);
+} else if ($route === 'admin/login') {
+    $pageLogin = $container->get('loginController');
+    $pageLogin->login();
+
 } else if ($route === 'admin/pages') {
+    $authService = $container->get('authService');
+    $authService->ensureIsLoggedIn();
+
     $page = $container->get('pagesAdminController');
     $page->index();
-}
-else if ($route === 'admin/pages/create') {
+} else if ($route === 'admin/pages/create') {
+    $authService = $container->get('authService');
+    $authService->ensureIsLoggedIn();
+
     $pagesAdminController = $container->get('pagesAdminController');
     $pagesAdminController->create();
-}
-else if ($route === 'admin/pages/edit') {
+} else if ($route === 'admin/pages/edit') {
+
+    $authService = $container->get('authService');
+    $authService->ensureIsLoggedIn();
+
     $pagesAdminController = $container->get('pagesAdminController');
     $pagesAdminController->edit();
-}
-else if ($route === 'admin/pages/delete') {
-    // $id = @(int) ($_GET['id'] || 0);
+} else if ($route === 'admin/pages/delete') {
+    $authService = $container->get('authService');
+    $authService->ensureIsLoggedIn();
+
     $pagesAdminController = $container->get('pagesAdminController');
     $pagesAdminController->delete();
-}
-else {
+} else {
     $notFoundController = $container->get('notFoundController');
     $notFoundController->error404();
 }

@@ -1,13 +1,18 @@
 <?php
 namespace App\Admin\Controller;
 
+use App\Admin\Support\AuthService;
 use App\Repository\PagesRespository;
 
 class PagesAdminController extends AbstractAdminController
 {
 
-    public function __construct(private PagesRespository $pagesRespository)
-    {}
+    public function __construct(
+        AuthService $authService,
+        private PagesRespository $pagesRespository
+    ) {
+        parent::__construct($authService);
+    }
 
     public function index()
     {
@@ -17,44 +22,6 @@ class PagesAdminController extends AbstractAdminController
         $this->render('pages/index', [
             'pages' => $pages,
         ]);
-    }
-
-    public function edit()
-    {
-
-        $pages = $this->pagesRespository->get();
-        // $id    = @(int) ($_GET['id'] ?? 0);
-        $slug = @(string) ($_GET['slug'] ?? '');
-
-        $slugExists = $this->pagesRespository->getSlugExists($slug);
-
-        if (! empty($slugExists)) {
-            $editPage = $this->pagesRespository->fetchBySlug($slug);
-            // header("Location: index.php?route=admin/pages");
-            // return;
-
-            // var_dump($editPage);
-
-            $this->render('pages/edit', [
-                'editpage' => $editPage,
-            ]);
-
-        }
-
-        // $editedtitle = @(string) ($_POST['title'] ?? '');
-        // $editedSlug    = @(string) ($_POST['slug'] ?? '');
-        // $editedContent = @(string) ($_POST['content'] ?? '');
-
-        // if (empty($slugExists)) {
-        //     $this->pagesRespository->create($title, $slug, $content);
-        //     header("Location: index.php?route=admin/pages");
-        //     return;
-        // }
-
-        //  header("Location : index.php?route=admin/pages");
-
-        // var_dump($id);
-
     }
 
     public function create()
@@ -95,5 +62,32 @@ class PagesAdminController extends AbstractAdminController
             $this->pagesRespository->delete($id);
         }
         header("Location: index.php?route=admin/pages");
+    }
+
+    public function edit()
+    {
+        $id     = @(int) ($_GET['id'] ?? 0);
+        $errors = [];
+
+        if (! empty($_POST)) {
+            $title   = @(string) ($_POST['title'] ?? '');
+            $content = @(string) ($_POST['content'] ?? '');
+
+            if (! empty($title) && ! empty($content)) {
+                $this->pagesRespository->editPageTitleAndContent($id, $title, $content);
+                header("Location: index.php?route=admin/pages");
+                return;
+
+            } else {
+                $errors[] = 'Please make sure you feel all fields';
+            }
+        }
+        $page = $this->pagesRespository->fetchByID($id);
+
+        $this->render('pages/edit', [
+            'editpage' => $page,
+            'errors'   => $errors,
+        ]);
+
     }
 }
