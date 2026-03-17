@@ -11,6 +11,7 @@
 <?php endif; ?>
 
 <form method="POST" action="index.php?<?php echo http_build_query(['route' => 'admin/pages/edit', 'id' => $editpage->id]); ?>">
+     <input type="hidden" name="_csrf" value="<?php echo e(csrf_token()); ?>" />
     <label for="title">Title:</label>
  <input type="text" 
         name="title" 

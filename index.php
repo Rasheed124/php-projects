@@ -35,10 +35,26 @@ ADMIN CONTROLLER
 */
 $container->bind('pagesAdminController', function () use ($container) {
     $pagesRepository = $container->get('pagesRespository');
-    $authService = $container->get('authService');
+    $authService     = $container->get('authService');
 
-    return new \App\Admin\Controller\PagesAdminController($authService, $pagesRepository );
+    return new \App\Admin\Controller\PagesAdminController($authService, $pagesRepository);
 });
+
+$container->bind('csrfHelper', function () {
+    return new \App\Support\CsrfHelper();
+});
+
+$csrfHelper =  $container->get('csrfHelper');
+$csrfHelper->handle();
+
+function csrf_token() {
+    global $container;
+    $csrfHelper = $container->get('csrfHelper');
+    return $csrfHelper->generateToken();
+}
+
+
+
 
 $route = @(string) ($_GET['route'] ?? 'pages');
 

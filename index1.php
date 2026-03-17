@@ -4,10 +4,9 @@
 
 // var_dump($_COOKIE);
 
+// $password  = 'paswword123';
 
-$password  = 'paswword123';
-
-echo password_hash($password, PASSWORD_DEFAULT);
+// echo password_hash($password, PASSWORD_DEFAULT);
 
 // header('Content-Type: text/plain');
 
@@ -70,3 +69,25 @@ echo password_hash($password, PASSWORD_DEFAULT);
 // var_dump($postController);
 // $postController2 = $container->get('postController');
 // var_dump($postController2);
+
+class Container
+{
+    public function __construct()
+    {}
+
+    public static ?Container $instance = null;
+
+    public static function getInstance()
+    {
+        if (empty(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+}
+
+
+$container =  Container::getInstance();
+$container2 =  Container::getInstance();
+var_dump($container);
+var_dump($container2);
