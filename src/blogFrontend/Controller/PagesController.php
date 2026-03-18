@@ -11,6 +11,10 @@ class PagesController extends AbstractController
                 return $this->renderIndexPage();
             case 'about':
                 return $this->renderAboutPage();
+            case 'contact':
+                return $this->renderContactPage();
+            case 'blog':
+                return $this->renderBlogPage();
             default:
                 return "Page not found.";
         }
@@ -23,6 +27,17 @@ class PagesController extends AbstractController
 
     private function renderAboutPage()
     {
-        return "This is the about page content.";
+        $this->render('pages/about', []);
+
+    }
+    private function renderContactPage()
+    {
+        $this->render('pages/contact', []);
+
+    }
+    private function renderBlogPage()
+    {
+        $this->render('pages/blog', []);
+
     }
 }
