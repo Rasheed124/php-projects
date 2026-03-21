@@ -1,9 +1,11 @@
 <?php
-namespace App\blogFrontend\Controller;
+namespace BlogApp\Frontend\Controller;
 
-abstract class AbstractController
+use BlogApp\Repository\PagesRepository;
+
+abstract class AbstractFrontendController
 {
-    public function __construct()
+    public function __construct(protected PagesRepository $pagesRepository)
     {}
 
     protected function render($view, $params)
@@ -14,9 +16,15 @@ abstract class AbstractController
         require __DIR__ . '/../../../views/frontend/' . $view . '.view.php';
         $contents = ob_get_clean();
 
+        $navigation = $this->pagesRepository->fetchNavigation();
+
+        var_dump($navigation);
+
         require __DIR__ . '/../../../views/frontend/layouts/main.view.php';
 
     }
+
+   
 
     protected function error404()
     {

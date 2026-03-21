@@ -1,11 +1,9 @@
-
-
     <!-- Banner Starts Here -->
     <div class="main-banner header-text">
       <div class="container-fluid">
         <div class="owl-banner owl-carousel">
           <div class="item">
-            <img src="assets/images/banner-item-01.jpg" alt="">
+            <img src="assets/frontend/images/banner-item-01.jpg" alt="">
             <div class="item-content">
               <div class="main-content">
                 <div class="meta-category">
@@ -21,7 +19,7 @@
             </div>
           </div>
           <div class="item">
-            <img src="assets/images/banner-item-02.jpg" alt="">
+            <img src="assets/frontend/images/banner-item-02.jpg" alt="">
             <div class="item-content">
               <div class="main-content">
                 <div class="meta-category">
@@ -37,7 +35,7 @@
             </div>
           </div>
           <div class="item">
-            <img src="assets/images/banner-item-03.jpg" alt="">
+            <img src="assets/frontend/images/banner-item-03.jpg" alt="">
             <div class="item-content">
               <div class="main-content">
                 <div class="meta-category">
@@ -53,7 +51,7 @@
             </div>
           </div>
           <div class="item">
-            <img src="assets/images/banner-item-04.jpg" alt="">
+            <img src="assets/frontend/images/banner-item-04.jpg" alt="">
             <div class="item-content">
               <div class="main-content">
                 <div class="meta-category">
@@ -69,7 +67,7 @@
             </div>
           </div>
           <div class="item">
-            <img src="assets/images/banner-item-05.jpg" alt="">
+            <img src="assets/frontend/images/banner-item-05.jpg" alt="">
             <div class="item-content">
               <div class="main-content">
                 <div class="meta-category">
@@ -85,7 +83,7 @@
             </div>
           </div>
           <div class="item">
-            <img src="assets/images/banner-item-06.jpg" alt="">
+            <img src="assets/frontend/images/banner-item-06.jpg" alt="">
             <div class="item-content">
               <div class="main-content">
                 <div class="meta-category">
@@ -103,32 +101,6 @@
         </div>
       </div>
     </div>
-    <!-- Banner Ends Here -->
-
-
-    <!-- Call TO Action Starts Here -->
-    <section class="call-to-action">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="main-content">
-              <div class="row">
-                <div class="col-lg-8">
-                  <span>Stand Blog HTML5 Template</span>
-                  <h4>Creative HTML Template For Bloggers!</h4>
-                </div>
-                <div class="col-lg-4">
-                  <div class="main-button">
-                    <a rel="nofollow" href="https://templatemo.com/tm-551-stand-blog" target="_parent">Download Now!</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Call TO Action Ends Here -->
 
 
 
@@ -142,7 +114,7 @@
                 <div class="col-lg-12">
                   <div class="blog-post">
                     <div class="blog-thumb">
-                      <img src="assets/images/blog-post-01.jpg" alt="">
+                      <img src="assets/frontend/images/blog-post-01.jpg" alt="">
                     </div>
                     <div class="down-content">
                       <span>Lifestyle</span>
@@ -177,7 +149,7 @@
                 <div class="col-lg-12">
                   <div class="blog-post">
                     <div class="blog-thumb">
-                      <img src="assets/images/blog-post-02.jpg" alt="">
+                      <img src="assets/frontend/images/blog-post-02.jpg" alt="">
                     </div>
                     <div class="down-content">
                       <span>Healthy</span>
@@ -212,7 +184,7 @@
                 <div class="col-lg-12">
                   <div class="blog-post">
                     <div class="blog-thumb">
-                      <img src="assets/images/blog-post-03.jpg" alt="">
+                      <img src="assets/frontend/images/blog-post-03.jpg" alt="">
                     </div>
                     <div class="down-content">
                       <span>Fashion</span>
