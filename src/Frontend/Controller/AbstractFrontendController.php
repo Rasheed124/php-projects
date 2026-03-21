@@ -18,7 +18,6 @@ abstract class AbstractFrontendController
 
         $navigation = $this->pagesRepository->fetchNavigation();
 
-
         require __DIR__ . '/../../../views/frontend/layouts/main.view.php';
 
     }

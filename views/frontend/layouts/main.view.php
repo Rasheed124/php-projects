@@ -41,9 +41,11 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarResponsive">
-            <?php $currentPage =  $_GET['page']; ?>
-            <?php if (! empty($navigation)): ?>
               <ul class="navbar-nav ml-auto">
+            <?php if (! empty($_GET['page'])):
+                    $currentPage = $_GET['page'];
+            endif; ?>
+            <?php if (! empty($navigation)): ?>
                 <!-- Loop through the navigation items -->
                 <?php foreach ($navigation as $pageNav): ?>
                   <li class="nav-item <?php echo($pageNav->page_slug == $currentPage ? 'active' : ''); ?>">
@@ -55,14 +57,17 @@
                     </a>
                   </li>
                 <?php endforeach; ?>
-              </ul>
             <?php else: ?>
               <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                   <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => $pageNav->page_slug]) ?>">Create menu</a>
                 </li>
-              </ul>
             <?php endif; ?>
+
+                <li class="nav-item">
+                  <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/auth', 'page' => 'signup']) ?>">Signup</a>
+                </li>
+              </ul>
           </div>
         </div>
       </nav>

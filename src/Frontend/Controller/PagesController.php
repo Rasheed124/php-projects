@@ -15,6 +15,7 @@ class PagesController extends AbstractFrontendController
         $page = $this->pagesRepository->fetchBySlug($page);
         if (empty($page)) {
             $this->error404();
+            return;
         }
 
         switch ($page->page_slug) {
@@ -27,11 +28,12 @@ class PagesController extends AbstractFrontendController
             case 'contact':
                 $this->render('pages/contact', []);
                 break;
+
             case 'blog':
                 $this->render('pages/blog', []);
                 break;
             default:
-                $this->render('pages/create-page', []);
+                $this->error404();
 
         }
 

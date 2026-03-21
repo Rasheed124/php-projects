@@ -1,5 +1,5 @@
 <?php
-namespace App\blogAdmin\Controller;
+namespace BlogApp\Admin\Controller;
 
 abstract class AbstractAdminController
 {

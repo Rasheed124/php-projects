@@ -1,0 +1,67 @@
+<?php
+namespace BlogApp\Admin\Controller\Auth;
+
+use BlogApp\Admin\Controller\AuthPagesController;
+use BlogApp\Admin\Repository\AuthRepository\AuthPagesRepository;
+
+class SignUpController extends AuthPagesController
+{
+    public function __construct(protected AuthPagesRepository $authPagesRepository)
+    {
+        parent::__construct($authPagesRepository); // Call the parent constructor
+    }
+
+    public function renderSignUpForm()
+    {
+        $signUpError = false;
+
+          if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+            $user_name = isset($_POST['user_name']) ? trim($_POST['user_name']) : '';
+            $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+            $password = isset($_POST['password']) ? $_POST['password'] : '';
+            $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+
+            if (!empty($user_name) && !empty($email) && !empty($password) && !empty($confirm_password)) {
+
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $signUpError = "Invalid email format.";
+                } elseif ($password !== $confirm_password) {
+                    $signUpError = "Passwords do not match.";
+                } elseif (strlen($password) < 8) {  
+                    $signUpError = "Password must be at least 8 characters long.";
+                } elseif (!preg_match("/[A-Z]/", $password)) {  
+                    $signUpError = "Password must contain at least one uppercase letter.";
+                } elseif (!preg_match("/[0-9]/", $password)) {  
+                    $signUpError = "Password must contain at least one digit.";
+                } else {
+                    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+                    if ($this->authPagesRepository->isEmailOrUsernameTaken($email, $user_name)) {
+                        $signUpError = "Username or email already taken.";
+                    } else {
+                        $success = $this->authPagesRepository->handleSignUp($user_name, $email, $hashedPassword);
+
+                        if ($success) {
+                            // After successful signup, store user info in session
+                            // $_SESSION['user_name'] = $uname;
+                            // $_SESSION['email'] = $email;
+                            // $_SESSION['logged_in'] = true;
+
+                            header("Location: index.php?route=pages&page=home");
+                            exit;
+                        } else {
+                            $signUpError = "An error occurred. Please try again later.";
+                        }
+                    }
+                }
+
+            } else {
+                $signUpError = "Please fill in all the required fields.";
+            }
+        }
+
+        $this->render('auth/signup', [
+            'signUpError' => $signUpError
+        ]);
+    }
+}
