@@ -2,7 +2,6 @@
 <html lang="en">
 
   <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -13,7 +12,6 @@
 
     <!-- Bootstrap core CSS -->
     <link href="assets/frontend/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
 
     <!-- Additional CSS Files -->
     <link rel="stylesheet" href="assets/frontend/css/fontawesome.css">
@@ -43,34 +41,37 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => 'index']) ?>">Home
-                  <span class="sr-only">(current)</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => 'about']) ?>">About Us</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => 'blog']) ?>">Blog Entries</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => 'blog']) ?>">Post Details</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => 'contact']) ?>">Contact Us</a>
-              </li>
-            </ul>
+            <?php $currentPage =  $_GET['page']; ?>
+            <?php if (! empty($navigation)): ?>
+              <ul class="navbar-nav ml-auto">
+                <!-- Loop through the navigation items -->
+                <?php foreach ($navigation as $pageNav): ?>
+                  <li class="nav-item <?php echo($pageNav->page_slug == $currentPage ? 'active' : ''); ?>">
+                    <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => $pageNav->page_slug]) ?>">
+                      <?php echo $pageNav->page_title ?>
+                      <?php if ($pageNav->page_slug == 'index'): ?>
+                        <span class="sr-only">(current)</span>
+                      <?php endif; ?>
+                    </a>
+                  </li>
+                <?php endforeach; ?>
+              </ul>
+            <?php else: ?>
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => $pageNav->page_slug]) ?>">Create menu</a>
+                </li>
+              </ul>
+            <?php endif; ?>
           </div>
         </div>
       </nav>
     </header>
 
-
     <!-- Page Contents -->
     <?php echo $contents ?>
 
+    <!-- Footer -->
     <footer>
       <div class="container">
         <div class="row">
@@ -103,14 +104,14 @@
     <script src="assets/frontend/js/isotope.js"></script>
     <script src="assets/frontend/js/accordions.js"></script>
 
-    <script language = "text/Javascript">
+    <script language="text/Javascript">
       cleared[0] = cleared[1] = cleared[2] = 0; //set a cleared flag for each field
-      function clearField(t){                   //declaring the array outside of the
-      if(! cleared[t.id]){                      // function makes it static and global
+      function clearField(t){ //declaring the array outside of the function makes it static and global
+        if(! cleared[t.id]){ // function makes it static and global
           cleared[t.id] = 1;  // you could use true and false, but that's more typing
           t.value='';         // with more chance of typos
           t.style.color='#fff';
-          }
+        }
       }
     </script>
 

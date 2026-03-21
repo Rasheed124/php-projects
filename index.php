@@ -3,6 +3,8 @@ require __DIR__ . '/inc/all.inc.php';
 
 $container = new \BlogApp\Support\Container;
 
+// ============================================  Containers ============================================ //
+
 $container->bind('pdo', function () {
     return require __DIR__ . '/inc/db-connect.inc.php';
 });
@@ -15,6 +17,12 @@ $container->bind('pagesController', function () use ($container) {
     $pagesRepository = $container->get('pagesRepository');
     return new \BlogApp\Frontend\Controller\PagesController($pagesRepository);
 });
+$container->bind('notFoundFrontendController', function () use ($container) {
+    $pagesRepository = $container->get('pagesRepository');
+    return new \BlogApp\Frontend\Controller\NotFoundFrontendController($pagesRepository);
+});
+
+// ============================================  ROUTES ============================================ //
 
 $route = @(string) ($_GET['route'] ?? 'pages');
 
@@ -22,7 +30,7 @@ if ($route === 'pages') {
     $page = @(string) ($_GET['page'] ?? 'index');
 
     $pageController = $container->get('pagesController');
- 
+
     $pageController->showPage($page);
 
 } else if ($route === 'admin/pages') {
@@ -34,8 +42,8 @@ if ($route === 'pages') {
     // $pagesController = new AuthController();
     // $pagesController->renderAuthScreens($page);
 } else {
-    // $notFoundController = new NotFoundController();
-    // $notFoundController->error404();
+    $notFoundController = $container->get('notFoundFrontendController');
+    $notFoundController->error404();
 }
 
 // require __DIR__ . '/inc/all.inc.php';

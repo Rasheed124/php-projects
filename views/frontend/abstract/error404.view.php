@@ -8,7 +8,7 @@
               </div>
 
                   <div class="mt-3 text-content text-center">
-                <a href="index.html">Back to Home</a>
+                <a href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => 'index']) ?>">Back to Home</a>
               </div>
             </div>
           </div>

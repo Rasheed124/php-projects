@@ -1,5 +1,5 @@
 <?php
-namespace App\blogAdmin\Controller;
+namespace BlogApp\blogAdmin\Controller;
 
 class NotFoundController extends AbstractAdminController
 {
