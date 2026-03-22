@@ -1,7 +1,5 @@
  
- <?php if (!empty($signUpError)): ?>
-    <p>Ensure all fields are properly field</p>
-<?php endif; ?>
+
  <section class="section">
       <div class="container mt-5">
         <div class="row">
@@ -35,6 +33,10 @@
                       <input id="password2" type="password" class="form-control" name="confirm_password">
                     </div>
                   </div>
+
+                    <div class="w-full m-b-5 text-center text-danger text-center">
+                      <?php echo $signUpError; ?>
+                    </div>
               
                   <div class="form-group">
                     <button type="submit" class="btn btn-primary btn-lg btn-block">

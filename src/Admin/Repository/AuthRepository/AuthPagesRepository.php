@@ -5,7 +5,8 @@ use PDO;
 
 class AuthPagesRepository
 {
-    public function __construct(private PDO $pdo) {}
+    public function __construct(private PDO $pdo)
+    {}
 
     // Check if email or username is already taken
     public function isEmailOrUsernameTaken($email, $user_name): bool
@@ -25,5 +26,14 @@ class AuthPagesRepository
         $stmt->bindValue(':email', $email);
         $stmt->bindValue(':password', $password);
         return $stmt->execute();
+    }
+
+    public function getUserByEmail(string $email): ?array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+        $stmt->bindValue(':email', $email);
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 }

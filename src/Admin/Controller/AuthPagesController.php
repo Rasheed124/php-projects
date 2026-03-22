@@ -7,12 +7,10 @@ use BlogApp\Admin\Repository\AuthRepository\AuthPagesRepository;
 
 class AuthPagesController extends AbstractAdminController
 {
-   
-    protected AuthPagesRepository $authPagesRepository;
-
-    public function __construct(AuthPagesRepository $authPagesRepository)
+    protected SessionController $handleIsLoggedOut;
+    public function __construct(protected AuthPagesRepository $authPagesRepository)
     {
-        $this->authPagesRepository = $authPagesRepository;
+        $this->handleIsLoggedOut = new SessionController();
     }
 
     public function renderAuthScreens($page)
@@ -27,8 +25,13 @@ class AuthPagesController extends AbstractAdminController
 
             case 'signup':
 
-                $signUpController = new SignUpController();
+                $signUpController = new SignUpController($this->authPagesRepository);
                 return $signUpController->renderSignUpForm();
+                break;
+
+            case 'logout':
+                 $this->handleIsLoggedOut->logout();
+                header('Location: index.php?' . http_build_query(['route' => 'admin/auth']));
                 break;
 
             default:

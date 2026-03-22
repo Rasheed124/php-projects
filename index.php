@@ -31,6 +31,10 @@ $container->bind('authController', function () use ($container) {
 
     return new \BlogApp\Admin\Controller\AuthPagesController($authPagesRepository);
 });
+$container->bind('dashboardController', function () {
+
+    return new \BlogApp\Admin\Controller\pagesController\DashboardController();
+});
 
 // ============================================  ROUTES ============================================ //
 
@@ -44,9 +48,18 @@ if ($route === 'pages') {
     $pageController->showPage($page);
 
 } else if ($route === 'admin/pages') {
-    echo "Admin Page";
+    $page = @(string) ($_GET['page'] ?? 'dashboard');
+
+    $dashboardController = $container->get('dashboardController');
+    $dashboardController->dashboardPage();
 
 } else if ($route === 'admin/auth') {
+    $page = @(string) ($_GET['page'] ?? 'login');
+
+    $authController = $container->get('authController');
+    $authController->renderAuthScreens($page);
+
+} else if ($route === 'admin/logout') {
     $page = @(string) ($_GET['page'] ?? 'login');
 
     $authController = $container->get('authController');

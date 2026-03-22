@@ -3,12 +3,20 @@ namespace BlogApp\Frontend\Controller;
 
 use BlogApp\Frontend\Controller\AbstractFrontendController;
 use BlogApp\Repository\PagesRepository;
+use BlogApp\Admin\Controller\SessionController;
 
 class PagesController extends AbstractFrontendController
 {
 
+    // public function __construct(protected PagesRepository $pagesRepository)
+    // {}
+
+    protected SessionController $handleIsLoggedIn;
     public function __construct(protected PagesRepository $pagesRepository)
-    {}
+    {
+        $this->handleIsLoggedIn =  new SessionController();
+    }
+
 
     public function showPage($page)
     {

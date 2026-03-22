@@ -1,12 +1,16 @@
 <?php
 namespace BlogApp\Frontend\Controller;
 
+use BlogApp\Admin\Controller\SessionController;
 use BlogApp\Repository\PagesRepository;
 
 abstract class AbstractFrontendController
 {
+    protected SessionController $handleIsLoggedIn;
     public function __construct(protected PagesRepository $pagesRepository)
-    {}
+    {
+        $this->handleIsLoggedIn =  new SessionController();
+    }
 
     protected function render($view, $params)
     {
@@ -15,6 +19,10 @@ abstract class AbstractFrontendController
         ob_start();
         require __DIR__ . '/../../../views/frontend/' . $view . '.view.php';
         $contents = ob_get_clean();
+
+        $isLoggedIn =  $this->handleIsLoggedIn->isLoggedIn();
+
+        var_dump($isLoggedIn);
 
         $navigation = $this->pagesRepository->fetchNavigation();
 
