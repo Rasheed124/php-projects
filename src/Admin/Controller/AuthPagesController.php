@@ -7,14 +7,19 @@ use BlogApp\Admin\Repository\AuthRepository\AuthPagesRepository;
 
 class AuthPagesController extends AbstractAdminController
 {
-    protected SessionController $handleIsLoggedOut;
+    protected SessionController $sessionController;
     public function __construct(protected AuthPagesRepository $authPagesRepository)
     {
-        $this->handleIsLoggedOut = new SessionController();
+        $this->sessionController = new SessionController();
     }
 
     public function renderAuthScreens($page)
     {
+
+        if ($this->sessionController->isLoggedIn()) {
+            header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
+            return;
+        }
         switch ($page) {
 
             case 'login':
@@ -30,7 +35,7 @@ class AuthPagesController extends AbstractAdminController
                 break;
 
             case 'logout':
-                 $this->handleIsLoggedOut->logout();
+                $this->sessionController->logout();
                 header('Location: index.php?' . http_build_query(['route' => 'admin/auth']));
                 break;
 

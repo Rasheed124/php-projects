@@ -21,9 +21,6 @@ abstract class AbstractFrontendController
         $contents = ob_get_clean();
 
         $isLoggedIn =  $this->handleIsLoggedIn->isLoggedIn();
-
-        var_dump($isLoggedIn);
-
         $navigation = $this->pagesRepository->fetchNavigation();
 
         require __DIR__ . '/../../../views/frontend/layouts/main.view.php';

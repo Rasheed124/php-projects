@@ -10,7 +10,6 @@ class SessionController
         }
     }
 
-    // Check if the user is logged in
     public function isLoggedIn()
     {
         $this->ensureSession();  

@@ -26,14 +26,14 @@ $container->bind('notFoundFrontendController', function () use ($container) {
     $pagesRepository = $container->get('pagesRepository');
     return new \BlogApp\Frontend\Controller\NotFoundFrontendController($pagesRepository);
 });
-$container->bind('authController', function () use ($container) {
+$container->bind('authPagesController', function () use ($container) {
     $authPagesRepository = $container->get('authPagesRepository');
 
     return new \BlogApp\Admin\Controller\AuthPagesController($authPagesRepository);
 });
 $container->bind('dashboardController', function () {
-
-    return new \BlogApp\Admin\Controller\pagesController\DashboardController();
+    $sessionController = new \BlogApp\Admin\Controller\SessionController();
+    return new \BlogApp\Admin\Controller\pagesController\DashboardController($sessionController);
 });
 
 // ============================================  ROUTES ============================================ //
@@ -51,20 +51,14 @@ if ($route === 'pages') {
     $page = @(string) ($_GET['page'] ?? 'dashboard');
 
     $dashboardController = $container->get('dashboardController');
-    $dashboardController->dashboardPage();
+    $dashboardController->renderDashboardPages($page);
 
-} else if ($route === 'admin/auth') {
+}
+ else if ($route === 'admin/auth') {
     $page = @(string) ($_GET['page'] ?? 'login');
 
-    $authController = $container->get('authController');
-    $authController->renderAuthScreens($page);
-
-} else if ($route === 'admin/logout') {
-    $page = @(string) ($_GET['page'] ?? 'login');
-
-    $authController = $container->get('authController');
-    $authController->renderAuthScreens($page);
-
+    $authPagesController = $container->get('authPagesController');
+    $authPagesController->renderAuthScreens($page);
 } else {
     $notFoundController = $container->get('notFoundFrontendController');
     $notFoundController->error404();

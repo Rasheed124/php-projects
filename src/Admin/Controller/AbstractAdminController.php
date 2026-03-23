@@ -1,9 +1,12 @@
 <?php
 namespace BlogApp\Admin\Controller;
 
+use BlogApp\Admin\Controller\SessionController;
+
+
 abstract class AbstractAdminController
 {
-    public function __construct()
+    public function __construct(protected SessionController $sessionController)
     {}
 
     protected function render($view, $params)
