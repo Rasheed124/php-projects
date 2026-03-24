@@ -2,17 +2,17 @@
 namespace BlogApp\Admin\Controller\AuthController;
 
 use BlogApp\Admin\Controller\AuthPagesController;
-use BlogApp\Admin\Repository\AuthRepository\AuthPagesRepository;
+use BlogApp\Repository\Auth\AuthPagesRepository;
+
 use BlogApp\Admin\Controller\SessionController;
 
 class LoginController extends AuthPagesController
 {
-    protected SessionController $sessionController;
+  
 
-    public function __construct(AuthPagesRepository $authPagesRepository)
+   public function __construct(AuthPagesRepository $authPagesRepository, SessionController $sessionController)
     {
-        parent::__construct($authPagesRepository);
-        $this->sessionController = new SessionController(); 
+        parent::__construct($authPagesRepository, $sessionController); 
     }
 
     public function renderLoginForm()
@@ -40,7 +40,7 @@ class LoginController extends AuthPagesController
 
                     if ($user && password_verify($password, $user['password'])) {
                         
-                        $this->sessionController->setUserSession($user['username'], $user['email']);
+                        $this->sessionController->setUserSession($user['id'], $user['username'], $user['email']);
                         
                         // Redirect to a dashboard or homepage
                         header("Location: index.php?route=admin/pages"); // Example redirect

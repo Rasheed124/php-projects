@@ -1,22 +1,16 @@
 <?php
 namespace BlogApp\Frontend\Controller;
 
+use BlogApp\Admin\Controller\SessionController;
 use BlogApp\Frontend\Controller\AbstractFrontendController;
 use BlogApp\Repository\PagesRepository;
-use BlogApp\Admin\Controller\SessionController;
 
 class PagesController extends AbstractFrontendController
 {
-
-    // public function __construct(protected PagesRepository $pagesRepository)
-    // {}
-
-    protected SessionController $handleIsLoggedIn;
-    public function __construct(protected PagesRepository $pagesRepository)
+    public function __construct(PagesRepository $pagesRepository, SessionController $sessionController)
     {
-        $this->handleIsLoggedIn =  new SessionController();
+        parent::__construct($pagesRepository, $sessionController); 
     }
-
 
     public function showPage($page)
     {
@@ -36,15 +30,11 @@ class PagesController extends AbstractFrontendController
             case 'contact':
                 $this->render('pages/contact', []);
                 break;
-
             case 'blog':
                 $this->render('pages/blog', []);
                 break;
             default:
                 $this->error404();
-
         }
-
     }
-
 }

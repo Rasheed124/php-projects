@@ -2,25 +2,21 @@
 namespace BlogApp\Admin\Controller\AuthController;
 
 use BlogApp\Admin\Controller\AuthPagesController;
-use BlogApp\Admin\Repository\AuthRepository\AuthPagesRepository;
 use BlogApp\Admin\Controller\SessionController;
+use BlogApp\Repository\Auth\AuthPagesRepository;
 
 class SignUpController extends AuthPagesController
 {
 
-    protected SessionController $sessionController;
-    public function __construct(protected AuthPagesRepository $authPagesRepository)
+    public function __construct(AuthPagesRepository $authPagesRepository, SessionController $sessionController)
     {
-        parent::__construct($authPagesRepository);
-        $this->sessionController = new SessionController();
+        parent::__construct($authPagesRepository, $sessionController); 
     }
-
-
 
     public function renderSignUpForm()
     {
 
-       if ($this->sessionController->isLoggedIn()) {
+        if ($this->sessionController->isLoggedIn()) {
             header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
             return;
         }
@@ -58,7 +54,7 @@ class SignUpController extends AuthPagesController
                             $_SESSION['email']     = $email;
                             $_SESSION['logged_in'] = true;
 
-                            header("Location: index.php?route=pages&page=index");
+                            header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
                             exit;
                         } else {
                             $signUpError = "An error occurred. Please try again later.";
@@ -75,7 +71,5 @@ class SignUpController extends AuthPagesController
             'signUpError' => $signUpError,
         ]);
     }
-
-
 
 }

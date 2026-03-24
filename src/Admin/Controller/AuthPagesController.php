@@ -3,34 +3,31 @@ namespace BlogApp\Admin\Controller;
 
 use BlogApp\Admin\Controller\AuthController\LoginController;
 use BlogApp\Admin\Controller\AuthController\SignUpController;
-use BlogApp\Admin\Repository\AuthRepository\AuthPagesRepository;
+use BlogApp\Repository\Auth\AuthPagesRepository;
+
 
 class AuthPagesController extends AbstractAdminController
 {
-    protected SessionController $sessionController;
-    public function __construct(protected AuthPagesRepository $authPagesRepository)
+    public function __construct(protected AuthPagesRepository $authPagesRepository, SessionController $sessionController)
     {
-        $this->sessionController = new SessionController();
+         parent::__construct($sessionController);
     }
 
     public function renderAuthScreens($page)
     {
 
-        // if ($this->sessionController->isLoggedIn()) {
-        //     header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
-        //     return;
-        // }
+   
         switch ($page) {
 
             case 'login':
 
-                $loginController = new LoginController($this->authPagesRepository);
+                $loginController = new LoginController($this->authPagesRepository, $this->sessionController);
                 return $loginController->renderLoginForm();
                 break;
 
             case 'signup':
 
-                $signUpController = new SignUpController($this->authPagesRepository);
+                $signUpController = new SignUpController($this->authPagesRepository, $this->sessionController);
                 return $signUpController->renderSignUpForm();
                 break;
 
