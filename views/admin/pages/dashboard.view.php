@@ -1,5 +1,5 @@
 <?php
-    require __DIR__ . '/../../../views/admin/layouts/admin-layouts/header.php';
+    require __DIR__ . '/../../../views/admin/layouts/support-layouts/header.php';
 ?>
   <div class="main-content">
         <section class="section">
@@ -93,9 +93,9 @@
 
         </section>
      <?php
-         require __DIR__ . '/../../../views/admin/layouts/admin-layouts/settingSiderbar.php';
+         require __DIR__ . '/../../../views/admin/layouts/support-layouts/settingSiderbar.php';
      ?>
   </div>
 <?php
-    require __DIR__ . '/../../../views/admin/layouts/admin-layouts/footer.php';
+    require __DIR__ . '/../../../views/admin/layouts/support-layouts/footer.php';
 ?>
