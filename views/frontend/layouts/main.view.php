@@ -63,17 +63,22 @@
                   <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => $pageNav->page_slug]) ?>">Create menu</a>
                 </li>
             <?php endif; ?>
-            
 
-              <?php if(!empty($isLoggedIn)):  ?>
+
+
+
+              <?php if (! empty($isLoggedIn)): ?>
+                 <li class="nav-item">
+                      <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'dashbaord']) ?>">Dashboard</a>
+                </li>
                 <li class="nav-item">
                   <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/auth', 'page' => 'logout']) ?>">Logout</a>
                 </li>
-                <?php else : ?>
+                <?php else: ?>
                     <li class="nav-item">
-                      <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/auth', 'page' => 'signup']) ?>">Signup</a>
+                      <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/auth', 'page' => 'login']) ?>">Login</a>
                     </li>
-                <?php endif ?>  
+                <?php endif?>
               </ul>
           </div>
         </div>

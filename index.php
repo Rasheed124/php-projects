@@ -38,7 +38,9 @@ $container->bind('pagesController', function () use ($container) {
 
 $container->bind('notFoundFrontendController', function () use ($container) {
     return new \BlogApp\Frontend\Controller\NotFoundFrontendController(
-        $container->get('pagesRepository')
+        $container->get('pagesRepository'),
+        $container->get('sessionController')
+
     );
 });
 

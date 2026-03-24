@@ -94,7 +94,7 @@
       <div class="main-sidebar sidebar-style-2">
         <aside id="sidebar-wrapper">
           <div class="sidebar-brand">
-            <a href="index.html">  <span
+            <a href="index.php?<?php echo http_build_query(['route' => 'pages']) ?>">  <span
                 class="logo-name">BlogNest</span>
             </a>
           </div>
