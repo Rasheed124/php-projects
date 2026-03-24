@@ -42,4 +42,11 @@ class SessionController
         return $_SESSION['user_id'];
 
     }
+
+    
+    public function isUserIdSession()
+    {
+        $this->ensureSession();
+        return isset($_SESSION['user_id']) && ! empty($_SESSION['user_id']);
+    }
 }

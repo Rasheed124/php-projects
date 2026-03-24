@@ -32,6 +32,16 @@
                                 </div>
                             </div>
 
+                                 <!-- Slug Field -->
+                                    <div class="form-group row mb-4">
+                                        <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Slug</label>
+                                        <div class="col-sm-12 col-md-7">
+                                            <input type="text" name="slug" class="form-control" value="<?php echo isset($_POST['slug']) ? e($_POST['slug']) : ''; ?>" >
+                                            <small>Leave empty to auto-generate from the title.</small>
+                                        </div>
+                                    </div>
+
+
                             <!-- Category Field -->
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Category</label>
@@ -80,7 +90,7 @@
                                 </div>
                             </div>
                         </div>
-                    </form>
+                </form>
 
                 </div>
               </div>

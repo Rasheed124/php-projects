@@ -6,7 +6,6 @@ use BlogApp\Admin\Controller\pagesController\AdminPagesController;
 use BlogApp\Admin\Controller\SessionController;
 use BlogApp\Repository\Admin\AdminPagesRepository;
 
-
 class DashboardController extends AbstractAdminController
 {
 
@@ -18,7 +17,7 @@ class DashboardController extends AbstractAdminController
     public function renderDashboardPages($page)
     {
 
-        if (empty($this->sessionController->isLoggedIn())) {
+        if (empty($this->sessionController->isLoggedIn() && $this->sessionController->isUserIdSession())) {
             header('Location: index.php?' . http_build_query(['route' => 'admin/auth']));
             return;
         }

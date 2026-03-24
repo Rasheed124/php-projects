@@ -23,6 +23,7 @@ abstract class AbstractFrontendController
         $contents = ob_get_clean();
 
         $isLoggedIn = $this->sessionController->isLoggedIn();
+        $isUserIdSession = $this->sessionController->isUserIdSession();
         $navigation = $this->pagesRepository->fetchNavigation();
 
         require __DIR__ . '/../../../views/frontend/layouts/main.view.php';

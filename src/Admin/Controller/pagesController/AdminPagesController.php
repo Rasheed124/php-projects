@@ -5,9 +5,16 @@ use BlogApp\Admin\Controller\AbstractAdminController;
 use BlogApp\Admin\Controller\SessionController;
 use BlogApp\Repository\Admin\AdminPagesRepository;
 
-
 class AdminPagesController extends AbstractAdminController
 {
+
+    private function generateSlug($title)
+    {
+        $slug = strtolower(trim($title));
+        $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
+        $slug = preg_replace('/-+/', '-', $slug);
+        return $slug;
+    }
 
     public function __construct(SessionController $sessionController, protected AdminPagesRepository $adminRepository)
     {
@@ -18,7 +25,6 @@ class AdminPagesController extends AbstractAdminController
     {
         $this->render('pages/dashboard', []);
     }
-
     public function createPost()
     {
         $errors = [];
@@ -29,15 +35,24 @@ class AdminPagesController extends AbstractAdminController
             if (empty($title)) {
                 $errors[] = "Title is required.";
             }
+
             // Validate content
             $content = isset($_POST['content']) ? trim($_POST['content']) : '';
             if (empty($content)) {
                 $errors[] = "Content is required.";
             }
+
             // Validate category
             $category = isset($_POST['category']) ? $_POST['category'] : '';
             if (empty($category)) {
                 $errors[] = "Category is required.";
+            }
+
+            // Slug handling
+            $slug = isset($_POST['slug']) && ! empty($_POST['slug']) ? trim($_POST['slug']) : null;
+            if (empty($slug)) {
+                // Generate slug from title if not provided
+                $slug = $this->generateSlug($title);
             }
 
             // Validate status
@@ -63,21 +78,24 @@ class AdminPagesController extends AbstractAdminController
                     }
                 }
             }
-            // Assming the user is logged in, get the author ID (e.g., from session)
-            $authorId  = $this->sessionController->getUSerID();
-            $isCreated = $this->adminRepository->createPost($title, $content, $authorId, $category, $status, $thumbnail);
 
-            if ($isCreated) {
-                // Redirect or notify success
-                header('Location: index.php?' . http_build_query(['route' => 'admin/pages', 'page' => 'posts']));
+            $authorId = $this->sessionController->getUSerID();
 
-                exit;
-            } else {
-                $errors[] = "Failed to create the post.";
+            // Create post
+            if (empty($errors)) {
+                $isCreated = $this->adminRepository->createPost($title, $content, $authorId, $category, $slug, $status, $thumbnail);
+
+                if ($isCreated) {
+                    // Redirect or notify success
+                    header('Location: index.php?' . http_build_query(['route' => 'admin/pages', 'page' => 'posts']));
+                    exit;
+                } else {
+                    $errors[] = "Failed to create the post.";
+                }
             }
-        } else {
-            $this->render('pages/create', ['errors' => $errors]);
         }
+
+        $this->render('pages/create', ['errors' => $errors]);
     }
 
     public function allPost()

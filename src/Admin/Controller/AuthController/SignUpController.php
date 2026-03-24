@@ -16,7 +16,7 @@ class SignUpController extends AuthPagesController
     public function renderSignUpForm()
     {
 
-        if ($this->sessionController->isLoggedIn()) {
+           if ($this->sessionController->isLoggedIn() && $this->sessionController->isUserIdSession()) {
             header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
             return;
         }
@@ -54,7 +54,7 @@ class SignUpController extends AuthPagesController
                             $_SESSION['email']     = $email;
                             $_SESSION['logged_in'] = true;
 
-                            header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
+                            header('Location: index.php?' . http_build_query(['route' => 'admin/auth']));
                             exit;
                         } else {
                             $signUpError = "An error occurred. Please try again later.";

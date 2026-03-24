@@ -67,7 +67,7 @@
 
 
 
-              <?php if (! empty($isLoggedIn)): ?>
+              <?php if (! empty($isLoggedIn) && !empty($isUserIdSession)): ?>
                  <li class="nav-item">
                       <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'dashbaord']) ?>">Dashboard</a>
                 </li>
