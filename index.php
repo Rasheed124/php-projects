@@ -15,7 +15,7 @@ $container->bind('pagesRepository', function () use ($container) {
 });
 $container->bind('authPagesRepository', function () use ($container) {
     $pdo = $container->get('pdo');
-
+    
     return new \BlogApp\Admin\Repository\AuthRepository\AuthPagesRepository($pdo);
 });
 $container->bind('pagesController', function () use ($container) {

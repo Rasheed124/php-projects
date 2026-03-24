@@ -20,10 +20,10 @@ class SignUpController extends AuthPagesController
     public function renderSignUpForm()
     {
 
-    //    if ($this->sessionController->isLoggedIn()) {
-    //         header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
-    //         return;
-    //     }
+       if ($this->sessionController->isLoggedIn()) {
+            header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
+            return;
+        }
         $signUpError = false;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && ! empty($_POST)) {

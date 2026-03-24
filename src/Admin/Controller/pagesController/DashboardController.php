@@ -4,7 +4,7 @@ namespace BlogApp\Admin\Controller\pagesController;
 use BlogApp\Admin\Controller\AbstractAdminController;
 use BlogApp\Admin\Controller\SessionController;
 
-use BlogApp\Admin\Controller\pagesController\PostController;
+use BlogApp\Admin\Controller\pagesController\AdminPagesController;
 
 
 class DashboardController extends AbstractAdminController
@@ -25,17 +25,17 @@ class DashboardController extends AbstractAdminController
           switch ($page) {
 
             case 'dashboard':
-                $createPostController = new PostController($this->sessionController);
+                $createPostController = new AdminPagesController($this->sessionController);
                 return $createPostController->dashboard();
                 break;
 
             case 'posts':
-                $createPostController = new PostController($this->sessionController);
+                $createPostController = new AdminPagesController($this->sessionController);
                 return $createPostController->allPost();
                 break;
 
             case 'create':
-                $createPostController = new PostController($this->sessionController);
+                $createPostController = new AdminPagesController($this->sessionController);
                 return $createPostController->createPost();
                 break;
 

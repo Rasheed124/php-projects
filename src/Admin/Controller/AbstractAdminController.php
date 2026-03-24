@@ -17,6 +17,7 @@ abstract class AbstractAdminController
         require __DIR__ . '/../../../views/admin/' . $view . '.view.php';
         $contents = ob_get_clean();
 
+        
         require __DIR__ . '/../../../views/admin/layouts/main.view.php';
 
     }

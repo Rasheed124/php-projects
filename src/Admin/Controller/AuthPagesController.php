@@ -16,10 +16,10 @@ class AuthPagesController extends AbstractAdminController
     public function renderAuthScreens($page)
     {
 
-        if ($this->sessionController->isLoggedIn()) {
-            header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
-            return;
-        }
+        // if ($this->sessionController->isLoggedIn()) {
+        //     header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
+        //     return;
+        // }
         switch ($page) {
 
             case 'login':
@@ -36,7 +36,7 @@ class AuthPagesController extends AbstractAdminController
 
             case 'logout':
                 $this->sessionController->logout();
-                header('Location: index.php?' . http_build_query(['route' => 'admin/auth']));
+                header('Location: index.php?' . http_build_query(['route' => 'pages', 'page'=> 'index']));
                 break;
 
             default:

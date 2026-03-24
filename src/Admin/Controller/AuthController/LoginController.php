@@ -18,10 +18,10 @@ class LoginController extends AuthPagesController
     public function renderLoginForm()
     {
 
-    //   if ($this->sessionController->isLoggedIn()) {
-    //         header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
-    //         return;
-    //     }
+      if ($this->sessionController->isLoggedIn()) {
+            header('Location: index.php?' . http_build_query(['route' => 'admin/pages']));
+            return;
+        }
 
 
         $loginError = false;

@@ -3,7 +3,7 @@ namespace BlogApp\Admin\Controller\pagesController;
 
 use BlogApp\Admin\Controller\AbstractAdminController;
 
-class PostController extends AbstractAdminController
+class AdminPagesController extends AbstractAdminController
 {
     public function dashboard()
     {
