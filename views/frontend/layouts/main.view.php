@@ -48,10 +48,10 @@
             <?php if (! empty($navigation)): ?>
                 <!-- Loop through the navigation items -->
                 <?php foreach ($navigation as $pageNav): ?>
-                  <li class="nav-item <?php echo($pageNav->page_slug == $currentPage ? 'active' : ''); ?>">
-                    <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => $pageNav->page_slug]) ?>">
-                      <?php echo $pageNav->page_title ?>
-                      <?php if ($pageNav->page_slug == 'index'): ?>
+                  <li class="nav-item <?php echo($pageNav->slug == $currentPage ? 'active' : ''); ?>">
+                    <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => $pageNav->slug]) ?>">
+                      <?php echo $pageNav->title ?>
+                      <?php if ($pageNav->slug == 'index'): ?>
                         <span class="sr-only">(current)</span>
                       <?php endif; ?>
                     </a>
@@ -60,7 +60,7 @@
             <?php else: ?>
               <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => $pageNav->page_slug]) ?>">Create menu</a>
+                  <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => $pageNav->slug]) ?>">Create menu</a>
                 </li>
             <?php endif; ?>
 

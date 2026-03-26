@@ -21,7 +21,7 @@ class AuthPagesRepository
     // Handle user signup
     public function handleSignUp($user_name, $email, $password): bool
     {
-        $stmt = $this->pdo->prepare('INSERT INTO `users` (`username`, `email`, `password`) VALUES (:username, :email, :password)');
+        $stmt = $this->pdo->prepare('INSERT INTO `users` (`username`, `email`, `password_hash`) VALUES (:username, :email, :password)');
         $stmt->bindValue(':username', $user_name);
         $stmt->bindValue(':email', $email);
         $stmt->bindValue(':password', $password);

@@ -20,7 +20,7 @@ class PagesController extends AbstractFrontendController
             return;
         }
 
-        switch ($page->page_slug) {
+        switch ($page->slug) {
             case 'index':
                 $this->render('pages/index', []);
                 break;

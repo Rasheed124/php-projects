@@ -35,12 +35,12 @@ class LoginController extends AuthPagesController
 
                     $user = $this->authPagesRepository->getUserByEmail($email);
 
-                    if ($user && password_verify($password, $user['password'])) {
+                    if ($user && password_verify($password, $user['password_hash'])) {
 
                         $this->sessionController->setUserSession($user['id'], $user['username'], $user['email']);
 
-                                                                         // Redirect to a dashboard or homepage
-                        header("Location: index.php?route=admin/pages"); // Example redirect
+                                                                       
+                        header("Location: index.php?route=admin/pages"); 
                         exit;
                     } else {
                         $loginError = "Invalid email or password.";

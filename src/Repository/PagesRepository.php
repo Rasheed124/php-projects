@@ -17,7 +17,7 @@ class PagesRepository
     
     public function getPages(): array
     {
-        $stmt = $this->pdo->prepare('SELECT * from `pages`  ORDER BY `page_id` ASC');
+        $stmt = $this->pdo->prepare('SELECT * from `pages`  ORDER BY `id` ASC');
         $stmt->execute();
         $entry = $stmt->fetchAll(PDO::FETCH_CLASS, PageModel::class);
         return $entry;
@@ -26,8 +26,8 @@ class PagesRepository
 
     public function fetchBySlug(string $page_slug): ?PageModel
     {
-        $stmt = $this->pdo->prepare('SELECT * from `pages` WHERE  `page_slug` = :page_slug');
-        $stmt->bindValue(':page_slug', $page_slug);
+        $stmt = $this->pdo->prepare('SELECT * from `pages` WHERE  `slug` = :slug');
+        $stmt->bindValue(':slug', $page_slug);
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_CLASS, PageModel::class);
         $entry = $stmt->fetch();
