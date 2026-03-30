@@ -74,6 +74,7 @@ if ($route === 'pages') {
 
 } else if ($route === 'admin/pages') {
     $page                = @(string) ($_GET['page'] ?? 'dashboard');
+    // $page                = @(string) ($_GET['page'] ?? 'dashboard');
     $dashboardController = $container->get('dashboardController');
     $dashboardController->renderDashboardPages($page);
 

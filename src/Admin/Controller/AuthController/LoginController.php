@@ -37,7 +37,7 @@ class LoginController extends AuthPagesController
 
                     if ($user && password_verify($password, $user['password_hash'])) {
 
-                        $this->sessionController->setUserSession($user['id'], $user['username'], $user['email']);
+                        $this->sessionController->setUserSession($user['user_id'], $user['username'], $user['email']);
 
                                                                        
                         header("Location: index.php?route=admin/pages"); 

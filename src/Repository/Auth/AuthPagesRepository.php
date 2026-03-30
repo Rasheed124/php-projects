@@ -34,6 +34,6 @@ class AuthPagesRepository
         $stmt->bindValue(':email', $email);
         $stmt->execute();
 
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

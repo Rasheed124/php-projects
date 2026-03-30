@@ -7,7 +7,11 @@ use BlogApp\Repository\Admin\AdminPagesRepository;
 
 class AdminPagesController extends AbstractAdminController
 {
+    public function __construct(SessionController $sessionController, protected AdminPagesRepository $adminRepository)
+    {
+        parent::__construct($sessionController);
 
+    }
     private function generateSlug($title)
     {
         $slug = strtolower(trim($title));
@@ -16,52 +20,45 @@ class AdminPagesController extends AbstractAdminController
         return $slug;
     }
 
-    public function __construct(SessionController $sessionController, protected AdminPagesRepository $adminRepository)
-    {
-        parent::__construct($sessionController);
-
-    }
     public function dashboard()
     {
         $this->render('pages/dashboard', []);
     }
+
     public function createPost()
     {
-        $errors = [];
+        $errors     = [];
+        $categories = $this->adminRepository->getCategories();
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && ! empty($_POST)) {
 
-            // Validate title
             $title = isset($_POST['title']) ? trim($_POST['title']) : '';
             if (empty($title)) {
                 $errors[] = "Title is required.";
             }
 
-            // Validate content
             $content = isset($_POST['content']) ? trim($_POST['content']) : '';
             if (empty($content)) {
                 $errors[] = "Content is required.";
             }
 
-            // Validate category
             $category = isset($_POST['category']) ? $_POST['category'] : '';
             if (empty($category)) {
                 $errors[] = "Category is required.";
+            } elseif ($category == '0') {
+                $errors[] = "No categories found. Please <a href='create-category.php'>create a category</a> first.";
             }
 
-            // Slug handling
             $slug = isset($_POST['slug']) && ! empty($_POST['slug']) ? trim($_POST['slug']) : null;
             if (empty($slug)) {
-                // Generate slug from title if not provided
                 $slug = $this->generateSlug($title);
             }
 
-            // Validate status
             $status = isset($_POST['status']) ? $_POST['status'] : 'draft';
 
             // Handle file upload for thumbnail
             $thumbnail = null;
             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                // Validate image upload
                 $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
                 $fileInfo          = pathinfo($_FILES['image']['name']);
                 $fileExtension     = strtolower($fileInfo['extension']);
@@ -69,7 +66,6 @@ class AdminPagesController extends AbstractAdminController
                     $errors[] = "Only JPG, PNG, and GIF files are allowed for the thumbnail.";
                 }
 
-                // Move the uploaded file to a target directory
                 if (empty($errors)) {
                     $uploadDir = 'uploads/thumbnails/';
                     $thumbnail = $uploadDir . basename($_FILES['image']['name']);
@@ -79,14 +75,12 @@ class AdminPagesController extends AbstractAdminController
                 }
             }
 
-            $authorId = $this->sessionController->getUSerID();
+            $userId = $this->sessionController->getUserID();
 
-            // Create post
+            // Create post if no errors
             if (empty($errors)) {
-                $isCreated = $this->adminRepository->createPost($title, $content, $authorId, $category, $slug, $status, $thumbnail);
-
+                $isCreated = $this->adminRepository->createPost($title, $content, $userId, $category, $slug, $status, $thumbnail);
                 if ($isCreated) {
-                    // Redirect or notify success
                     header('Location: index.php?' . http_build_query(['route' => 'admin/pages', 'page' => 'posts']));
                     exit;
                 } else {
@@ -95,13 +89,68 @@ class AdminPagesController extends AbstractAdminController
             }
         }
 
-        $this->render('pages/create', ['errors' => $errors]);
+        // Pass categories to the view
+        $this->render('pages/create', ['errors' => $errors, 'categories' => $categories]);
     }
 
+    // Function to fetch posts by status and pass category and user info
     public function allPost()
     {
+                      // Pagination
+        $limit  = 10; // Number of posts per page
+        $page   = (int) ($_GET['page'] ?? 1);
+        $page   = max(1, $page);
+        $offset = ($page - 1) * $limit;
 
-        $this->render('pages/posts', []);
+        // Fetch posts with category and user
+        $allPosts   = $this->adminRepository->getPostsWithCategoryAndUser('published', $limit, $offset);
+        $totalPosts = $this->adminRepository->getTotalPostsByStatus('published');
+                                            // Handle active tab
+        $activeTab = $_GET['tab'] ?? 'all'; // Default to 'all' if not specified
+
+        // Pass data to the view
+        $this->render('pages/posts', [
+            'allPosts'   => $allPosts,
+            'totalPosts' => $totalPosts,
+            'limit'      => $limit,
+            'page'       => $page,
+            'activeTab'  => $activeTab, // Add active tab for styling
+        ]);
     }
+
+    public function draftPost()
+    {
+        $limit  = 10;
+        $page   = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $offset = ($page - 1) * $limit;
+
+        $draftPosts = $this->adminRepository->getPostsWithCategoryAndUser('draft', $limit, $offset);
+        $totalPosts = $this->adminRepository->getTotalPostsByStatus('draft');
+        $this->render('pages/posts', [
+            'draftPosts' => $draftPosts,
+            'totalPosts' => $totalPosts,
+            'limit'      => $limit,
+            'page'       => $page,
+        ]);
+    }
+
+    public function pendingPost()
+    {
+        $limit  = 10;
+        $page   = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $offset = ($page - 1) * $limit;
+
+        $pendingPosts = $this->adminRepository->getPostsWithCategoryAndUser('pending', $limit, $offset);
+        $totalPosts   = $this->adminRepository->getTotalPostsByStatus('pending');
+
+        $this->render('pages/posts', [
+            'pendingPosts' => $pendingPosts,
+            'totalPosts'   => $totalPosts,
+            'limit'        => $limit,
+            'page'         => $page,
+        ]);
+    }
+
+
 
 }

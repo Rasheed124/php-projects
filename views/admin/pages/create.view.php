@@ -32,26 +32,32 @@
                                 </div>
                             </div>
 
-                                 <!-- Slug Field -->
-                                    <div class="form-group row mb-4">
-                                        <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Slug</label>
-                                        <div class="col-sm-12 col-md-7">
-                                            <input type="text" name="slug" class="form-control" value="<?php echo isset($_POST['slug']) ? e($_POST['slug']) : ''; ?>" >
-                                            <small>Leave empty to auto-generate from the title.</small>
-                                        </div>
-                                    </div>
-
+                            <!-- Slug Field -->
+                            <div class="form-group row mb-4">
+                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Slug</label>
+                                <div class="col-sm-12 col-md-7">
+                                    <input type="text" name="slug" class="form-control" value="<?php echo isset($_POST['slug']) ? e($_POST['slug']) : ''; ?>" >
+                                    <small>Leave empty to auto-generate from the title.</small>
+                                </div>
+                            </div>
 
                             <!-- Category Field -->
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Category</label>
                                 <div class="col-sm-12 col-md-7">
-                                  <select name="category" class="form-control selectric" required>
-                                        <option value="" <?php echo isset($_POST['category']) && empty($_POST['category']) ? 'selected' : ''; ?>>Select a category</option>
-                                        <option value="1" <?php echo(isset($_POST['category']) && $_POST['category'] == '1') ? 'selected' : ''; ?>>Tech</option>
-                                        <option value="2" <?php echo(isset($_POST['category']) && $_POST['category'] == '2') ? 'selected' : ''; ?>>News</option>
-                                        <option value="3" <?php echo(isset($_POST['category']) && $_POST['category'] == '3') ? 'selected' : ''; ?>>Political</option>
+                                    <select name="category" class="form-control selectric" required>
+                                        <option value="">Select a category</option>
+                                        <?php if (!empty($categories)): ?>
+                                            <?php foreach ($categories as $category): ?>
+                                                <option value="<?php echo e($category['id']); ?>" <?php echo(isset($_POST['category']) && $_POST['category'] == $category['id']) ? 'selected' : ''; ?>><?php echo e($category['name']); ?></option>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <option value="0" disabled>No categories available</option>
+                                        <?php endif; ?>
                                     </select>
+                                    <?php if (empty($categories)): ?>
+                                        <small class="text-danger">No categories found. Please <a href="create-category.php">create a category</a> first.</small>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
@@ -90,7 +96,7 @@
                                 </div>
                             </div>
                         </div>
-                </form>
+                   </form>
 
                 </div>
               </div>

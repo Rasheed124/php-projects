@@ -22,26 +22,33 @@ class DashboardController extends AbstractAdminController
             return;
         }
 
+        $createPostController = new AdminPagesController($this->sessionController, $this->adminPagesRepository);
         switch ($page) {
 
             case 'dashboard':
-                $createPostController = new AdminPagesController($this->sessionController, $this->adminPagesRepository);
                 return $createPostController->dashboard();
                 break;
 
             case 'posts':
-                $createPostController = new AdminPagesController($this->sessionController, $this->adminPagesRepository);
-                return $createPostController->allPost();
+                // Here, we check for the specific post type based on the tab clicked
+                $tab = $_GET['tab'] ?? 'all'; // Default to 'all' if no tab is specified
+                switch ($tab) {
+                    case 'draft':
+                        return $createPostController->draftPost(); // For Draft posts
+                    case 'pending':
+                        return $createPostController->pendingPost(); // For Pending posts
+                    case 'all':
+                    default:
+                        return $createPostController->allPost(); // For All posts
+                }
                 break;
-
             case 'create':
-                $createPostController = new AdminPagesController($this->sessionController, $this->adminPagesRepository);
                 return $createPostController->createPost();
                 break;
 
             default:
                 header('Location: index.php?' . http_build_query(['route' => 'admin/auth']));
-                exit();
+                die();
         }
 
     }
