@@ -81,8 +81,8 @@
                                               <td>
                                                   <div class="custom-checkbox custom-control">
                                                       <input type="checkbox" data-checkboxes="mygroup" class="custom-control-input"
-                                                            id="checkbox-<?php echo $post['id']; ?>">
-                                                      <label for="checkbox-<?php echo $post['id']; ?>" class="custom-control-label">&nbsp;</label>
+                                                            id="checkbox-<?php echo $post['post_id']; ?>">
+                                                      <label for="checkbox-<?php echo $post['post_id']; ?>" class="custom-control-label">&nbsp;</label>
                                                   </div>
                                               </td>
                                               <td>

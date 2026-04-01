@@ -12,9 +12,9 @@
                   </div>
 
                   <!-- ============================ FORM AREA -->
-                   <form action="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'create']); ?>" method="POST" enctype="multipart/form-data">
+                   <form id="createForm" action="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'create']); ?>" method="POST" enctype="multipart/form-data">
                         <div class="card-body">
-                            <?php if (!empty($errors)): ?>
+                            <?php if (! empty($errors)): ?>
                                 <div class="alert alert-danger">
                                     <ul>
                                         <?php foreach ($errors as $error): ?>
@@ -45,11 +45,11 @@
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Category</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <select name="category" class="form-control selectric" required>
+                                    <select name="category" class="form-control selectric" <?php if (empty($categories)): ?> disabled <?php else: ?> required <?php endif?>>
                                         <option value="">Select a category</option>
-                                        <?php if (!empty($categories)): ?>
+                                        <?php if (! empty($categories)): ?>
                                             <?php foreach ($categories as $category): ?>
-                                                <option value="<?php echo e($category['id']); ?>" <?php echo(isset($_POST['category']) && $_POST['category'] == $category['id']) ? 'selected' : ''; ?>><?php echo e($category['name']); ?></option>
+                                                <option value="<?php echo e($category['category_id']); ?>" <?php echo(isset($_POST['category']) && $_POST['category'] == $category['category_id']) ? 'selected' : ''; ?>><?php echo e($category['name']); ?></option>
                                             <?php endforeach; ?>
                                         <?php else: ?>
                                             <option value="0" disabled>No categories available</option>
@@ -60,6 +60,29 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
+
+                           <!-- Tags Field -->
+                                <div class="form-group row mb-4">
+                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tags</label>
+                                    <div class="col-sm-12 col-md-7">
+                                        <select name="tags[]" id="tag-select" class="form-control selectric" multiple required <?php if (empty($tags)): ?> disabled <?php else: ?> required <?php endif?>>
+                                            <option value="">Select tags</option>
+                                            <?php if (!empty($tags)): ?>
+                                                <?php foreach ($tags as $tag): ?>
+                                                    <option value="<?php echo e($tag['tag_id']); ?>" <?php echo(isset($_POST['tags']) && in_array($tag['tag_id'], $_POST['tags']) ? 'selected' : ''); ?>>
+                                                        <?php echo e($tag['name']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                <option value="0" disabled>No tags available</option>
+                                            <?php endif; ?>
+                                        </select>
+                                        <?php if (empty($tags)): ?>
+                                            <small class="text-danger">No tags found. Please <a href="create-tag.php">create a tag</a> first.</small>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                      
 
                             <!-- Content Field -->
                             <div class="form-group row mb-4">
@@ -84,7 +107,6 @@
                                     <select name="status" class="form-control selectric">
                                         <option value="published" <?php echo(isset($_POST['status']) && $_POST['status'] == 'published') ? 'selected' : ''; ?>>Publish</option>
                                         <option value="draft" <?php echo(isset($_POST['status']) && $_POST['status'] == 'draft') ? 'selected' : ''; ?>>Draft</option>
-                                        <option value="pending" <?php echo(isset($_POST['status']) && $_POST['status'] == 'pending') ? 'selected' : ''; ?>>Pending</option>
                                     </select>
                                 </div>
                             </div>

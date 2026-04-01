@@ -29,6 +29,13 @@
 
   </div>
   <!-- General JS Scripts -->
+   <script>
+    // Handle the form submission to pass tags as hidden input
+    document.querySelector('#createForm').addEventListener('submit', function() {
+        // Update the hidden input field with the selected tags
+        document.getElementById('tags-field').value = JSON.stringify(selectedTags);
+    });
+</script>
   <script src="assets/admin/js/app.min.js"></script>
   <!-- JS Libraies -->
   <!-- Page Specific JS File -->

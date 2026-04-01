@@ -29,6 +29,7 @@ class AdminPagesController extends AbstractAdminController
     {
         $errors     = [];
         $categories = $this->adminRepository->getCategories();
+        $tags       = $this->adminRepository->getTags();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && ! empty($_POST)) {
 
@@ -53,6 +54,8 @@ class AdminPagesController extends AbstractAdminController
             if (empty($slug)) {
                 $slug = $this->generateSlug($title);
             }
+
+            $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
 
             $status = isset($_POST['status']) ? $_POST['status'] : 'draft';
 
@@ -79,7 +82,7 @@ class AdminPagesController extends AbstractAdminController
 
             // Create post if no errors
             if (empty($errors)) {
-                $isCreated = $this->adminRepository->createPost($title, $content, $userId, $category, $slug, $status, $thumbnail);
+                $isCreated = $this->adminRepository->createPost($title, $content, $userId, $category, $slug, $status, $thumbnail, $tags);
                 if ($isCreated) {
                     header('Location: index.php?' . http_build_query(['route' => 'admin/pages', 'page' => 'posts']));
                     exit;
@@ -89,8 +92,7 @@ class AdminPagesController extends AbstractAdminController
             }
         }
 
-        // Pass categories to the view
-        $this->render('pages/create', ['errors' => $errors, 'categories' => $categories]);
+        $this->render('pages/create', ['errors' => $errors, 'categories' => $categories, 'tags' => $tags]);
     }
 
     // Function to fetch posts by status and pass category and user info
@@ -150,7 +152,5 @@ class AdminPagesController extends AbstractAdminController
             'page'         => $page,
         ]);
     }
-
-
 
 }

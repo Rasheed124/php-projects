@@ -1,7 +1,7 @@
 <?php
 
 try {
-    $pdo = new PDO( 'mysql:host=127.0.0.1;port=3307;dbname=blog;charset=utf8mb4', 'root', '', [
+    $pdo = new PDO( 'mysql:host=127.0.0.1;dbname=blognest;charset=utf8mb4', 'root', '', [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
 }
