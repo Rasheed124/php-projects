@@ -12,7 +12,11 @@ $segments = $uri ? explode('/', $uri) : [];
 
 
 
+adminOwn!@#2026
+admin@gmail.com
 
+rasheed@gmail.com
+RasheeDev!@#22
 
 
 

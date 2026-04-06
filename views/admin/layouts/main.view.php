@@ -2,47 +2,40 @@
 <html lang="en">
 
 
-<!-- auth-login.html  21 Nov 2019 03:49:32 GMT -->
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
   <title>Otika - Admin Dashboard Template</title>
   <!-- General CSS Files -->
-  <link rel="stylesheet" href="assets/admin/css/app.min.css">
-  <link rel="stylesheet" href="assets/admin/bundles/bootstrap-social/bootstrap-social.css">
+  <link rel="stylesheet" href="<?php echo asset('admin/css/app.min.css'); ?>">
+  <link rel="stylesheet" href="<?php echo asset('admin/bundles/bootstrap-social/bootstrap-social.css'); ?>">
   <!-- Template CSS -->
-  <link rel="stylesheet" href="assets/admin/css/style.css">
-  <link rel="stylesheet" href="assets/admin/css/components.css">
+  <link rel="stylesheet" href="<?php echo asset('admin/css/style.css'); ?>">
+  <link rel="stylesheet" href="<?php echo asset('admin/css/components.css'); ?>">
   <!-- Custom style CSS -->
-  <link rel="stylesheet" href="assets/admin/css/custom.css">
-  <link rel='shortcut icon' type='image/x-icon' href='assets/admin/img/favicon.ico' />
+  <link rel="stylesheet" href="<?php echo asset('admin/css/custom.css'); ?>">
+  <link rel='shortcut icon' type='image/x-icon' href='<?php echo asset('admin/img/favicon.ico'); ?>' />
+
 </head>
 
 <body>
   <div class="loader"></div>
   <div id="app">
 
- 
+
       <!-- Main Content -->
       <?php echo $contents ?>
 
 
   </div>
   <!-- General JS Scripts -->
-   <script>
-    // Handle the form submission to pass tags as hidden input
-    document.querySelector('#createForm').addEventListener('submit', function() {
-        // Update the hidden input field with the selected tags
-        document.getElementById('tags-field').value = JSON.stringify(selectedTags);
-    });
-</script>
-  <script src="assets/admin/js/app.min.js"></script>
+
+  <script src="<?php echo asset('admin/js/app.min.js'); ?>"></script>
   <!-- JS Libraies -->
-  <!-- Page Specific JS File -->
   <!-- Template JS File -->
-  <script src="assets/admin/js/scripts.js"></script>
+  <script src="<?php echo asset('admin/js/scripts.js'); ?>"></script>
   <!-- Custom JS File -->
-  <script src="assets/admin/js/custom.js"></script>
+  <script src="<?php echo asset('assets/admin/js/custom.js'); ?>"></script>
 </body>
 
 

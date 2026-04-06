@@ -18,3 +18,8 @@ function url(...$segments)
     return $base . '/' . $path;
 }
 
+function asset($path = '')
+{
+    return (BASE_PATH ? BASE_PATH : '') . '/assets/' . ltrim($path, '/');
+}
+

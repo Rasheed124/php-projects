@@ -1,7 +1,7 @@
 <?php
 namespace App\Admin\Controller;
 
-class NotFoundController extends AbstractAdminController
+class NotFoundAdminController extends AbstractAdminController
 {
 
     public function error404()

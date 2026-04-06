@@ -1,14 +1,16 @@
 <?php
 namespace App\Frontend\Controller;
 
+use App\Admin\Support\AdminSupport;
 use App\Frontend\Controller\AbstractFrontendController;
 use App\Repository\PagesRepository;
 
 class PagesController extends AbstractFrontendController
 {
-    public function __construct(PagesRepository $pagesRepository)
-    {
-        parent::__construct($pagesRepository); 
+    public function __construct(
+        PagesRepository $pagesRepository,
+        AdminSupport $sessionController) {
+        parent::__construct($pagesRepository, $sessionController);
     }
 
     public function showPage($slug)
@@ -23,7 +25,7 @@ class PagesController extends AbstractFrontendController
         $view = ($slug === 'index') ? 'pages/index' : 'pages/show';
 
         $this->render($view, [
-            'page' => $page
+            'page' => $page,
         ]);
     }
 }

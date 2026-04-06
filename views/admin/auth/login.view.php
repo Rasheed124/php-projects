@@ -7,7 +7,7 @@
                 <h4>Login</h4>
               </div>
               <div class="card-body">
-                <form method="POST" action="index.php?<?php echo http_build_query(['route' => 'admin/auth', 'page'=> 'login']);?>" class="needs-validation" novalidate="">
+                <form method="POST" action="<?php echo url('admin', 'auth', 'login'); ?>" class="needs-validation" novalidate="">
                   <div class="form-group">
                     <label for="email">Email</label>
                     <input id="email" type="email" class="form-control" value="<?php if (!empty($_POST['email'])) echo e($_POST['email']); ?>" name="email" tabindex="1" required autofocus>
@@ -41,7 +41,10 @@
               </div>
             </div>
             <div class="mt-5 text-muted text-center">
-              Don't have an account? <a href="index.php?<?php echo http_build_query(['route' => 'admin/auth', 'page' => 'signup']) ?>">Create One</a>
+              Don't have an account? <a href="<?php echo url('admin/auth/signup') ?>">Create One</a>
+            </div>
+            <div class="mt-2 text-muted text-center">
+             Go to <a href="<?php echo url('/') ?>">Home</a>
             </div>
           </div>
         </div>
