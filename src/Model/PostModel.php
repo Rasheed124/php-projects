@@ -1,14 +1,14 @@
 <?php
-namespace BlogApp\Model;
+namespace App\Model;
 
 class PostModel
 {
-    public int $id;
+    public int $post_id;
     public int $user_id;
     public ?int $category_id = null;
     public string $title;
     public string $slug;
-    public string $body;
+    public string $content;
     public string $status        = 'draft';
     public ?string $published_at = null;
     public ?string $created_at   = null;

@@ -18,10 +18,10 @@
                         <li class="nav-item">
                             <a class="nav-link" id="pending-tab" data-toggle="pill" href="#pending-posts">Pending <span class="badge badge-primary">3</span></a>
                         </li>
-                     
+
                     </ul>
 
-                       
+
                   </div>
                 </div>
               </div>
@@ -57,6 +57,7 @@
                               </div>
                               <div class="clearfix mb-3"></div>
 
+
                               <div class="table-responsive">
                                   <table class="table table-striped">
                                       <tr>
@@ -86,11 +87,19 @@
                                                   </div>
                                               </td>
                                               <td>
-                                                  <!-- <a href="#"> -->
                                                       <span class="d-inline-block ml-1"><?php echo $post['author_name']; ?></span>
-                                                  <!-- </a> -->
                                               </td>
-                                              <td><?php echo $post['title']; ?></td>
+
+                                              <td><?php echo $post['title']; ?>
+                                                <div class="table-links">
+                                                    <a href="#">View</a>
+                                                    <div class="bullet"></div>
+                                                    <a href="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'edit', 'post_id' => $post['post_id']]); ?>">Edit</a>
+                                                    <div class="bullet"></div>
+                                                    <a href="#" class="text-danger">Trash</a>
+                                                </div>
+
+                                             </td>
                                               <td><a href="#"><?php echo $post['category_name']; ?></a></td>
                                               <td><?php echo $post['created_at']; ?></td>
                                               <td><?php echo $post['published_at']; ?></td>

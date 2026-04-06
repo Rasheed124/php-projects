@@ -36,51 +36,71 @@
     <header class="">
       <nav class="navbar navbar-expand-lg">
         <div class="container">
-          <a class="navbar-brand" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => 'index']) ?>"><h2>BlogNest<em>.</em></h2></a>
+          <a class="navbar-brand" href="<?php echo url('/'); ?>"><h2>BlogNest<em>.</em></h2></a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
+
+
           <div class="collapse navbar-collapse" id="navbarResponsive">
-              <ul class="navbar-nav ml-auto">
-            <?php if (! empty($_GET['page'])):
-                    $currentPage = $_GET['page'];
-            endif; ?>
-            <?php if (! empty($navigation)): ?>
-                <!-- Loop through the navigation items -->
-                <?php foreach ($navigation as $pageNav): ?>
-                  <li class="nav-item <?php echo($pageNav->slug == $currentPage ? 'active' : ''); ?>">
-                    <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => $pageNav->slug]) ?>">
-                      <?php echo $pageNav->title ?>
-                      <?php if ($pageNav->slug == 'index'): ?>
-                        <span class="sr-only">(current)</span>
-                      <?php endif; ?>
+    <ul class="navbar-nav ml-auto">
+
+        <?php
+            $currentPage = $segments[0] ?? 'index';
+        ?>
+
+        <?php if (! empty($navigation)): ?>
+
+            <?php foreach ($navigation as $pageNav): ?>
+                <li class="nav-item <?php echo($pageNav->slug == $currentPage ? 'active' : ''); ?>">
+
+                    <a class="nav-link" href="<?php echo url($pageNav->slug); ?>">
+                        <?php echo $pageNav->title ?>
+
+                        <?php if ($pageNav->slug == 'index'): ?>
+                            <span class="sr-only">(current)</span>
+                        <?php endif; ?>
                     </a>
-                  </li>
-                <?php endforeach; ?>
-            <?php else: ?>
-              <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                  <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'pages', 'page' => $pageNav->slug]) ?>">Create menu</a>
+
                 </li>
-            <?php endif; ?>
+            <?php endforeach; ?>
 
+        <?php else: ?>
 
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo url('create-menu'); ?>">
+                    Create menu
+                </a>
+            </li>
 
+        <?php endif; ?>
 
-              <?php if (! empty($isLoggedIn) && !empty($isUserIdSession)): ?>
-                 <li class="nav-item">
-                      <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'dashbaord']) ?>">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/auth', 'page' => 'logout']) ?>">Logout</a>
-                </li>
-                <?php else: ?>
-                    <li class="nav-item">
-                      <a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/auth', 'page' => 'login']) ?>">Login</a>
-                    </li>
-                <?php endif?>
-              </ul>
-          </div>
+        <?php if (! empty($isLoggedIn) && ! empty($isUserIdSession)): ?>
+
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo url('admin', 'dashboard'); ?>">
+                    Dashboard
+                </a>
+            </li> 
+
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo url('admin', 'auth', 'logout'); ?>">
+                    Logout
+                </a>
+            </li>
+
+        <?php else: ?>
+
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo url('admin', 'auth', 'login'); ?>">
+                    Login
+                </a>
+            </li>
+
+        <?php endif; ?>
+
+    </ul>
+</div>
         </div>
       </nav>
     </header>

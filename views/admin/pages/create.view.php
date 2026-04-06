@@ -61,28 +61,27 @@
                                 </div>
                             </div>
 
-                           <!-- Tags Field -->
-                                <div class="form-group row mb-4">
-                                    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tags</label>
-                                    <div class="col-sm-12 col-md-7">
-                                        <select name="tags[]" id="tag-select" class="form-control selectric" multiple required <?php if (empty($tags)): ?> disabled <?php else: ?> required <?php endif?>>
-                                            <option value="">Select tags</option>
-                                            <?php if (!empty($tags)): ?>
-                                                <?php foreach ($tags as $tag): ?>
-                                                    <option value="<?php echo e($tag['tag_id']); ?>" <?php echo(isset($_POST['tags']) && in_array($tag['tag_id'], $_POST['tags']) ? 'selected' : ''); ?>>
-                                                        <?php echo e($tag['name']); ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            <?php else: ?>
-                                                <option value="0" disabled>No tags available</option>
-                                            <?php endif; ?>
-                                        </select>
-                                        <?php if (empty($tags)): ?>
-                                            <small class="text-danger">No tags found. Please <a href="create-tag.php">create a tag</a> first.</small>
+                        <!-- Tags Field -->
+                            <div class="form-group row mb-4">
+                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tags</label>
+                                <div class="col-sm-12 col-md-7">
+                                    <select name="tags[]" id="tag-select" class="form-control selectric" multiple required <?php if (empty($tags)): ?> disabled <?php else: ?> required <?php endif?>>
+                                        <option value="">Select tags</option>
+                                        <?php if (!empty($tags)): ?>
+                                            <?php foreach ($tags as $tag): ?>
+                                                <option value="<?php echo e($tag['tag_id']); ?>" <?php echo(isset($_POST['tags']) && in_array($tag['tag_id'], $_POST['tags']) ? 'selected' : ''); ?>>
+                                                    <?php echo e($tag['name']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <option value="0" disabled>No tags available</option>
                                         <?php endif; ?>
-                                    </div>
+                                    </select>
+                                    <?php if (empty($tags)): ?>
+                                        <small class="text-danger">No tags found. Please <a href="create-tag.php">create a tag</a> first.</small>
+                                    <?php endif; ?>
                                 </div>
-                      
+                            </div>
 
                             <!-- Content Field -->
                             <div class="form-group row mb-4">

@@ -1,5 +1,5 @@
 <?php
-namespace BlogApp\Model;
+namespace App\Model;
 
 class CategoryModel
 {

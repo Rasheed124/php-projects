@@ -1,5 +1,5 @@
 <?php
-namespace BlogApp\Support;
+namespace App\Support;
 
 
 class CsrfHelper {

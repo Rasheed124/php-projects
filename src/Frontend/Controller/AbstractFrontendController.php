@@ -1,18 +1,15 @@
 <?php
-namespace BlogApp\Frontend\Controller;
+namespace App\Frontend\Controller;
 
-use BlogApp\Admin\Controller\SessionController;
-use BlogApp\Repository\PagesRepository;
+// use App\Admin\Support\AdminSupport;
+use App\Repository\PagesRepository;
 
 abstract class AbstractFrontendController
 {
 
     public function __construct(
-        protected PagesRepository $pagesRepository, 
-        protected SessionController $sessionController)
-    {
+        protected PagesRepository $pagesRepository) {
 
-    
     }
     protected function render($view, $params)
     {
@@ -22,9 +19,9 @@ abstract class AbstractFrontendController
         require __DIR__ . '/../../../views/frontend/' . $view . '.view.php';
         $contents = ob_get_clean();
 
-        $isLoggedIn = $this->sessionController->isLoggedIn();
-        $isUserIdSession = $this->sessionController->isUserIdSession();
-        $navigation = $this->pagesRepository->fetchNavigation();
+        // $isLoggedIn      = $this->sessionController->isLoggedIn();
+        // $isUserIdSession = $this->sessionController->isUserIdSession();
+        $navigation      = $this->pagesRepository->fetchNavigation();
 
         require __DIR__ . '/../../../views/frontend/layouts/main.view.php';
 

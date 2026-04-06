@@ -1,7 +1,7 @@
 <?php
-namespace BlogApp\Repository;
+namespace App\Repository;
 
-use BlogApp\Model\PageModel;
+use App\Model\PageModel;
 use PDO;
 
 class PagesRepository
@@ -17,7 +17,7 @@ class PagesRepository
     
     public function getPages(): array
     {
-        $stmt = $this->pdo->prepare('SELECT * from `pages`  ORDER BY `page_id` ASC');
+        $stmt = $this->pdo->prepare('SELECT * from `pages`  ORDER BY `id` ASC');
         $stmt->execute();
         $entry = $stmt->fetchAll(PDO::FETCH_CLASS, PageModel::class);
         return $entry;

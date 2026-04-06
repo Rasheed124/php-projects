@@ -1,18 +1,20 @@
 <?php
 
-function e($value) {
+define('BASE_PATH', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/'));
+
+function e($value)
+{
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
-/*
-function render($view, $params) {
-    extract($params);
+function url(...$segments)
+{
+    $base = BASE_PATH ? BASE_PATH : '';
 
-    ob_start();
-    require __DIR__ . '/../views/frontend/pages/' . $view . '.php';
-    $contents = ob_get_clean();
-    
-    require __DIR__ . '/../views/frontend/layouts/main.view.php';
+    $path = implode('/', array_map(function ($segment) {
+        return trim($segment, '/');
+    }, $segments));
+
+    return $base . '/' . $path;
 }
-*/
 

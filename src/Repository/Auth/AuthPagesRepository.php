@@ -1,5 +1,5 @@
 <?php
-namespace BlogApp\Repository\Auth;
+namespace App\Repository\Auth;
 
 use PDO;
 

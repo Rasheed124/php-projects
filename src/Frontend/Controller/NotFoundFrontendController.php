@@ -1,7 +1,7 @@
 <?php
-namespace BlogApp\Frontend\Controller;
+namespace App\Frontend\Controller;
 
-use BlogApp\Frontend\Controller\AbstractFrontendController;
+use App\Frontend\Controller\AbstractFrontendController;
 
 class NotFoundFrontendController extends AbstractFrontendController
 {

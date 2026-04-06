@@ -1,8 +1,7 @@
 <?php
-namespace BlogApp\Admin\Controller;
+namespace App\Admin\Support;
 
-class SessionController
-{
+class AdminSupport{
     public function ensureSession()
     {
         if (session_id() === '') {

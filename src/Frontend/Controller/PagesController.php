@@ -1,40 +1,29 @@
 <?php
-namespace BlogApp\Frontend\Controller;
+namespace App\Frontend\Controller;
 
-use BlogApp\Admin\Controller\SessionController;
-use BlogApp\Frontend\Controller\AbstractFrontendController;
-use BlogApp\Repository\PagesRepository;
+use App\Frontend\Controller\AbstractFrontendController;
+use App\Repository\PagesRepository;
 
 class PagesController extends AbstractFrontendController
 {
-    public function __construct(PagesRepository $pagesRepository, SessionController $sessionController)
+    public function __construct(PagesRepository $pagesRepository)
     {
-        parent::__construct($pagesRepository, $sessionController); 
+        parent::__construct($pagesRepository); 
     }
 
-    public function showPage($page)
+    public function showPage($slug)
     {
-        $page = $this->pagesRepository->fetchBySlug($page);
+        $page = $this->pagesRepository->fetchBySlug($slug);
+
         if (empty($page)) {
             $this->error404();
             return;
         }
 
-        switch ($page->slug) {
-            case 'index':
-                $this->render('pages/index', []);
-                break;
-            case 'about':
-                $this->render('pages/about', []);
-                break;
-            case 'contact':
-                $this->render('pages/contact', []);
-                break;
-            case 'blog':
-                $this->render('pages/blog', []);
-                break;
-            default:
-                $this->error404();
-        }
+        $view = ($slug === 'index') ? 'pages/index' : 'pages/show';
+
+        $this->render($view, [
+            'page' => $page
+        ]);
     }
 }
