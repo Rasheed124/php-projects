@@ -72,7 +72,7 @@
             </div>
           </li>
           <li class="dropdown"><a href="#" data-toggle="dropdown"
-              class="nav-link dropdown-toggle nav-link-lg nav-link-user"> <img alt="image" src="assets/admin/img/user.png"
+              class="nav-link dropdown-toggle nav-link-lg nav-link-user"> <img alt="image" src="<?php echo asset('admin/img/user.png'); ?>"
                 class="user-img-radious-style"> <span class="d-sm-none d-lg-inline-block"></span></a>
             <div class="dropdown-menu dropdown-menu-right pullDown">
               <div class="dropdown-title">Hello Sarah Smith</div>
@@ -94,30 +94,30 @@
       <div class="main-sidebar sidebar-style-2">
         <aside id="sidebar-wrapper">
           <div class="sidebar-brand">
-            <a href="index.php?<?php echo http_build_query(['route' => 'pages']) ?>">  <span
+            <a href="<?php echo url('/'); ?>">  <span
                 class="logo-name">BlogNest</span>
             </a>
           </div>
           <ul class="sidebar-menu">
             <li class="dropdown active">
-              <a href="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'dashboard']) ?>" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a>
+              <a href="<?php echo url('admin/dashboard') ?>" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a>
             </li>
 
             <li class="dropdown">
               <a href="#" class="menu-toggle nav-link has-dropdown"><i  data-feather="shopping-bag"></i><span>Pages</span></a>
               <ul class="dropdown-menu">
-                <li><a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'dashboard']) ?>">Home</a></li>
-                <li><a class="nav-link" href="portfolio.html">About</a></li>
+                <li><a class="nav-link" href="<?php echo url('admin/pages') ?>">All Pages</a></li>
+                <li><a class="nav-link" href="<?php echo url('admin/pages/create') ?>">Create Page</a></li>
 
               </ul>
             </li>
 
             <li class="dropdown">
-              <a href="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'posts']) ?>" class="menu-toggle nav-link has-dropdown"><i data-feather="copy"></i><span>Post
+              <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="copy"></i><span>Post
                   </span></a>
               <ul class="dropdown-menu">
-                <li><a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'posts']) ?>">All Post</a></li>
-                <li><a class="nav-link" href="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'create']) ?>">Create Post</a></li>
+                <li><a class="nav-link" href="<?php echo url('admin/posts') ?>">All Post</a></li>
+                <li><a class="nav-link" href="<?php echo url('admin/post/create') ?>">Create Post</a></li>
 
               </ul>
             </li>

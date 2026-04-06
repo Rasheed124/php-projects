@@ -78,6 +78,13 @@ $container->bind('adminPagesController', function () use ($container) {
 
     );
 });
+$container->bind('adminDashboardController', function () use ($container) {
+    return new \App\Admin\Controller\Pages\AdminDashboardController(
+        $container->get('AdminSupport'),
+        $container->get('pagesRepository'),
+
+    );
+});
 
 // ============================================  Routes ============================================ //
 

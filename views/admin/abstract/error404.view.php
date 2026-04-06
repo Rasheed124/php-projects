@@ -25,7 +25,7 @@
                 </div>
               </form>
               <div class="mt-3">
-                <a href="index.html">Back to Home</a>
+                <a href="<?php echo url('admin/dashboard') ?>">Back to Home</a>
               </div>
             </div>
           </div>
