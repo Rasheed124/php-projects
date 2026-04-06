@@ -15,13 +15,25 @@ $container->bind('AdminSupport', function () use ($container) {
     return new \App\Admin\Support\AdminSupport();
 });
 
+// ===============================  Repositories ============================= //
+
+$container->bind('pagesRepository', function () use ($container) {
+    $pdo = $container->get('pdo');
+    return new \App\Repository\PagesRepository($pdo);
+});
 $container->bind('AuthPagesRepository', function () use ($container) {
     return new \App\Repository\Auth\AuthPagesRepository(
         $container->get('pdo')
     );
 });
+$container->bind('postRepository', function () use ($container) {
+    return new \App\Repository\Admin\PostsRepository(
+        $container->get('pdo')
+    );
+});
 
-// 404 Controllers
+// ===============================  404 Controllers ============================= //
+
 $container->bind('notFoundFrontendController', function () use ($container) {
     return new \App\Frontend\Controller\NotFoundFrontendController(
         $container->get('signupController'),
@@ -36,17 +48,37 @@ $container->bind('notFoundAdminController', function () use ($container) {
     );
 });
 
-// Repositories
-$container->bind('pagesRepository', function () use ($container) {
-    $pdo = $container->get('pdo');
-    return new \App\Repository\PagesRepository($pdo);
-});
+// ===============================  FRONTEND PAGES Controllers ============================= //
 
 $container->bind('pagesController', function () use ($container) {
     return new \App\Frontend\Controller\PagesController(
         $container->get('pagesRepository'),
         $container->get('AdminSupport'),
 
+    );
+});
+
+// ===============================  ADMIN PAGES Controllers ============================= //
+
+$container->bind('adminPagesController', function () use ($container) {
+    return new \App\Admin\Controller\Pages\AdminPagesController(
+        $container->get('AdminSupport'),
+        $container->get('pagesRepository'),
+
+    );
+});
+
+$container->bind('postController', function () use ($container) {
+    return new \App\Admin\Controller\Post\PostController(
+        $container->get('AdminSupport'),
+        $container->get('postRepository')
+    );
+});
+
+$container->bind('adminDashboardController', function () use ($container) {
+    return new \App\Admin\Controller\Pages\AdminDashboardController(
+        $container->get('AdminSupport'),
+        $container->get('pagesRepository'),
     );
 });
 
@@ -71,20 +103,6 @@ $container->bind('authPagesController', function () use ($container) {
         $container->get('AdminSupport'),
     );
 });
-$container->bind('adminPagesController', function () use ($container) {
-    return new \App\Admin\Controller\Pages\AdminPagesController(
-        $container->get('AdminSupport'),
-        $container->get('pagesRepository'),
-
-    );
-});
-$container->bind('adminDashboardController', function () use ($container) {
-    return new \App\Admin\Controller\Pages\AdminDashboardController(
-        $container->get('AdminSupport'),
-        $container->get('pagesRepository'),
-
-    );
-});
 
 // ============================================  Routes ============================================ //
 
@@ -94,7 +112,6 @@ if ($basePath && strpos($uri, $basePath) === 0) {
     $uri = substr($uri, strlen($basePath));
 }
 
-// ============================================  Routes ============================================ //
 
 $uri      = trim($uri, '/');
 $segments = $uri ? explode('/', $uri) : [];

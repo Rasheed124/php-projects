@@ -21,6 +21,114 @@ RasheeDev!@#22
 
 
 
+  <div class="form-group row mb-4">
+                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tags</label>
+                                <div class="col-sm-12 col-md-7">
+                                    <select name="tags[]" id="tag-select" class="form-control select2" multiple="" required <?php if (empty($tags)): ?> disabled <?php else: ?> required <?php endif?>>
+                                        <option value="">Select tags</option>
+                                        <?php if (! empty($tags)): ?>
+                                            <?php foreach ($tags as $tag): ?>
+                                                <option value="<?php echo e($tag['id']); ?>" <?php echo(isset($_POST['tags']) && in_array($tag['id'], $_POST['tags']) ? 'selected' : ''); ?>>
+                                                    <?php echo e($tag['name']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <option value="0" disabled>No tags available</option>
+                                        <?php endif; ?>
+                                    </select>
+                                    <?php if (empty($tags)): ?>
+                                        <small class="text-danger">No tags found. Please <a href="create-tag.php">create a tag</a> first.</small>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            
+                              <div class="table-responsive">
+                                  <table class="table table-striped">
+                                      <tr>
+                                          <th class="pt-2">
+                                              <div class="custom-checkbox custom-checkbox-table custom-control">
+                                                  <input type="checkbox" data-checkboxes="mygroup" data-checkbox-role="dad"
+                                                        class="custom-control-input" id="checkbox-all">
+                                                  <label for="checkbox-all" class="custom-control-label">&nbsp;</label>
+                                              </div>
+                                          </th>
+                                          <th>Author</th>
+                                          <th>Title</th>
+                                          <th>Category</th>
+                                          <th>Created At</th>
+                                          <th>Published At</th>
+                                          <th>Status</th>
+                                          <th>Thumbnail</th>
+                                      </tr>
+
+                                      <?php foreach ($allPosts as $post): ?>
+                                          <tr>
+                                              <td>
+                                                  <div class="custom-checkbox custom-control">
+                                                      <input type="checkbox" data-checkboxes="mygroup" class="custom-control-input"
+                                                            id="checkbox-<?php echo $post['post_id']; ?>">
+                                                      <label for="checkbox-<?php echo $post['post_id']; ?>" class="custom-control-label">&nbsp;</label>
+                                                  </div>
+                                              </td>
+                                              <td>
+                                                      <span class="d-inline-block ml-1"><?php echo $post['author_name']; ?></span>
+                                              </td>
+
+                                              <td><?php echo $post['title']; ?>
+                                                <div class="table-links">
+                                                    <a href="#">View</a>
+                                                    <div class="bullet"></div>
+                                                    <a href="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'edit', 'post_id' => $post['post_id']]); ?>">Edit</a>
+                                                    <div class="bullet"></div>
+                                                    <a href="#" class="text-danger">Trash</a>
+                                                </div>
+
+                                             </td>
+                                              <td><a href="#"><?php echo $post['category_name']; ?></a></td>
+                                              <td><?php echo $post['created_at']; ?></td>
+                                              <td><?php echo $post['published_at']; ?></td>
+                                              <td>
+                                                  <div class="badge badge-<?php echo $post['status'] == 'published' ? 'success' : 'warning'; ?>">
+                                                      <?php echo ucfirst($post['status']); ?>
+                                                  </div>
+                                              </td>
+                                              <td><a href="#"><img alt="image" src="<?php echo $post['thumbnail']; ?>"
+                                                                  class="rounded-circle" width="35" title=""></a></td>
+                                          </tr>
+                                      <?php endforeach; ?>
+                                  </table>
+                              </div>
+
+
+
+
+
 
 
 header('Location: ' . base_url('admin/auth/login'));

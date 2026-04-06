@@ -12,7 +12,7 @@
                   </div>
 
                   <!-- ============================ FORM AREA -->
-                   <form id="createForm" action="index.php?<?php echo http_build_query(['route' => 'admin/pages', 'page' => 'create']); ?>" method="POST" enctype="multipart/form-data">
+                   <form id="createForm" action="<?php echo url('/admin/posts/create') ?>" method="POST" enctype="multipart/form-data">
                         <div class="card-body">
                             <?php if (! empty($errors)): ?>
                                 <div class="alert alert-danger">
@@ -24,19 +24,17 @@
                                 </div>
                             <?php endif; ?>
 
-                            <!-- Title Field -->
-                            <div class="form-group row mb-4">
+                           <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Title</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <input type="text" name="title" class="form-control" value="<?php echo isset($_POST['title']) ? e($_POST['title']) : ''; ?>" required>
+                                    <input type="text" id="post-create-title" name="title" class="form-control" value="<?php echo isset($_POST['title']) ? e($_POST['title']) : ''; ?>" required>
                                 </div>
                             </div>
 
-                            <!-- Slug Field -->
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Slug</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <input type="text" name="slug" class="form-control" value="<?php echo isset($_POST['slug']) ? e($_POST['slug']) : ''; ?>" >
+                                    <input type="text" id="post-create-slug" name="slug" class="form-control" value="<?php echo isset($_POST['slug']) ? e($_POST['slug']) : ''; ?>" >
                                     <small>Leave empty to auto-generate from the title.</small>
                                 </div>
                             </div>
@@ -49,7 +47,7 @@
                                         <option value="">Select a category</option>
                                         <?php if (! empty($categories)): ?>
                                             <?php foreach ($categories as $category): ?>
-                                                <option value="<?php echo e($category['category_id']); ?>" <?php echo(isset($_POST['category']) && $_POST['category'] == $category['category_id']) ? 'selected' : ''; ?>><?php echo e($category['name']); ?></option>
+                                                <option value="<?php echo e($category['id']); ?>" <?php echo(isset($_POST['category']) && $_POST['category'] == $category['id']) ? 'selected' : ''; ?>><?php echo e($category['name']); ?></option>
                                             <?php endforeach; ?>
                                         <?php else: ?>
                                             <option value="0" disabled>No categories available</option>
@@ -61,35 +59,46 @@
                                 </div>
                             </div>
 
-                        <!-- Tags Field -->
+                            <!-- Tags Field -->
+
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tags</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <select name="tags[]" id="tag-select" class="form-control selectric" multiple required <?php if (empty($tags)): ?> disabled <?php else: ?> required <?php endif?>>
-                                        <option value="">Select tags</option>
-                                        <?php if (!empty($tags)): ?>
+                                    <select
+                                        name="tags[]"
+                                        id="post-create-tag-select"
+                                        class="form-control js-choice"
+                                        multiple
+                                        <?php echo empty($tags) ? 'disabled' : 'required'; ?>
+                                    >
+                                        <?php if (! empty($tags)): ?>
                                             <?php foreach ($tags as $tag): ?>
-                                                <option value="<?php echo e($tag['tag_id']); ?>" <?php echo(isset($_POST['tags']) && in_array($tag['tag_id'], $_POST['tags']) ? 'selected' : ''); ?>>
+                                                <option value="<?php echo e($tag['id']); ?>"
+                                                    <?php echo(isset($_POST['tags']) && in_array($tag['id'], $_POST['tags'])) ? 'selected' : ''; ?>>
                                                     <?php echo e($tag['name']); ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         <?php else: ?>
-                                            <option value="0" disabled>No tags available</option>
+                                            <option value="" disabled>No tags available</option>
                                         <?php endif; ?>
                                     </select>
+
                                     <?php if (empty($tags)): ?>
                                         <small class="text-danger">No tags found. Please <a href="create-tag.php">create a tag</a> first.</small>
                                     <?php endif; ?>
                                 </div>
                             </div>
 
+
                             <!-- Content Field -->
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Content</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <textarea name="content" class="summernote-simple" required><?php echo isset($_POST['content']) ? e($_POST['content']) : ''; ?></textarea>
+                                    <textarea name="content" class="summernote-simple" style="width: 100%;" required><?php echo isset($_POST['content']) ? e($_POST['content']) : ''; ?></textarea>
                                 </div>
                             </div>
+
+
 
                             <!-- Thumbnail Upload -->
                             <div class="form-group row mb-4">

@@ -117,7 +117,7 @@
                   </span></a>
               <ul class="dropdown-menu">
                 <li><a class="nav-link" href="<?php echo url('admin/posts') ?>">All Post</a></li>
-                <li><a class="nav-link" href="<?php echo url('admin/post/create') ?>">Create Post</a></li>
+                <li><a class="nav-link" href="<?php echo url('admin/posts/create') ?>">Create Post</a></li>
 
               </ul>
             </li>

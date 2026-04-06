@@ -16,6 +16,9 @@
   <link rel="stylesheet" href="<?php echo asset('admin/css/custom.css'); ?>">
   <link rel='shortcut icon' type='image/x-icon' href='<?php echo asset('admin/img/favicon.ico'); ?>' />
 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+
 </head>
 
 <body>
@@ -31,11 +34,18 @@
   <!-- General JS Scripts -->
 
   <script src="<?php echo asset('admin/js/app.min.js'); ?>"></script>
+
+
   <!-- JS Libraies -->
   <!-- Template JS File -->
   <script src="<?php echo asset('admin/js/scripts.js'); ?>"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+
   <!-- Custom JS File -->
-  <script src="<?php echo asset('assets/admin/js/custom.js'); ?>"></script>
+  <script src="<?php echo url('assets/admin/js/custom.js'); ?>"></script>
 </body>
 
 

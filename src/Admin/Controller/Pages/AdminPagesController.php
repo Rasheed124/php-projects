@@ -2,7 +2,7 @@
 namespace App\Admin\Controller\Pages;
 
 use App\Admin\Controller\AbstractAdminController;
-use App\Repository\PagesRepository; // Assuming you have an Admin version or use the same one
+use App\Repository\PagesRepository; 
 use App\Admin\Support\AdminSupport;
 
 class AdminPagesController extends AbstractAdminController
