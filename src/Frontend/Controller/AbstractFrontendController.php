@@ -17,14 +17,15 @@ abstract class AbstractFrontendController
         extract($params);
 
         ob_start();
-        require __DIR__ . '/../../../views/frontend/' . $view . '.view.php';
+        require FRONTEND_VIEWS_PATH . '/' . $view . '.view.php';
         $contents = ob_get_clean();
 
         $isLoggedIn      = $this->sessionController->isLoggedIn();
         $isUserIdSession = $this->sessionController->isUserIdSession();
         $navigation = $this->pagesRepository->fetchNavigation();
 
-        require __DIR__ . '/../../../views/frontend/layouts/main.view.php';
+
+        require FRONTEND_VIEWS_PATH . '/layouts/main.view.php';
 
     }
 

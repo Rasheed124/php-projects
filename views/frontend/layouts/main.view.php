@@ -45,14 +45,10 @@
           <div class="collapse navbar-collapse" id="navbarResponsive">
     <ul class="navbar-nav ml-auto">
 
-        <?php
-            $currentPage = $segments[0] ?? 'index';
-        ?>
-
         <?php if (! empty($navigation)): ?>
 
             <?php foreach ($navigation as $pageNav): ?>
-                <li class="nav-item <?php echo($pageNav->slug == $currentPage ? 'active' : ''); ?>">
+                <li class="nav-item <?php echo($pageNav->slug == $page->slug ? 'active' : ''); ?>">
 
                     <a class="nav-link" href="<?php echo url($pageNav->slug); ?>">
                         <?php echo $pageNav->title ?>
@@ -81,7 +77,7 @@
                 <a class="nav-link" href="<?php echo url('admin', 'dashboard'); ?>">
                     Dashboard
                 </a>
-            </li> 
+            </li>
 
             <li class="nav-item">
                 <a class="nav-link" href="<?php echo url('admin', 'auth', 'logout'); ?>">

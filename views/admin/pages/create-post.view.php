@@ -40,54 +40,74 @@
                             </div>
 
                             <!-- Category Field -->
-                            <div class="form-group row mb-4">
-                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Category</label>
-                                <div class="col-sm-12 col-md-7">
-                                    <select name="category" class="form-control selectric" <?php if (empty($categories)): ?> disabled <?php else: ?> required <?php endif?>>
-                                        <option value="">Select a category</option>
-                                        <?php if (! empty($categories)): ?>
-                                            <?php foreach ($categories as $category): ?>
-                                                <option value="<?php echo e($category['id']); ?>" <?php echo(isset($_POST['category']) && $_POST['category'] == $category['id']) ? 'selected' : ''; ?>><?php echo e($category['name']); ?></option>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <option value="0" disabled>No categories available</option>
-                                        <?php endif; ?>
-                                    </select>
-                                    <?php if (empty($categories)): ?>
-                                        <small class="text-danger">No categories found. Please <a href="create-category.php">create a category</a> first.</small>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
+<div class="form-group row mb-4">
+    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Category</label>
+    <div class="col-sm-12 col-md-7">
+        <select name="category" class="form-control selectric"
+            <?php if (empty($categories)): ?> disabled <?php else: ?> required <?php endif; ?>>
+
+            <option value="">Select a category</option>
+
+            <?php if (!empty($categories)): ?>
+
+                <?php foreach ($categories as $category): ?>
+                    <option value="<?php echo e($category->id); ?>"
+                        <?php echo (isset($_POST['category']) && $_POST['category'] == $category->id) ? 'selected' : ''; ?>>
+                        
+                        <?php echo e($category->name); ?>
+                    
+                    </option>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <option value="0" disabled>No categories available</option>
+            <?php endif; ?>
+
+        </select>
+
+        <?php if (empty($categories)): ?>
+            <small class="text-danger">
+                No categories found. Please <a href="create-category.php">create a category</a> first.
+            </small>
+        <?php endif; ?>
+    </div>
+</div>
 
                             <!-- Tags Field -->
 
-                            <div class="form-group row mb-4">
-                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tags</label>
-                                <div class="col-sm-12 col-md-7">
-                                    <select
-                                        name="tags[]"
-                                        id="post-create-tag-select"
-                                        class="form-control js-choice"
-                                        multiple
-                                        <?php echo empty($tags) ? 'disabled' : 'required'; ?>
-                                    >
-                                        <?php if (! empty($tags)): ?>
-                                            <?php foreach ($tags as $tag): ?>
-                                                <option value="<?php echo e($tag['id']); ?>"
-                                                    <?php echo(isset($_POST['tags']) && in_array($tag['id'], $_POST['tags'])) ? 'selected' : ''; ?>>
-                                                    <?php echo e($tag['name']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <option value="" disabled>No tags available</option>
-                                        <?php endif; ?>
-                                    </select>
+                     
 
-                                    <?php if (empty($tags)): ?>
-                                        <small class="text-danger">No tags found. Please <a href="create-tag.php">create a tag</a> first.</small>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
+
+                            <div class="form-group row mb-4">
+    <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tags</label>
+    <div class="col-sm-12 col-md-7">
+        <select
+            name="tags[]"
+            id="post-create-tag-select"
+            class="form-control js-choice"
+            multiple
+            <?php echo empty($tags) ? 'disabled' : 'required'; ?>
+        >
+            <?php if (!empty($tags)): ?>
+                <?php foreach ($tags as $tag): ?>
+                    <option value="<?php echo htmlspecialchars($tag->id); ?>"
+                        <?php 
+                            echo (in_array($tag->id, $selectedTags)) ? 'selected' : ''; 
+                        ?>>
+                        <?php echo htmlspecialchars($tag->name); ?>
+                    </option>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <option value="" disabled>No tags available</option>
+            <?php endif; ?>
+        </select>
+
+        <?php if (empty($tags)): ?>
+            <small class="text-danger">
+                No tags found. Please <a href="create-tag.php">create a tag</a> first.
+            </small>
+        <?php endif; ?>
+    </div>
+</div>
 
 
                             <!-- Content Field -->
