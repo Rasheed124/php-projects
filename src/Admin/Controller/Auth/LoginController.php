@@ -7,41 +7,40 @@ use App\Repository\Auth\AuthPagesRepository;
 
 class LoginController extends AbstractAdminController
 {
-
-    public function __construct(AdminSupport $sessionController, protected AuthPagesRepository $authPagesRepository, )
+    public function __construct(AdminSupport $sessionController, protected AuthPagesRepository $authPagesRepository)
     {
         parent::__construct($sessionController);
     }
 
     public function login()
     {
-
         if ($this->sessionController->isLoggedIn() && $this->sessionController->isUserIdSession()) {
-            header('Location: ' . url('admin', 'dashboard'));
-            return;
+            header('Location: ' . url('admin/dashboard'));
+            exit;
         }
 
         $loginError = false;
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ! empty($_POST)) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
             $email    = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            if (! empty($email) && ! empty($password)) {
-
-                if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (!empty($email) && !empty($password)) {
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     $loginError = "Invalid email format.";
                 } else {
-
                     $user = $this->authPagesRepository->getUserByEmail($email);
 
                     if ($user && password_verify($password, $user['password'])) {
+                        
+                        $this->sessionController->setUserSession(
+                            $user['id'], 
+                            $user['username'], 
+                            $user['email'], 
+                            $user['role'] ?? 'user' 
+                        );
 
-                        $this->sessionController->setUserSession($user['id'], $user['username'], $user['email']);
-
-                        // header("Location: index.php?route=admin/pages");
                         header("Location:" . url('admin/dashboard'));
-
                         exit;
                     } else {
                         $loginError = "Invalid email or password.";
@@ -52,7 +51,6 @@ class LoginController extends AbstractAdminController
             }
         }
 
-        // Render login form with any errors
         $this->render('auth/login', [
             'loginError' => $loginError,
         ]);

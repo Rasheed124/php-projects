@@ -19,6 +19,9 @@ class PostController extends AbstractAdminController
     {
         switch ($action) {
             case 'index':return $this->allPosts();
+            case 'trash':return $this->trashPost();
+            case 'restore':return $this->restorePost();
+            case 'delete':return $this->deletePost();
             case 'create':return $this->createPost();
             case 'edit':return $this->editPost();
             default: return $this->error404();
@@ -42,6 +45,7 @@ class PostController extends AbstractAdminController
             'all'       => $this->postsRepository->getTotalPostsByStatus('all'),
             'draft'     => $this->postsRepository->getTotalPostsByStatus('draft'),
             'published' => $this->postsRepository->getTotalPostsByStatus('published'),
+            'trash' => $this->postsRepository->getTotalPostsByStatus('trash'),
         ];
 
         $this->render('pages/posts', [
@@ -209,9 +213,9 @@ class PostController extends AbstractAdminController
                 $slug = $this->generateSlug($title);
             }
 
-        if ($this->postsRepository->slugExistsExcluding($slug, (int)$id)) {
-            $errors[] = "The slug '{$slug}' is already in use by another post.";
-        }
+            if ($this->postsRepository->slugExistsExcluding($slug, (int) $id)) {
+                $errors[] = "The slug '{$slug}' is already in use by another post.";
+            }
 
             $selectedTags = isset($_POST['tags']) ? $_POST['tags'] : [];
 
@@ -304,5 +308,109 @@ class PostController extends AbstractAdminController
         $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
         $slug = preg_replace('/-+/', '-', $slug);
         return $slug;
+    }
+
+    /**
+     * Soft delete a post (Move to Trash)
+     */
+    public function trashPost()
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+
+        // 1. Security Check: Does the post exist and does the user have permission?
+        $post = $this->checkPostAccess($id);
+
+        // 2. Execute Soft Delete
+        $isAdmin = $this->sessionController->isAdmin();
+        $userId  = (int) $this->sessionController->getUserID();
+
+        if ($this->postsRepository->softDelete($id, $userId, $isAdmin)) {
+            $_SESSION['success'] = "Post moved to trash.";
+        } else {
+            $_SESSION['error'] = "Unable to move post to trash.";
+        }
+
+        header("Location: " . url('admin/posts'));
+        exit;
+    }
+
+/**
+ * Restore a post from Trash
+ */
+    public function restorePost()
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+
+        $post = $this->checkPostAccess($id);
+
+        $isAdmin = $this->sessionController->isAdmin();
+        $userId  = (int) $this->sessionController->getUserID();
+
+        if ($this->postsRepository->restore($id, $userId, $isAdmin)) {
+            $_SESSION['success'] = "Post restored successfully.";
+        } else {
+            $_SESSION['error'] = "Unable to restore post.";
+        }
+
+        header("Location: " . url('admin/posts') . "?status=trash");
+        exit;
+    }
+
+/**
+ * Permanently delete a post
+ */
+    public function deletePost()
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+
+        $post = $this->checkPostAccess($id);
+
+        $isAdmin = $this->sessionController->isAdmin();
+        $userId  = (int) $this->sessionController->getUserID();
+
+        if ($this->postsRepository->permanentDelete($id, $userId, $isAdmin)) {
+            $_SESSION['success'] = "Post deleted permanently.";
+        } else {
+            $_SESSION['error'] = "Unable to delete post.";
+        }
+
+        header("Location: " . url('admin/posts') . "?status=trash");
+        exit;
+    }
+
+/**
+ * PRIVATE SECURITY HELPER
+ * Verifies post existence and user authority (Owner vs Admin)
+ */
+    private function checkPostAccess($id)
+    {
+        if ($id <= 0) {
+            $_SESSION['error'] = "Invalid Post ID.";
+            header("Location: " . url('admin/posts'));
+            exit;
+        }
+
+        // Fetch post from repository (ensure you have a findById method)
+        $post = $this->postsRepository->findById($id);
+
+        if (! $post) {
+            $_SESSION['error'] = "Post not found.";
+            header("Location: " . url('admin/posts'));
+            exit;
+        }
+
+        // AUTHORITY LOGIC
+        $isAdmin       = $this->sessionController->isAdmin();
+        $currentUserId = (int) $this->sessionController->getUserID();
+        $postOwnerId   = (int) $post['user_id'];
+
+        // If you aren't an admin AND you don't own the post, block access
+        if (! $isAdmin && ($currentUserId !== $postOwnerId)) {
+            $_SESSION['error'] = "Access Denied: You cannot modify posts created by others.";
+            header("Location: " . url('admin/posts'));
+            exit;
+        }
+
+        return $post;
     }
 }

@@ -2,7 +2,6 @@
 namespace App\Repository\Admin;
 
 use App\Model\CategoryModel;
-use App\Model\PostModel;
 use App\Model\TagModel;
 use PDO;
 
@@ -97,7 +96,6 @@ class PostsRepository
         }
     }
 
- 
     public function getPostById(int $id)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM posts WHERE id = :id");
@@ -167,62 +165,12 @@ class PostsRepository
         }
     }
 
-
     public function slugExistsExcluding(string $slug, int $postId): bool
     {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM posts WHERE slug = :slug AND id != :id");
         $stmt->execute(['slug' => $slug, 'id' => $postId]);
         return (int) $stmt->fetchColumn() > 0;
     }
-
-    // public function updatePost($postId, $title, $content, $userId, $categoryId, $slug, $status, $thumbnail, $tags)
-    // {
-    //     $publishedAt = ($status === 'published') ? date('Y-m-d H:i:s') : null;
-
-    //     // Update the post in the posts table
-    //     $stmt = $this->pdo->prepare('
-    //     UPDATE posts SET title = :title, content = :content, user_id = :user_id,
-    //     category_id = :category_id, slug = :slug, status = :status,
-    //     thumbnail = :thumbnail, published_at = :published_at, updated_at = CURRENT_TIMESTAMP
-    //     WHERE post_id = :post_id
-    // ');
-
-    //     $stmt->bindValue(':title', $title);
-    //     $stmt->bindValue(':content', $content);
-    //     $stmt->bindValue(':user_id', $userId);
-    //     $stmt->bindValue(':category_id', $categoryId);
-    //     $stmt->bindValue(':slug', $slug);
-    //     $stmt->bindValue(':status', $status);
-    //     $stmt->bindValue(':thumbnail', $thumbnail);
-    //     $stmt->bindValue(':post_id', $postId);
-
-    //     if ($publishedAt === null) {
-    //         $stmt->bindValue(':published_at', null, \PDO::PARAM_NULL);
-    //     } else {
-    //         $stmt->bindValue(':published_at', $publishedAt);
-    //     }
-
-    //     if ($stmt->execute()) {
-    //         // Update tags in the post_tags table (many-to-many relationship)
-    //         // Delete current tags
-    //         $this->deleteTagsFromPost($postId);
-
-    //         // Insert new tags
-    //         if (! empty($tags)) {
-    //             $stmt = $this->pdo->prepare("INSERT INTO post_tags (post_id, tag_id) VALUES (:post_id, :tag_id)");
-
-    //             foreach ($tags as $tagId) {
-    //                 $stmt->bindValue(':post_id', $postId);
-    //                 $stmt->bindValue(':tag_id', $tagId);
-    //                 $stmt->execute();
-    //             }
-    //         }
-
-    //         return true;
-    //     }
-
-    //     return false;
-    // }
 
     public function deleteTagsFromPost($postId)
     {
@@ -232,28 +180,39 @@ class PostsRepository
         $stmt->execute();
     }
 
-    public function getPostsWithCategoryAndUser($status, int $limit, int $offset): array
+    public function getPostsWithCategoryAndUser(string $status, int $limit, int $offset): array
     {
-        $whereClause = ($status === 'all') ? "1=1" : "p.status = :status";
+        // 1. Determine if we are looking at the Trash or Live posts
+        if ($status === 'trash') {
+            $whereClause = "p.deleted_at IS NOT NULL";
+        } else {
+            // Normal tabs (all, published, draft) should NEVER show trashed items
+            $whereClause = "p.deleted_at IS NULL";
 
-        $stmt = $this->pdo->prepare("
+            if ($status !== 'all') {
+                $whereClause .= " AND p.status = :status";
+            }
+        }
+
+        $sql = "
         SELECT
             p.*,
             c.name AS category_name,
             u.username AS author_name
         FROM posts p
-        -- Fix: Match post's category_id to the category table's id
         LEFT JOIN categories c ON p.category_id = c.id
-        -- Fix: Match post's user_id to the user table's id
         LEFT JOIN users u ON p.user_id = u.id
         WHERE $whereClause
         ORDER BY p.created_at DESC
         LIMIT :limit OFFSET :offset
-    ");
+    ";
 
-        if ($status !== 'all') {
+        $stmt  = $this->pdo->prepare($sql);
+
+        if ($status !== 'all' && $status !== 'trash') {
             $stmt->bindValue(':status', $status);
         }
+
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
@@ -261,21 +220,76 @@ class PostsRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getTotalPostsByStatus($status)
+    public function softDelete(int $id, int $userId, bool $isAdmin): bool
     {
-        // If 'all', we select everything. Otherwise, filter by the specific status string.
-        $sql = ($status === 'all')
-            ? "SELECT COUNT(*) FROM posts"
-            : "SELECT COUNT(*) FROM posts WHERE status = :status";
+        $sql = "UPDATE posts SET deleted_at = NOW() WHERE id = :id";
 
-        $stmt = $this->pdo->prepare($sql);
-
-        if ($status !== 'all') {
-            $stmt->bindValue(':status', $status);
+        // If not admin, verify ownership
+        if (! $isAdmin) {
+            $sql .= " AND user_id = :userId";
         }
 
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        if (! $isAdmin) {
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+        }
+
+        return $stmt->execute();
+    }
+
+    public function restore(int $id, int $userId, bool $isAdmin): bool
+    {
+        $sql = "UPDATE posts SET deleted_at = NULL WHERE id = :id";
+
+        if (! $isAdmin) {
+            $sql .= " AND user_id = :userId";
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        if (! $isAdmin) {
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+        }
+
+        return $stmt->execute();
+    }
+
+    public function permanentDelete(int $id, int $userId, bool $isAdmin): bool
+    {
+        $sql = "DELETE FROM posts WHERE id = :id";
+
+        if (! $isAdmin) {
+            $sql .= " AND user_id = :userId";
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        if (! $isAdmin) {
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+        }
+
+        return $stmt->execute();
+    }
+
+    public function getTotalPostsByStatus(string $status): int
+    {
+        if ($status === 'trash') {
+            $sql = "SELECT COUNT(*) FROM posts WHERE deleted_at IS NOT NULL";
+        } else {
+            $sql = "SELECT COUNT(*) FROM posts WHERE deleted_at IS NULL";
+            if ($status !== 'all') {
+                $sql .= " AND status = :status";
+            }
+        }
+
+        $stmt  = $this->pdo->prepare($sql);
+        if ($status !== 'all' && $status !== 'trash') {
+            $stmt->bindValue(':status', $status);
+        }
         $stmt->execute();
-        return $stmt->fetchColumn();
+
+        return (int) $stmt->fetchColumn();
     }
 
     public function getCategoryNameByID($id): CategoryModel
@@ -287,6 +301,11 @@ class PostsRepository
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-
+    public function findById(int $id)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM posts WHERE id = :id LIMIT 1");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
 
 }

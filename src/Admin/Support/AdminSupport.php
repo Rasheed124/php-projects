@@ -1,7 +1,7 @@
 <?php
 namespace App\Admin\Support;
 
-class AdminSupport{
+class AdminSupport {
     public function ensureSession()
     {
         if (session_id() === '') {
@@ -12,40 +12,51 @@ class AdminSupport{
     public function isLoggedIn()
     {
         $this->ensureSession();
-        return ! empty($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
+        return !empty($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
     }
 
-    public function setUserSession($user_id, $user_name, $user_email)
+    // Updated to include user_role
+    public function setUserSession($user_id, $user_name, $user_email, $user_role)
     {
+        $this->ensureSession();
         $_SESSION['user_id']   = $user_id;
         $_SESSION['user_name'] = $user_name;
         $_SESSION['email']     = $user_email;
+        $_SESSION['user_role'] = $user_role; // Added role session
         $_SESSION['logged_in'] = true;
         session_regenerate_id();
-
     }
 
     public function logout()
     {
         $this->ensureSession();
-        unset($_SESSION['user_id']);
-        unset($_SESSION['user_name']);
-        unset($_SESSION['logged_in']);
-        unset($_SESSION['email']);
-        session_regenerate_id();
+        // Clear all session data safely
+        $_SESSION = [];
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        session_destroy();
     }
 
-    public function getUSerID()
+    public function getUserID()
     {
         $this->ensureSession();
-        return $_SESSION['user_id'];
-
+        return $_SESSION['user_id'] ?? null;
     }
 
-    
+    public function isAdmin()
+    {
+        $this->ensureSession();
+        return isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
+    }
+
     public function isUserIdSession()
     {
         $this->ensureSession();
-        return isset($_SESSION['user_id']) && ! empty($_SESSION['user_id']);
+        return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
     }
 }

@@ -9,20 +9,21 @@
                 <div class="col-12">
                     <div class="card mb-0">
                         <div class="card-body">
-                            <ul class="nav nav-pills">
+                             <ul class="nav nav-pills">
                                 <?php
-                                    $tabs = [
-                                        'all'       => 'All',
-                                        'published' => 'Published',
-                                        'draft'     => 'Draft',
-                                    ];
-                                    foreach ($tabs as $key => $label):
-                                        $isActive = ($currentStatus === $key);
+                                $tabs = [
+                                    'all'       => 'All',
+                                    'published' => 'Published',
+                                    'draft'     => 'Draft',
+                                    'trash'     => 'Trash', // Added Trash Tab
+                                ];
+                                foreach ($tabs as $key => $label):
+                                    $isActive = ($currentStatus === $key);
                                 ?>
                                 <li class="nav-item">
-                                    <a class="nav-link <?php echo $isActive ? 'active' : ''; ?>"
-                                       href="<?php echo url('admin/posts') ?>?status=<?php echo $key; ?>">
-                                        <?php echo $label; ?>
+                                    <a class="nav-link <?php echo $isActive ? 'active' : ''; ?>" 
+                                    href="<?php echo url('admin/posts') ?>?status=<?php echo $key; ?>">
+                                        <?php echo $label; ?> 
                                         <span class="badge <?php echo $isActive ? 'badge-white' : 'badge-primary'; ?>">
                                             <?php echo $counts[$key] ?? 0; ?>
                                         </span>
@@ -65,20 +66,29 @@
                                         <?php endif; ?>
                                     </td>
 
-                                    <td>
-                                        <?php echo htmlspecialchars($post['title']); ?>
-                                        <div class="table-links">
+                                   <td>
+                                    <?php echo htmlspecialchars($post['title']); ?>
+                                    <div class="table-links">
+                                        <?php if ($currentStatus === 'trash'): ?>
+                                            <a href="<?php echo url('admin/posts/restore') ?>?id=<?php echo $post['id']; ?>">Restore</a>
+                                            <div class="bullet"></div>
+                                            <a href="<?php echo url('admin/posts/delete') ?>?id=<?php echo $post['id']; ?>" 
+                                            class="text-danger" 
+                                            onclick="return confirm('Permanently delete this post?')">Delete Permanently</a>
+                                        <?php else: ?>
                                             <a href="#">View</a>
                                             <div class="bullet"></div>
                                             <a href="<?php echo url('admin/posts/edit') ?>?id=<?php echo $post['id']; ?>">Edit</a>
                                             <div class="bullet"></div>
-                                            <a href="#" class="text-danger">Trash</a>
-                                        </div>
-                                    </td>
+                                            <a href="<?php echo url('admin/posts/trash') ?>?id=<?php echo $post['id']; ?>" 
+                                            class="text-danger">Trash</a>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
 
                                     <td>
                                         <img alt="image" src="assets/img/users/user-1.png" class="rounded-circle" width="25">
-                                        <span class="d-inline-block ml-1"><?php echo htmlspecialchars($post['username'] ?? 'Admin'); ?></span>
+                                        <span class="d-inline-block ml-1"><?php echo e($post['username'] ?? 'Admin'); ?></span>
                                     </td>
 
                                     <td><?php echo e($post['category_name'] ?? 'Uncategorized'); ?></td>
