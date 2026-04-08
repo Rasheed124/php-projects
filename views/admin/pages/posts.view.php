@@ -5,6 +5,31 @@
 <div class="main-content">
     <section class="section">
         <div class="section-body">
+
+              <div class="row">
+                    <?php if (!empty($error)): ?>
+                        <div class="alert alert-danger alert-dismissible show fade">
+                            <div class="alert-body">
+                                <button class="close"  data-dismiss="alert">
+                                    <span>&times;</span>
+                                </button>
+                                <i class="fas fa-exclamation-triangle"></i> <?php echo e($error); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($success)): ?>
+                        <div class="alert alert-success alert-dismissible show fade">
+                            <div class="alert-body">
+                                <button class="close"  data-dismiss="alert">
+                                    <span>&times;</span>
+                                </button>
+                                <i class="fas fa-check-circle"></i> <?php echo e($success); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
             <div class="row">
                 <div class="col-12">
                     <div class="card mb-0">
@@ -67,28 +92,45 @@
                                     </td>
 
                                    <td>
-                                    <?php echo htmlspecialchars($post['title']); ?>
-                                    <div class="table-links">
-                                        <?php if ($currentStatus === 'trash'): ?>
-                                            <a href="<?php echo url('admin/posts/restore') ?>?id=<?php echo $post['id']; ?>">Restore</a>
-                                            <div class="bullet"></div>
-                                            <a href="<?php echo url('admin/posts/delete') ?>?id=<?php echo $post['id']; ?>" 
-                                            class="text-danger" 
-                                            onclick="return confirm('Permanently delete this post?')">Delete Permanently</a>
-                                        <?php else: ?>
-                                            <a href="#">View</a>
-                                            <div class="bullet"></div>
-                                            <a href="<?php echo url('admin/posts/edit') ?>?id=<?php echo $post['id']; ?>">Edit</a>
-                                            <div class="bullet"></div>
-                                            <a href="<?php echo url('admin/posts/trash') ?>?id=<?php echo $post['id']; ?>" 
-                                            class="text-danger">Trash</a>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
+                                    <?php echo e($post['title']); ?>
+                            
+                                        <div class="table-links">
+                                            <?php 
+                                                 $isAdmin = $this->sessionController->isAdmin();
+                                                 $isOwner = ((int)$post['user_id'] === (int)$this->sessionController->getUserID());
+                                                $hasAccess = ($isAdmin || $isOwner);
+                                            ?>
 
-                                    <td>
-                                        <img alt="image" src="assets/img/users/user-1.png" class="rounded-circle" width="25">
-                                        <span class="d-inline-block ml-1"><?php echo e($post['username'] ?? 'Admin'); ?></span>
+                                            <?php if ($currentStatus === 'trash'): ?>
+                                                <?php if ($hasAccess): ?>
+                                                    <a href="<?php echo url('admin/posts/restore') ?>?id=<?php echo $post['id']; ?>">Restore</a>
+                                                    <div class="bullet"></div>
+                                                    <a href="<?php echo url('admin/posts/delete') ?>?id=<?php echo $post['id']; ?>" 
+                                                    class="text-danger" 
+                                                    onclick="return confirm('Permanently delete this post?')">Delete Permanently</a>
+                                                <?php else: ?>
+                                                    <span class="text-muted">No actions available</span>
+                                                <?php endif; ?>
+
+                                            <?php else: ?>
+                                                <a href="#">View</a>
+                                                
+                                                <?php if ($hasAccess): ?>
+                                                    <div class="bullet"></div>
+                                                    <a href="<?php echo url('admin/posts/edit') ?>?id=<?php echo $post['id']; ?>">Edit</a>
+                                                    <div class="bullet"></div>
+                                                    <a href="<?php echo url('admin/posts/trash') ?>?id=<?php echo $post['id']; ?>" 
+                                                    class="text-danger">Trash</a>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                        </div>
+                                     </td>
+
+                                   <td>
+                                        <img alt="image" src="<?php echo asset('admin/img/user.png'); ?>" class="rounded-circle" width="25">
+                                        <span class="d-inline-block ml-1">
+                                            <?php echo e($post['author_name'] ?? 'Unknown'); ?>
+                                        </span>
                                     </td>
 
                                     <td><?php echo e($post['category_name'] ?? 'Uncategorized'); ?></td>

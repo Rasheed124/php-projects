@@ -34,18 +34,22 @@ class PostController extends AbstractAdminController
         $page   = max(1, (int) ($_GET['page'] ?? 1));
         $offset = ($page - 1) * $limit;
 
-        // Get status from URL, default to 'all'
         $status = $_GET['status'] ?? 'all';
 
-        // Fetch posts based on current tab
+        // Capture flash messages from session
+        $error   = $_SESSION['error'] ?? null;
+        $success = $_SESSION['success'] ?? null;
+
+        // Clear them immediately so they don't show again on refresh
+        unset($_SESSION['error'], $_SESSION['success']);
+
         $posts = $this->postsRepository->getPostsWithCategoryAndUser($status, $limit, $offset);
 
-        // Fetch counts for the 3 active tabs
         $counts = [
             'all'       => $this->postsRepository->getTotalPostsByStatus('all'),
             'draft'     => $this->postsRepository->getTotalPostsByStatus('draft'),
             'published' => $this->postsRepository->getTotalPostsByStatus('published'),
-            'trash' => $this->postsRepository->getTotalPostsByStatus('trash'),
+            'trash'     => $this->postsRepository->getTotalPostsByStatus('trash'),
         ];
 
         $this->render('pages/posts', [
@@ -55,6 +59,8 @@ class PostController extends AbstractAdminController
             'limit'         => $limit,
             'page'          => $page,
             'totalPosts'    => $counts[$status] ?? 0,
+            'error'         => $error,   // Pass to view
+            'success'       => $success, // Pass to view
         ]);
     }
 
@@ -172,18 +178,15 @@ class PostController extends AbstractAdminController
 
     public function editPost()
     {
+        $id = (int) ($_GET['id'] ?? 0);
 
-        $id = $_GET['id'] ?? null;
-        if (! $id) {
-            header('Location: ' . url('/admin/posts'));
-            exit;
-        }
+        /** * 1. SECURITY & EXISTENCE CHECK
+         * This single line replaces your manual ID check and findById logic.
+         * It will handle redirects and error messages automatically.
+         */
+        $post = $this->checkPostAccess($id);
 
-        $post = $this->postsRepository->getPostById((int) $id);
-        if (! $post) {
-            die("Post not found.");
-        }
-
+        // If we reached here, the post exists AND the user is authorized.
         $errors       = [];
         $categories   = $this->postsRepository->getCategories();
         $tags         = $this->postsRepository->getTags();
@@ -205,7 +208,7 @@ class PostController extends AbstractAdminController
             if (empty($category)) {
                 $errors[] = "Category is required.";
             } elseif ($category == '0') {
-                $errors[] = "No categories found. Please <a href='create-category.php'>create a category</a> first.";
+                $errors[] = "No categories found. Please create a category first.";
             }
 
             $slug = isset($_POST['slug']) && ! empty($_POST['slug']) ? trim($_POST['slug']) : null;
@@ -218,68 +221,53 @@ class PostController extends AbstractAdminController
             }
 
             $selectedTags = isset($_POST['tags']) ? $_POST['tags'] : [];
+            $status       = isset($_POST['status']) ? $_POST['status'] : 'draft';
 
-            $status = isset($_POST['status']) ? $_POST['status'] : 'draft';
-
-            // Handle file upload for thumbnail
+            // Handle file upload logic for thumbnail
             $thumbnail = $post['thumbnail'];
 
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                // 1. Configuration
                 $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
                 $allowedMimeTypes  = ['image/jpeg', 'image/png', 'image/gif'];
-                $maxFileSize       = 2 * 1024 * 1024; // 2MB limit
+                $maxFileSize       = 2 * 1024 * 1024;
                 $uploadDir         = 'uploads/thumbnails/';
 
-                // 2. Basic File Info
                 $fileName      = $_FILES['image']['name'];
                 $fileTmpName   = $_FILES['image']['tmp_name'];
                 $fileSize      = $_FILES['image']['size'];
                 $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-                // 3. Validation Checks
-                // Check Extension
                 if (! in_array($fileExtension, $allowedExtensions)) {
-                    $errors[] = "Invalid file extension. Only JPG, PNG, and GIF are allowed.";
+                    $errors[] = "Invalid file extension.";
                 }
 
-                // Check Actual MIME Type (Security: ensures it's actually an image)
-                $finfo    = new finfo(FILEINFO_MIME_TYPE);
+                $finfo    = new \finfo(FILEINFO_MIME_TYPE);
                 $mimeType = $finfo->file($fileTmpName);
                 if (! in_array($mimeType, $allowedMimeTypes)) {
                     $errors[] = "The file content is not a valid image.";
                 }
 
-                // Check File Size
                 if ($fileSize > $maxFileSize) {
-                    $errors[] = "The image is too large. Maximum size is 2MB.";
+                    $errors[] = "The image is too large (Max 2MB).";
                 }
 
-                // 4. Final Processing
                 if (empty($errors)) {
-                    // Create directory if it doesn't exist
                     if (! is_dir($uploadDir)) {
                         mkdir($uploadDir, 0755, true);
                     }
-
-                    // Generate a unique name to prevent overwriting (e.g., 65a1b2c3d4e5f.png)
                     $uniqueName  = uniqid() . '.' . $fileExtension;
                     $destination = $uploadDir . $uniqueName;
 
                     if (move_uploaded_file($fileTmpName, $destination)) {
+                        // Optional: Delete old thumbnail file if you want to save space
                         $thumbnail = $destination;
                     } else {
-                        $errors[] = "Failed to move uploaded file. Check folder permissions.";
+                        $errors[] = "Failed to move uploaded file.";
                     }
                 }
-            } elseif (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
-                // Handle specific PHP upload errors (e.g., file exceeds server's post_max_size)
-                $errors[] = "An error occurred during file upload (Error Code: " . $_FILES['image']['error'] . ").";
             }
 
-            $userId = $this->sessionController->getUserID();
-
-            // Create post if no errors
+            // 2. UPDATE POST
             if (empty($errors)) {
                 $updateData = [
                     'title'       => $title,
@@ -289,17 +277,26 @@ class PostController extends AbstractAdminController
                     'status'      => $status,
                     'thumbnail'   => ($thumbnail !== $post['thumbnail']) ? $thumbnail : null,
                 ];
-                $isCreated = $this->postsRepository->updatePost((int) $id, $updateData, $selectedTags);
-                if ($isCreated) {
-                    header('Location: ' . url('/admin/posts'));
+
+                $isUpdated = $this->postsRepository->updatePost((int) $id, $updateData, $selectedTags);
+
+                if ($isUpdated) {
+                    $_SESSION['success'] = "Post updated successfully.";
+                    header('Location: ' . url('admin/posts'));
                     exit;
                 } else {
-                    $errors[] = "Failed to create the post.";
+                    $errors[] = "Failed to update the post.";
                 }
             }
         }
 
-        $this->render('pages/edit-post', ['errors' => $errors, 'post' => $post, 'categories' => $categories, 'tags' => $tags, 'selectedTags' => $selectedTags]);
+        $this->render('pages/edit-post', [
+            'errors'       => $errors,
+            'post'         => $post,
+            'categories'   => $categories,
+            'tags'         => $tags,
+            'selectedTags' => $selectedTags,
+        ]);
     }
 
     private function generateSlug($title)
@@ -356,9 +353,6 @@ class PostController extends AbstractAdminController
         exit;
     }
 
-/**
- * Permanently delete a post
- */
     public function deletePost()
     {
         $id = (int) ($_GET['id'] ?? 0);
