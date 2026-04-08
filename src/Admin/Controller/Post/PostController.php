@@ -372,10 +372,7 @@ class PostController extends AbstractAdminController
         exit;
     }
 
-/**
- * PRIVATE SECURITY HELPER
- * Verifies post existence and user authority (Owner vs Admin)
- */
+
     private function checkPostAccess($id)
     {
         if ($id <= 0) {

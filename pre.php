@@ -135,7 +135,7 @@
 
 
 
-    <div class="table-links">
+                              <div class="table-links">
                                         <?php if ($currentStatus === 'trash'): ?>
                                             <a href="<?php echo url('admin/posts/restore') ?>?id=<?php echo $post['id']; ?>">Restore</a>
                                             <div class="bullet"></div>
@@ -151,3 +151,45 @@
                                             class="text-danger">Trash</a>
                                         <?php endif; ?>
                                     </div>
+
+
+
+
+
+
+
+
+
+
+
+                                      <div class="table-links">
+                                            <?php 
+                                                    // 1. Establish permissions for the current row
+                                                    $isAdmin = ($_SESSION['user_role'] === 'admin');
+                                                    $isOwner = ((int)$post['user_id'] === (int)$_SESSION['user_id']);
+                                                    $hasAccess = ($isAdmin || $isOwner);
+                                                ?>
+
+                                            <?php if ($currentStatus === 'trash'): ?>
+                                                <?php if ($hasAccess): ?>
+                                                    <a href="<?php echo url('admin/posts/restore') ?>?id=<?php echo $post['id']; ?>">Restore</a>
+                                                    <div class="bullet"></div>
+                                                    <a href="<?php echo url('admin/posts/delete') ?>?id=<?php echo $post['id']; ?>" 
+                                                    class="text-danger" 
+                                                    onclick="return confirm('Permanently delete this post?')">Delete Permanently</a>
+                                                <?php else: ?>
+                                                    <span class="text-muted">No actions available</span>
+                                                <?php endif; ?>
+
+                                            <?php else: ?>
+                                                <a href="#">View</a>
+                                                
+                                                <?php if ($hasAccess): ?>
+                                                    <div class="bullet"></div>
+                                                    <a href="<?php echo url('admin/posts/edit') ?>?id=<?php echo $post['id']; ?>">Edit</a>
+                                                    <div class="bullet"></div>
+                                                    <a href="<?php echo url('admin/posts/trash') ?>?id=<?php echo $post['id']; ?>" 
+                                                    class="text-danger">Trash</a>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                        </div>
