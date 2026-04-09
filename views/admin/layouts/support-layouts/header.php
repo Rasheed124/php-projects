@@ -116,7 +116,7 @@
             <li class="dropdown">
               <a href="#" class="menu-toggle nav-link has-dropdown"><i  data-feather="shopping-bag"></i><span>Pages</span></a>
               <ul class="dropdown-menu">
-                <li><a class="nav-link" href="<?php echo url('admin/pages') ?>">All Pages</a></li>
+                <li><a class="nav-link" href="<?php echo url('admin/pages/index') ?>">All Pages</a></li>
                 <li><a class="nav-link" href="<?php echo url('admin/pages/create') ?>">Create Page</a></li>
 
               </ul>
@@ -128,6 +128,7 @@
               <ul class="dropdown-menu">
                 <li><a class="nav-link" href="<?php echo url('admin/posts') ?>">All Post</a></li>
                 <li><a class="nav-link" href="<?php echo url('admin/posts/create') ?>">Create Post</a></li>
+                <li><a class="nav-link" href="<?php echo url('admin/taxonomy') ?>">Mange Category & Tag</a></li>
 
               </ul>
             </li>

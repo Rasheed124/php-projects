@@ -259,7 +259,9 @@ class PostController extends AbstractAdminController
                     $destination = $uploadDir . $uniqueName;
 
                     if (move_uploaded_file($fileTmpName, $destination)) {
-                        // Optional: Delete old thumbnail file if you want to save space
+                        if (! empty($post['thumbnail']) && file_exists($post['thumbnail'])) {
+                            unlink($post['thumbnail']);
+                        }
                         $thumbnail = $destination;
                     } else {
                         $errors[] = "Failed to move uploaded file.";
@@ -307,9 +309,6 @@ class PostController extends AbstractAdminController
         return $slug;
     }
 
-    /**
-     * Soft delete a post (Move to Trash)
-     */
     public function trashPost()
     {
         $id = (int) ($_GET['id'] ?? 0);
@@ -331,9 +330,6 @@ class PostController extends AbstractAdminController
         exit;
     }
 
-/**
- * Restore a post from Trash
- */
     public function restorePost()
     {
         $id = (int) ($_GET['id'] ?? 0);
@@ -372,7 +368,6 @@ class PostController extends AbstractAdminController
         exit;
     }
 
-
     private function checkPostAccess($id)
     {
         if ($id <= 0) {
@@ -404,4 +399,9 @@ class PostController extends AbstractAdminController
 
         return $post;
     }
+
+    // =================================== CATEGORY AND TAGS ========================== \\
+    //============================================================================== \\
+
+    
 }

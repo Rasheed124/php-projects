@@ -48,14 +48,14 @@
 
             <option value="">Select a category</option>
 
-            <?php if (!empty($categories)): ?>
+            <?php if (! empty($categories)): ?>
 
                 <?php foreach ($categories as $category): ?>
                     <option value="<?php echo e($category->id); ?>"
-                        <?php echo (isset($_POST['category']) && $_POST['category'] == $category->id) ? 'selected' : ''; ?>>
-                        
+                        <?php echo(isset($_POST['category']) && $_POST['category'] == $category->id) ? 'selected' : ''; ?>>
+
                         <?php echo e($category->name); ?>
-                    
+
                     </option>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -68,13 +68,17 @@
             <small class="text-danger">
                 No categories found. Please <a href="create-category.php">create a category</a> first.
             </small>
+        <?php else: ?>
+              <small class="mt-5">
+               Click <a href="<?php echo url('admin/posts/create-category-and-tag') ?>">here</a> to create category .
+            </small>
         <?php endif; ?>
     </div>
 </div>
 
                             <!-- Tags Field -->
 
-                     
+
 
 
                             <div class="form-group row mb-4">
@@ -87,11 +91,11 @@
             multiple
             <?php echo empty($tags) ? 'disabled' : 'required'; ?>
         >
-            <?php if (!empty($tags)): ?>
+            <?php if (! empty($tags)): ?>
                 <?php foreach ($tags as $tag): ?>
                     <option value="<?php echo htmlspecialchars($tag->id); ?>"
-                        <?php 
-                            echo (in_array($tag->id, $selectedTags)) ? 'selected' : ''; 
+                        <?php
+                        echo(in_array($tag->id, $selectedTags)) ? 'selected' : '';
                         ?>>
                         <?php echo htmlspecialchars($tag->name); ?>
                     </option>
@@ -104,6 +108,10 @@
         <?php if (empty($tags)): ?>
             <small class="text-danger">
                 No tags found. Please <a href="create-tag.php">create a tag</a> first.
+            </small>
+         <?php else: ?>
+              <small class="">
+               Click <a href="<?php echo url('admin/posts/create-category-and-tag') ?>">here</a> to create tags .
             </small>
         <?php endif; ?>
     </div>

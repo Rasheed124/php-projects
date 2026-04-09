@@ -27,17 +27,17 @@ class AdminPagesController extends AbstractAdminController
     public function allPages()
     {
         $pages = $this->pagesRepository->getPages(); 
-        $this->render('pages/index', ['pages' => $pages]);
+        $this->render('pages/all-pages', ['pages' => $pages]);
     }
     public function createPage()
     {
         $pages = $this->pagesRepository->getPages(); 
-        $this->render('pages/index', ['pages' => $pages]);
+        $this->render('pages/create-page', ['pages' => $pages]);
     }
     public function editPage()
     {
         $pages = $this->pagesRepository->getPages(); 
-        $this->render('pages/index', ['pages' => $pages]);
+        $this->render('pages/edit-page', ['pages' => $pages]);
     }
 
 }

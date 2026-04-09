@@ -308,4 +308,48 @@ class PostsRepository
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    // =================================== CATEGORY ========================== \\
+    //============================================================================== \\
+
+    public function createCategory($name, $slug)
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO categories (name, slug) VALUES (?, ?)");
+        return $stmt->execute([$name, $slug]);
+    }
+
+    public function updateCategory($id, $name, $slug)
+    {
+        $stmt = $this->pdo->prepare("UPDATE categories SET name = ?, slug = ? WHERE id = ?");
+        return $stmt->execute([$name, $slug, $id]);
+    }
+
+    public function deleteCategory($id)
+    {
+        // Basic delete
+        $stmt = $this->pdo->prepare("DELETE FROM categories WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    // ===================================  TAGS ========================== \\
+    //============================================================================== \\
+
+ 
+
+    public function createTag($name)
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO tags (name) VALUES (:name)");
+        return $stmt->execute(['name' => $name]);
+    }
+
+    public function updateTag($id, $name)
+    {
+        $stmt = $this->pdo->prepare("UPDATE tags SET name = :name, WHERE id = :id");
+        return $stmt->execute(['name' => $name,  'id' => $id]);
+    }
+
+    public function deleteTag($id)
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM tags WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
 }

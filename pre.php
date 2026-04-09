@@ -161,35 +161,82 @@
 
 
 
+        <section class="section">
+            <div class="section-body">
+    <?php if ($error): ?>
+        <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
+    <?php if ($success): ?>
+        <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
+    <?php endif; ?>
 
-                                      <div class="table-links">
-                                            <?php 
-                                                    // 1. Establish permissions for the current row
-                                                    $isAdmin = ($_SESSION['user_role'] === 'admin');
-                                                    $isOwner = ((int)$post['user_id'] === (int)$_SESSION['user_id']);
-                                                    $hasAccess = ($isAdmin || $isOwner);
-                                                ?>
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="card">
+                <form action="<?php echo url('admin/categories/save'); ?>" method="POST">
+                    <div class="card-header">
+                        <h4 id="form-title">Create Category</h4>
+                    </div>
+                    <div class="card-body">
+                        <input type="hidden" name="id" id="category-id" value="0">
+                        
+                        <div class="form-group">
+                            <label>Category Name</label>
+                            <input type="text" name="name" id="category-name" class="form-control" required>
+                            <small class="form-text text-muted">The name is how it appears on your site.</small>
+                        </div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <button type="button" class="btn btn-secondary" onclick="resetCategoryForm()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="submit-btn">Save Category</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-                                            <?php if ($currentStatus === 'trash'): ?>
-                                                <?php if ($hasAccess): ?>
-                                                    <a href="<?php echo url('admin/posts/restore') ?>?id=<?php echo $post['id']; ?>">Restore</a>
-                                                    <div class="bullet"></div>
-                                                    <a href="<?php echo url('admin/posts/delete') ?>?id=<?php echo $post['id']; ?>" 
-                                                    class="text-danger" 
-                                                    onclick="return confirm('Permanently delete this post?')">Delete Permanently</a>
-                                                <?php else: ?>
-                                                    <span class="text-muted">No actions available</span>
-                                                <?php endif; ?>
+        <div class="col-12 col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>All Categories</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Slug</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($categories)): foreach ($categories as $cat): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($cat->name); ?></td>
+                                        <td><?php echo htmlspecialchars($cat->slug); ?></td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm" 
+                                                    onclick="editCategory(<?php echo $cat->id; ?>, '<?php echo addslashes($cat->name); ?>')">
+                                                Edit
+                                            </button>
+                                            <a href="<?php echo url('admin/categories/delete'); ?>?id=<?php echo $cat->id; ?>" 
+                                               class="btn btn-danger btn-sm" 
+                                               onclick="return confirm('Are you sure you want to delete this category?')">
+                                               Delete
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; else: ?>
+                                    <tr><td colspan="3" class="text-center">No categories found.</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                                            <?php else: ?>
-                                                <a href="#">View</a>
-                                                
-                                                <?php if ($hasAccess): ?>
-                                                    <div class="bullet"></div>
-                                                    <a href="<?php echo url('admin/posts/edit') ?>?id=<?php echo $post['id']; ?>">Edit</a>
-                                                    <div class="bullet"></div>
-                                                    <a href="<?php echo url('admin/posts/trash') ?>?id=<?php echo $post['id']; ?>" 
-                                                    class="text-danger">Trash</a>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-                                        </div>
+
+        </section>

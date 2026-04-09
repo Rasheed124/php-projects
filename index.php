@@ -74,6 +74,12 @@ $container->bind('postController', function () use ($container) {
         $container->get('postRepository')
     );
 });
+$container->bind('taxonomyController', function () use ($container) {
+    return new \App\Admin\Controller\Post\TaxonomyController(
+        $container->get('AdminSupport'),
+        $container->get('postRepository')
+    );
+});
 
 $container->bind('adminDashboardController', function () use ($container) {
     return new \App\Admin\Controller\Pages\AdminDashboardController(
@@ -112,7 +118,6 @@ if ($basePath && strpos($uri, $basePath) === 0) {
     $uri = substr($uri, strlen($basePath));
 }
 
-
 $uri      = trim($uri, '/');
 $segments = $uri ? explode('/', $uri) : [];
 
@@ -126,7 +131,6 @@ elseif ($segments[0] === 'admin') {
 
     $subAction = $segments[1] ?? 'dashboard';
 
-    // GLOBAL ADMIN GUARD: If they aren't logged in and aren't hitting the auth page, kick them out.
     if ($subAction !== 'auth' && ! $container->get('AdminSupport')->isLoggedIn()) {
         header('Location: ' . url('admin/auth/login'));
         exit;
@@ -140,6 +144,11 @@ elseif ($segments[0] === 'admin') {
         $container->get('adminPagesController')->handleAction($segments[2] ?? 'index');
     } elseif ($subAction === 'posts') {
         $container->get('postController')->handleAction($segments[2] ?? 'index');
+    }
+
+    elseif ($subAction === 'taxonomy') {
+        $action = isset($segments[3]) ? $segments[2] . '/' . $segments[3] : ($segments[2] ?? 'index');
+        $container->get('taxonomyController')->handleAction($action);
     } else {
         $container->get('notFoundAdminController')->error404();
     }
