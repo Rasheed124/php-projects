@@ -3,14 +3,12 @@ namespace App\Model;
 
 class PageModel
 {
-    public ?int $id = null;
-    public int $author_id;
+    public int $id;
     public string $title;
     public string $slug;
-    public string $body;
-    public string $status        = 'draft';
-    public ?string $published_at = null;
-    public ?string $created_at   = null;
-    public ?string $updated_at   = null;
-
+    public string $content;
+    public ?string $thumbnail;
+    public int $user_id; // Added this
+    public string $created_at;
+    public ?string $updated_at;
 }

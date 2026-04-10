@@ -33,8 +33,6 @@
 
 
 
-
-
                             <!-- Content Field -->
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Content</label>
@@ -42,7 +40,6 @@
                                     <textarea name="content" class="summernote-simple" style="width: 100%;" required><?php echo isset($_POST['content']) ? e($_POST['content']) : ''; ?></textarea>
                                 </div>
                             </div>
-
 
 
                             <!-- Thumbnail Upload -->
@@ -53,14 +50,28 @@
                                 </div>
                             </div>
 
+                                    <!-- Status Field -->
+                            <div class="form-group row mb-4">
+                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Status</label>
+                                <div class="col-sm-12 col-md-7">
+                                    <select name="status" class="form-control selectric">
+                                        <option value="published" <?php echo(isset($_POST['status']) && $_POST['status'] == 'published') ? 'selected' : ''; ?>>Publish</option>
+                                        <option value="draft" <?php echo(isset($_POST['status']) && $_POST['status'] == 'draft') ? 'selected' : ''; ?>>Draft</option>
+                                    </select>
+                                </div>
+                            </div>
+
 
 
                             <!-- Submit Button -->
-                            <div class="form-group row mb-4">
-                                <div class="col-sm-12 col-md-7 offset-md-3">
-                                    <button type="submit" class="btn btn-primary">Create Post</button>
-                                </div>
+                           <div class="form-group row mb-4">
+                            <div class="col-sm-12 col-md-7 offset-md-3">
+                                <button type="submit" class="btn btn-primary">Create Page</button>
+                                <a href="<?php echo url('admin/pages/index'); ?>" class="btn btn-light">Cancel</a>
                             </div>
+                        </div>
+
+
                         </div>
                    </form>
 
