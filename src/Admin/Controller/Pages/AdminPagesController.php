@@ -3,16 +3,19 @@ namespace App\Admin\Controller\Pages;
 
 use App\Admin\Controller\AbstractAdminController;
 use App\Admin\Support\AdminSupport;
+use App\Repository\Admin\ProfileRepository;
 use App\Repository\PagesRepository;
 use finfo;
 
 class AdminPagesController extends AbstractAdminController
 {
+
     public function __construct(
         AdminSupport $sessionController,
-        protected PagesRepository $pagesRepository
+        ProfileRepository $profileRepository,
+        private PagesRepository $pagesRepository,
     ) {
-        parent::__construct($sessionController);
+        parent::__construct($sessionController, $profileRepository);
     }
 
     public function handleAction($action)

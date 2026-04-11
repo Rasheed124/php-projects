@@ -3,14 +3,15 @@ namespace App\Admin\Controller\Auth;
 
 use App\Admin\Controller\AbstractAdminController;
 use App\Admin\Support\AdminSupport;
+use App\Repository\Admin\ProfileRepository;
 use App\Repository\Auth\AuthPagesRepository;
 
 class SignUpController extends AbstractAdminController
 {
 
-    public function __construct(AdminSupport $sessionController, protected AuthPagesRepository $authPagesRepository, )
+    public function __construct(AdminSupport $sessionController, ProfileRepository $profileRepository, protected AuthPagesRepository $authPagesRepository, )
     {
-        parent::__construct($sessionController);
+        parent::__construct($sessionController, $profileRepository);
     }
 
     public function signup()

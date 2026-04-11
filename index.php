@@ -21,6 +21,10 @@ $container->bind('pagesRepository', function () use ($container) {
     $pdo = $container->get('pdo');
     return new \App\Repository\PagesRepository($pdo);
 });
+$container->bind('profileRepository', function () use ($container) {
+    $pdo = $container->get('pdo');
+    return new \App\Repository\Admin\ProfileRepository($pdo);
+});
 $container->bind('AuthPagesRepository', function () use ($container) {
     return new \App\Repository\Auth\AuthPagesRepository(
         $container->get('pdo')
@@ -43,7 +47,8 @@ $container->bind('notFoundFrontendController', function () use ($container) {
 });
 $container->bind('notFoundAdminController', function () use ($container) {
     return new \App\Admin\Controller\NotFoundAdminController(
-        $container->get('AdminSupport')
+        $container->get('AdminSupport'),
+        $container->get('profileRepository'),
 
     );
 });
@@ -63,7 +68,15 @@ $container->bind('pagesController', function () use ($container) {
 $container->bind('adminPagesController', function () use ($container) {
     return new \App\Admin\Controller\Pages\AdminPagesController(
         $container->get('AdminSupport'),
+        $container->get('profileRepository'),
         $container->get('pagesRepository'),
+
+    );
+});
+$container->bind('adminProfileController', function () use ($container) {
+    return new \App\Admin\Controller\Pages\AdminProfileController(
+        $container->get('AdminSupport'),
+        $container->get('profileRepository'),
 
     );
 });
@@ -71,20 +84,26 @@ $container->bind('adminPagesController', function () use ($container) {
 $container->bind('postController', function () use ($container) {
     return new \App\Admin\Controller\Post\PostController(
         $container->get('AdminSupport'),
-        $container->get('postRepository')
+        $container->get('profileRepository'),
+        $container->get('postRepository'),
+
     );
 });
 $container->bind('taxonomyController', function () use ($container) {
     return new \App\Admin\Controller\Post\TaxonomyController(
         $container->get('AdminSupport'),
-        $container->get('postRepository')
+        $container->get('postRepository'),
+        $container->get('profileRepository'),
+
     );
 });
 
 $container->bind('adminDashboardController', function () use ($container) {
     return new \App\Admin\Controller\Pages\AdminDashboardController(
         $container->get('AdminSupport'),
+        $container->get('profileRepository'),
         $container->get('pagesRepository'),
+
     );
 });
 
@@ -92,6 +111,8 @@ $container->bind('adminDashboardController', function () use ($container) {
 $container->bind('loginController', function () use ($container) {
     return new \App\Admin\Controller\Auth\LoginController(
         $container->get('AdminSupport'),
+        $container->get('profileRepository'),
+        
         $container->get('AuthPagesRepository')
 
     );
@@ -99,6 +120,8 @@ $container->bind('loginController', function () use ($container) {
 $container->bind('signupController', function () use ($container) {
     return new \App\Admin\Controller\Auth\SignupController(
         $container->get('AdminSupport'),
+        $container->get('profileRepository'),
+
         $container->get('AuthPagesRepository')
     );
 });
@@ -142,11 +165,11 @@ elseif ($segments[0] === 'admin') {
         $container->get('adminDashboardController')->index();
     } elseif ($subAction === 'pages') {
         $container->get('adminPagesController')->handleAction($segments[2] ?? 'index');
+    } elseif ($subAction === 'profile') {
+        $container->get('adminProfileController')->handleAction($segments[2] ?? 'index');
     } elseif ($subAction === 'posts') {
         $container->get('postController')->handleAction($segments[2] ?? 'index');
-    }
-
-    elseif ($subAction === 'taxonomy') {
+    } elseif ($subAction === 'taxonomy') {
         $action = isset($segments[3]) ? $segments[2] . '/' . $segments[3] : ($segments[2] ?? 'index');
         $container->get('taxonomyController')->handleAction($action);
     } else {

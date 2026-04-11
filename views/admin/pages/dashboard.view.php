@@ -3,7 +3,32 @@
 ?>
   <div class="main-content">
         <section class="section">
+            <div class="row">
+                  <?php if (!empty($error)): ?>
+                      <div class="alert alert-danger alert-dismissible show fade">
+                          <div class="alert-body">
+                              <button class="close"  data-dismiss="alert">
+                                  <span>&times;</span>
+                              </button>
+                              <i class="fas fa-exclamation-triangle"></i> <?php echo e($error); ?>
+                          </div>
+                      </div>
+                  <?php endif; ?>
+
+                  <?php if (!empty($success)): ?>
+                      <div class="alert alert-success alert-dismissible show fade">
+                          <div class="alert-body">
+                              <button class="close"  data-dismiss="alert">
+                                  <span>&times;</span>
+                              </button>
+                              <i class="fas fa-check-circle"></i> <?php echo e($success); ?>
+                          </div>
+                      </div>
+                  <?php endif; ?>
+              </div>
           <div class="row ">
+
+            
             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
               <div class="card">
                 <div class="card-statistic-4">

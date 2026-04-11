@@ -1,7 +1,8 @@
 <?php
 namespace App\Admin\Support;
 
-class AdminSupport {
+class AdminSupport
+{
     public function ensureSession()
     {
         if (session_id() === '') {
@@ -12,7 +13,7 @@ class AdminSupport {
     public function isLoggedIn()
     {
         $this->ensureSession();
-        return !empty($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
+        return ! empty($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
     }
 
     // Updated to include user_role
@@ -57,7 +58,10 @@ class AdminSupport {
     public function isUserIdSession()
     {
         $this->ensureSession();
-        return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+        return isset($_SESSION['user_id']) && ! empty($_SESSION['user_id']);
     }
-    
+
+
+
+
 }

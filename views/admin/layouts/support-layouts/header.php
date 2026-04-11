@@ -71,34 +71,38 @@
               </div>
             </div>
           </li>
-          <li class="dropdown">
-              <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-                  <img alt="image" src="<?php echo asset('admin/img/user.png'); ?>" class="user-img-radious-style">
-                  <span class="d-sm-none d-lg-inline-block">
-                      <?php
-                          echo($_SESSION['user_role'] === 'admin') ? 'Admin' : e($_SESSION['user_name'] ?? 'Guest');
-                      ?>
-                  </span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right pullDown">
-                  <div class="dropdown-title">
-                      Hello, <?php echo($_SESSION['user_role'] === 'admin') ? 'Admin' : e($_SESSION['user_name'] ?? 'User'); ?>
-                  </div>
+           <li class="dropdown">
+    <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
+        <img src="<?php echo !empty($authUser['profile_image']) ? url($authUser['profile_image']) : asset('admin/img/user.png'); ?>" 
+             class="user-img-radious-style" width="35">
+             
+        <span class="d-sm-none d-lg-inline-block">
+            <?php 
+                // Prioritize the actual username, fallback to session role
+                echo e($authUser['username'] ?? ucfirst($_SESSION['user_role'] ?? 'Guest')); 
+            ?>
+        </span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-right pullDown">
+        <div class="dropdown-title">
+            Hello, <?php echo e($authUser['username'] ?? 'User'); ?>
+        </div>
 
-                  <a href="<?php echo url('admin/profile'); ?>" class="dropdown-item has-icon">
-                      <i class="far fa-user"></i> Profile
-                  </a>
-                  <a href="#" class="dropdown-item has-icon">
-                      <i class="fas fa-cog"></i> Settings
-                  </a>
+        <a href="<?php echo url('admin/profile/view'); ?>" class="dropdown-item has-icon">
+            <i class="far fa-user"></i> Profile
+        </a>
+        
+        <a href="<?php echo url('admin/profile/view?id=' . $authUser['id']); ?>#settings" class="dropdown-item has-icon">
+            <i class="fas fa-cog"></i> Settings
+        </a>
 
-                  <div class="dropdown-divider"></div>
+        <div class="dropdown-divider"></div>
 
-                  <a href="<?php echo url('admin/auth/logout'); ?>" class="dropdown-item has-icon text-danger">
-                      <i class="fas fa-sign-out-alt"></i> Logout
-                  </a>
-              </div>
-          </li>
+        <a href="<?php echo url('admin/auth/logout'); ?>" class="dropdown-item has-icon text-danger">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</li>
         </ul>
       </nav>
       <div class="main-sidebar sidebar-style-2">
@@ -118,6 +122,14 @@
               <ul class="dropdown-menu">
                 <li><a class="nav-link" href="<?php echo url('admin/pages/index') ?>">All Pages</a></li>
                 <li><a class="nav-link" href="<?php echo url('admin/pages/create') ?>">Create Page</a></li>
+
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="menu-toggle nav-link has-dropdown"><i  data-feather="shopping-bag"></i><span>Profile</span></a>
+              <ul class="dropdown-menu">
+                <li><a class="nav-link" href="<?php echo url('admin/profile/index') ?>">All Profile</a></li>
+                <li><a class="nav-link" href="<?php echo url('admin/profile/view') ?>">View Profile</a></li>
 
               </ul>
             </li>

@@ -136,9 +136,15 @@
                                     <td><?php echo e($post['category_name'] ?? 'Uncategorized'); ?></td>
                                     <td><?php echo date('d-m-Y', strtotime($post['created_at'])); ?></td>
                                     <td>
-                                        <div class="badge badge-<?php echo($post['status'] === 'published') ? 'success' : 'warning'; ?>">
-                                            <?php echo ucfirst($post['status']); ?>
-                                        </div>
+                                        <?php if ($currentStatus === 'trash'): ?>
+                                            <div class="badge badge-danger">
+                                                <i class="fas fa-trash"></i> Trashed
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="badge badge-<?php echo ($post['status'] === 'published') ? 'success' : 'warning'; ?>">
+                                                <?php echo ucfirst($post['status']); ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>

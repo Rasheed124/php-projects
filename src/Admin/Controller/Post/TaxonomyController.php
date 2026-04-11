@@ -4,14 +4,17 @@ namespace App\Admin\Controller\Post;
 use App\Admin\Controller\AbstractAdminController;
 use App\Admin\Support\AdminSupport;
 use App\Repository\Admin\PostsRepository;
+use App\Repository\Admin\ProfileRepository;
 
 class TaxonomyController extends AbstractAdminController
 {
     public function __construct(
         AdminSupport $sessionController,
-        protected PostsRepository $postsRepository
+        private  PostsRepository $postsRepository,
+        ProfileRepository $profileRepository,
+
     ) {
-        parent::__construct($sessionController);
+        parent::__construct($sessionController, $profileRepository);
     }
 
     public function handleAction($action)

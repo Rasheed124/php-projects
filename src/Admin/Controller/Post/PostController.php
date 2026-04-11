@@ -4,15 +4,18 @@ namespace App\Admin\Controller\Post;
 use App\Admin\Controller\AbstractAdminController;
 use App\Admin\Support\AdminSupport;
 use App\Repository\Admin\PostsRepository;
+use App\Repository\Admin\ProfileRepository;
 use finfo;
 
 class PostController extends AbstractAdminController
 {
     public function __construct(
         AdminSupport $sessionController,
-        protected PostsRepository $postsRepository
+        ProfileRepository $profileRepository,
+        private PostsRepository $postsRepository // Post-specific repo
     ) {
-        parent::__construct($sessionController);
+        // Pass the required ones to the AbstractAdminController
+        parent::__construct($sessionController, $profileRepository);
     }
 
     public function handleAction($action)
@@ -311,17 +314,23 @@ class PostController extends AbstractAdminController
 
     public function trashPost()
     {
-        $id = (int) ($_GET['id'] ?? 0);
-
-        // 1. Security Check: Does the post exist and does the user have permission?
+        $id   = (int) ($_GET['id'] ?? 0);
         $post = $this->checkPostAccess($id);
 
-        // 2. Execute Soft Delete
         $isAdmin = $this->sessionController->isAdmin();
         $userId  = (int) $this->sessionController->getUserID();
 
+        // 1. Prepare data to change status to draft upon trashing
+        $trashData = [
+            'status' => 'draft',
+        ];
+
+        // 2. We update the status AND then call softDelete
+        // (Assuming your repository allows passing data to softDelete or has an update method)
+        $this->postsRepository->updatePost($id, $trashData, $post['tag_ids'] ?? []);
+
         if ($this->postsRepository->softDelete($id, $userId, $isAdmin)) {
-            $_SESSION['success'] = "Post moved to trash.";
+            $_SESSION['success'] = "Post moved to trash and set to draft.";
         } else {
             $_SESSION['error'] = "Unable to move post to trash.";
         }
@@ -403,5 +412,4 @@ class PostController extends AbstractAdminController
     // =================================== CATEGORY AND TAGS ========================== \\
     //============================================================================== \\
 
-    
 }

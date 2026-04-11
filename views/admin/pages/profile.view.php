@@ -1,18 +1,21 @@
 <?php
     require __DIR__ . '/../../../views/admin/layouts/support-layouts/header.php';
-    
+
     // Logic to determine if the current viewer can see the settings tab
-    $currentLoggedInId = (int)$this->sessionController->getUserId();
-    $isAdmin = $this->sessionController->isAdmin();
-    $isOwner = ($user->id == $currentLoggedInId);
-    $canEdit = ($isAdmin || $isOwner);
+    $currentLoggedInId = (int) $this->sessionController->getUserId();
+    $isAdmin           = $this->sessionController->isAdmin();
+    $isOwner           = ($user->id == $currentLoggedInId);
+    $canEdit           = ($isAdmin || $isOwner);
 
     $socials = $user->getSocialLinksArray();
     $getLink = function ($platform) use ($socials) {
-        foreach ($socials as $s) {
-            if ($s['platform'] === $platform) return $s['url'];
+    foreach ($socials as $s) {
+        if ($s['platform'] === $platform) {
+            return $s['url'];
         }
-        return '';
+
+    }
+    return '';
     };
 ?>
 
@@ -24,11 +27,17 @@
                     <div class="card author-box">
                         <div class="card-body">
                             <div class="author-box-center">
-                                <img alt="image" src="assets/img/users/user-1.png" class="rounded-circle author-box-picture">
+                                  
+                                <img alt="image" src="<?php echo url($user->profile_image) ?? asset('admin/img/user.png'); ?>" style="width: 100px;  height: 100px;" class="rounded-circle author-box-picture">
                                 <div class="author-box-name"><?php echo e($user->username); ?></div>
                             </div>
                             <div class="text-center">
-                                <p><?php echo e($user->bio ?? 'No bio added yet.'); ?></p>
+                            <p>
+                                <?php 
+                                    $bio = $user->bio ?? 'No bio added yet.';
+                                    echo e(mb_strimwidth($bio, 0, 100, "...")); 
+                                ?>
+                            </p>
                                 <div class="mb-2 mt-3"><div class="text-small font-weight-bold">Follow On</div></div>
                                 <a href="<?php echo e($getLink('facebook')); ?>" class="btn btn-social-icon mr-1 btn-facebook"><i class="fab fa-facebook-f"></i></a>
                                 <a href="<?php echo e($getLink('twitter')); ?>" class="btn btn-social-icon mr-1 btn-twitter"><i class="fab fa-twitter"></i></a>
@@ -45,13 +54,13 @@
                                 <li class="nav-item">
                                     <a class="nav-link active" id="home-tab2" data-toggle="tab" href="#about" role="tab">About</a>
                                 </li>
-                                <?php if($canEdit): ?>
+                                <?php if ($canEdit): ?>
                                 <li class="nav-item">
                                     <a class="nav-link" id="profile-tab2" data-toggle="tab" href="#settings" role="tab">Settings</a>
                                 </li>
                                 <?php endif; ?>
                             </ul>
-                            
+
                             <div class="tab-content tab-bordered" id="myTab3Content">
                                 <div class="tab-pane fade show active" id="about" role="tabpanel">
                                     <div class="row">
@@ -62,11 +71,11 @@
                                     <p class="m-t-30"><?php echo e($user->bio); ?></p>
                                 </div>
 
-                                <?php if($canEdit): ?>
+                                <?php if ($canEdit): ?>
                                 <div class="tab-pane fade" id="settings" role="tabpanel">
-                                    <form action="<?php echo url('admin/profile/edit'); ?>" method="post" class="needs-validation">
+                                    <form action="<?php echo url('admin/profile/edit'); ?>" method="post" enctype="multipart/form-data" class="needs-validation">
                                         <input type="hidden" name="id" value="<?php echo $user->id; ?>">
-                                        
+
                                         <div class="card-header"><h4>Edit Profile</h4></div>
                                         <div class="card-body">
                                             <div class="row">
@@ -83,6 +92,14 @@
                                                 <div class="form-group col-12">
                                                     <label>Bio</label>
                                                     <textarea name="bio" class="form-control summernote-simple"><?php echo e($user->bio); ?></textarea>
+                                                </div>
+                                            </div>
+                                                 <div class="row">
+                                                <div class="form-group col-md-12">
+                                                    <label class="col-form-label ">Upload Profile Image</label>
+                                                    <div class="col-sm-12 col-md-7">
+                                                        <input type="file" name="image" class="form-control" accept="image/*">
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -106,22 +123,3 @@
 </div>
 
 <?php require __DIR__ . '/../../../views/admin/layouts/support-layouts/footer.php'; ?>
-
-
-
-
-
-
-
-
-
-
-
-      <div class="row">
-                                                <div class="form-group col-md-12">
-                                                    <label class="col-form-label ">Upload Profile Image</label>
-                                                    <div class="col-sm-12 col-md-7">
-                                                        <input type="file" name="image" class="form-control" accept="image/*">
-                                                    </div>
-                                                </div>
-                                            </div>
