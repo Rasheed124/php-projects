@@ -113,7 +113,7 @@ $container->bind('loginController', function () use ($container) {
     return new \App\Admin\Controller\Auth\LoginController(
         $container->get('AdminSupport'),
         $container->get('profileRepository'),
-        
+
         $container->get('AuthPagesRepository')
 
     );
@@ -176,14 +176,21 @@ elseif ($segments[0] === 'admin') {
     } else {
         $container->get('notFoundAdminController')->error404();
     }
+} 
+
+elseif ($segments[0] === 'post' && ! empty($segments[1])) {
+    $slug = $segments[1];
+    $container->get('pagesController')->showSinglePost($slug);
+} 
+
+elseif ($segments[0] === 'category' && ! empty($segments[1])) {
+    $container->get('pagesController')->showByCategory($segments[1]);
+} 
+
+elseif ($segments[0] === 'tag' && ! empty($segments[1])) {
+    $container->get('pagesController')->showByTag($segments[1]);
 }
 
-elseif ($segments[0] === 'post' && !empty($segments[1])) {
-    $slug = $segments[1];
-    // die($slug);
-    $container->get('pagesController')->showSinglePost($slug);
-}
-    
 // 4. FRONTEND DYNAMIC PAGES (About, Contact, etc.)
 else {
     $slug = $segments[0];

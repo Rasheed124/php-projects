@@ -452,4 +452,40 @@ class PostsRepository
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+
+    public function allPostByTagAndCat(array $filters = []): array
+{
+    $sql = "SELECT p.*, c.name as category_name, u.username as author_name 
+            FROM posts p
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN users u ON p.author_id = u.id";
+
+    $conditions = ["p.status = 'published'", "p.deleted_at IS NULL"];
+    $params = [];
+
+    if (isset($filters['category_slug'])) {
+        $conditions[] = "c.slug = :c_slug";
+        $params['c_slug'] = $filters['category_slug'];
+    }
+
+    if (isset($filters['tag_slug'])) {
+        $sql .= " JOIN post_tags pt ON p.id = pt.post_id JOIN tags t ON pt.tag_id = t.id";
+        $conditions[] = "t.name = :t_slug"; // or t.slug if you have a slug column
+        $params['t_slug'] = $filters['tag_slug'];
+    }
+
+    $sql .= " WHERE " . implode(" AND ", $conditions);
+    $sql .= " ORDER BY p.created_at DESC";
+
+    if (isset($filters['limit'])) {
+        $sql .= " LIMIT " . (int)$filters['limit'];
+    }
+
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
+
+    
 }

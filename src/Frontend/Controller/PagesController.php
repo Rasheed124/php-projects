@@ -56,4 +56,38 @@ class PagesController extends AbstractFrontendController
 
         $this->render('pages/post', $data);
     }
+
+    public function showByCategory($slug)
+    {
+        $posts = $this->postsRepository->all(['category_slug' => $slug]);
+
+        // We pass a 'page' object so the header doesn't break,
+        // and a 'title' so the user knows what they are looking at.
+        $data = [
+            'posts'       => $posts,
+            'title'       => 'Category: ' . str_replace('-', ' ', $slug),
+            'page'        => (object) ['slug' => 'blog'],
+            'recentPosts' => $this->postsRepository->all(['limit' => 3]),
+            'categories'  => $this->postsRepository->getActiveCategories(),
+            'tags'        => $this->postsRepository->getActiveTags(),
+        ];
+
+        $this->render('pages/post-list', $data);
+    }
+
+    public function showByTag($slug)
+    {
+        $posts = $this->postsRepository->all(['tag_slug' => $slug]);
+
+        $data = [
+            'posts'       => $posts,
+            'title'       => 'Tag: ' . str_replace('-', ' ', $slug),
+            'page'        => (object) ['slug' => 'blog'],
+            'recentPosts' => $this->postsRepository->all(['limit' => 3]),
+            'categories'  => $this->postsRepository->getActiveCategories(),
+            'tags'        => $this->postsRepository->getActiveTags(),
+        ];
+
+        $this->render('pages/post-list', $data);
+    }
 }

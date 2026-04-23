@@ -49,7 +49,8 @@
         <?php if (! empty($navigation)): ?>
 
             <?php foreach ($navigation as $pageNav): ?>
-                <li class="nav-item <?php echo($pageNav->slug == $page->slug ? 'active' : ''); ?>">
+                
+             <li class="nav-item <?php echo(isset($page->slug) && $page->slug !== '' && $pageNav->slug == $page->slug ? 'active' : ''); ?>">
 
                     <a class="nav-link" href="<?php echo url($pageNav->slug); ?>">
                         <?php echo $pageNav->title ?>

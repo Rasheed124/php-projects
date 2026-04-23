@@ -409,21 +409,6 @@ class PostController extends AbstractAdminController
         return $post;
     }
 
-    // private function uploadPostImage()
-    // {
-    //     if ($_FILES['file']) {
-    //         $file        = $_FILES['file'];
-    //         $uploadDir   = 'uploads/posts/';
-    //         $fileName    = uniqid() . '_' . $file['name'];
-    //         $destination = $uploadDir . $fileName;
-
-    //         if (move_uploaded_file($file['tmp_name'], $destination)) {
-    //             // TinyMCE expects a JSON response with the location
-    //             echo json_encode(['location' => url($destination)]);
-    //         }
-    //     }
-    // }
-
     private function uploadPostImage()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || ! isset($_FILES['file'])) {
