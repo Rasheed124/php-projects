@@ -14,26 +14,9 @@ class PagesController extends AbstractFrontendController
         parent::__construct($pagesRepository, $sessionController);
     }
 
-    // public function showPage($slug)
-    // {
-    //     $page = $this->pagesRepository->fetchBySlug($slug);
-
-    //     if (empty($page)) {
-    //         $this->error404();
-    //         return;
-    //     }
-
-    //     $view = ($slug === 'index') ? 'pages/index' : 'pages/show';
-
-    //     $this->render($view, [
-    //         'page' => $page,
-    //     ]);
-    // }
-
     public function showPage($slug)
     {
         $page = $this->pagesRepository->fetchBySlug($slug);
-
         if (empty($page)) {
             $this->error404();
             return;
@@ -41,19 +24,16 @@ class PagesController extends AbstractFrontendController
 
         $data = ['page' => $page];
 
-        // If we are on the homepage, fetch blog content
         if ($slug === 'index') {
-            // Fetch 3 posts for the Carousel
-            $data['featuredPosts'] = $this->postsRepository->all(['limit' => 3, 'status' => 'published']);
+            $data['featuredPosts'] = $this->postsRepository->all(['limit' => 3]);
+            $data['latestPosts']   = $this->postsRepository->all(['limit' => 6]);
 
-            // Fetch 6 posts for the Main Feed
-            $data['latestPosts'] = $this->postsRepository->all(['limit' => 6, 'status' => 'published']);
-
-            // Fetch 5 posts for the Sidebar
-            $data['recentPosts'] = $this->postsRepository->all(['limit' => 5, 'status' => 'published']);
+            $data['recentPosts'] = $this->postsRepository->all(['limit' => 3]);
+            $data['categories']  = $this->postsRepository->getActiveCategories();
+            $data['tags']        = $this->postsRepository->getActiveTags();
         }
 
-        $view = ($slug === 'index') ? 'pages/index' : 'pages/show';
+        $view = ($slug === 'index' ? 'pages/index' : 'pages/show');
 
         $this->render($view, $data);
     }

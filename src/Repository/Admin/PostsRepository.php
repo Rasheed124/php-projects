@@ -378,4 +378,33 @@ class PostsRepository
         $stmt = $this->pdo->prepare("DELETE FROM tags WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
+
+    // ===================================  FORNTNEND POST PAGE RENDERING ========================== \\
+    //============================================================================== \\
+
+    public function getActiveCategories()
+    {
+        $sql = "SELECT c.name, c.slug, COUNT(p.id) as post_count
+            FROM categories c
+            JOIN posts p ON c.id = p.category_id
+            WHERE p.status = 'published'
+            AND p.deleted_at IS NULL
+            GROUP BY c.id, c.name, c.slug
+            ORDER BY post_count DESC";
+
+        return $this->pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getActiveTags()
+    {
+        $sql = "SELECT DISTINCT t.name, t.id
+            FROM tags t
+            JOIN post_tags pt ON t.id = pt.tag_id
+            JOIN posts p ON pt.post_id = p.id
+            WHERE p.status = 'published'
+            AND p.deleted_at IS NULL
+            ORDER BY t.name ASC";
+
+        return $this->pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

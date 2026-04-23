@@ -120,48 +120,65 @@
                 </div>
 
                 <!-- RECENT POSTS -->
+             
                 <div class="col-lg-12">
-                  <div class="sidebar-item recent-posts">
-                    <div class="sidebar-heading">
-                      <h2>Recent Posts</h2>
-                    </div>
-                    <div class="content">
-                      <ul>
-                        <li><a href="post-details.html">
-                          <h5>Vestibulum id turpis porttitor sapien facilisis scelerisque</h5>
-                          <span>May 31, 2020</span>
-                        </a></li>
-
-                      </ul>
-                    </div>
+                    <div class="sidebar-item recent-posts">
+                      <div class="sidebar-heading">
+                          <h2>Recent Posts</h2>
+                      </div>
+                      <div class="content">
+                          <ul>
+                              <?php foreach ($recentPosts as $rp): ?>
+                              <li>
+                                  <a href="<?php echo url('post/' . $rp['slug']); ?>">
+                                      <h5><?php echo e($rp['title']); ?></h5>
+                                      <span><?php echo date('M d, Y', strtotime($rp['created_at'])); ?></span>
+                                  </a>
+                              </li>
+                              <?php endforeach; ?>
+                          </ul>
+                      </div>
                   </div>
-                </div>
+              </div>
 
-                <!-- CATEGORIES POSTS -->
+                <!-- CATEGORIES  -->
                 <div class="col-lg-12">
                   <div class="sidebar-item categories">
-                    <div class="sidebar-heading">
-                      <h2>Categories</h2>
-                    </div>
-                    <div class="content">
-                      <ul>
-                        <li><a href="#">- Nature Lifestyle</a></li>
-
-                      </ul>
-                    </div>
+                      <div class="sidebar-heading">
+                          <h2>Categories</h2>
+                      </div>
+                      <div class="content">
+                          <ul>
+                              <?php foreach ($categories as $cat): ?>
+                              <li>
+                                  <a href="<?php echo url('category/' . $cat['slug']); ?>">
+                                      - <?php echo e($cat['name']); ?> 
+                                      (<?php echo $cat['post_count']; ?>)
+                                  </a>
+                              </li>
+                              <?php endforeach; ?>
+                          </ul>
+                      </div>
                   </div>
                 </div>
-                <div class="col-lg-12">
-                  <div class="sidebar-item tags">
-                    <div class="sidebar-heading">
-                      <h2>Tags</h2>
-                    </div>
-                    <div class="content">
-                      <ul>
-                        <li><a href="#">Lifestyle</a></li>
 
-                      </ul>
-                    </div>
+                <!-- TAGS  -->
+                <div class="col-lg-12">
+                    <div class="sidebar-item tags">
+                      <div class="sidebar-heading">
+                          <h2>Tags</h2>
+                      </div>
+                      <div class="content">
+                          <ul>
+                              <?php foreach ($tags as $tag): ?>
+                              <li>
+                                  <a href="<?php echo url('tag/' . urlencode($tag['name'])); ?>">
+                                      <?php echo e($tag['name']); ?>
+                                  </a>
+                              </li>
+                              <?php endforeach; ?>
+                          </ul>
+                      </div>
                   </div>
                 </div>
               </div>
