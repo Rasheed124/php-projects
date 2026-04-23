@@ -26,10 +26,10 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group row mb-4">
+                                <div class="form-group row mb-4" >
                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Content</label>
                                     <div class="col-sm-12 col-md-7">
-                                        <textarea name="content" class="summernote-simple" style="width: 100%;" required><?php echo e($_POST['content'] ?? $page->content); ?></textarea>
+                                        <textarea name="content" id="page_content_edit" class="summernote-simple" style="width: 100%;" required><?php echo e($_POST['content'] ?? $page->content); ?></textarea>
                                     </div>
                                 </div>
 

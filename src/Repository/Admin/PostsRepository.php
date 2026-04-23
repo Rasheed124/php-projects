@@ -407,4 +407,49 @@ class PostsRepository
 
         return $this->pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    public function fetchBySlug(string $slug): ?array
+    {
+        // 1. Fetch the Post, Author, and Category
+        $sql = "SELECT
+                p.*,
+                c.name as category_name,
+                c.slug as category_slug,
+                u.username as author_name
+            FROM posts p
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN users u ON p.user_id = u.id
+            WHERE p.slug = :slug
+            AND p.deleted_at IS NULL
+            LIMIT 1";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['slug' => $slug]);
+        $post = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (! $post) {
+            return null;
+        }
+
+        // 2. Fetch Tags specifically for this post
+        $post['tags'] = $this->getTagsByPostId((int) $post['id']);
+
+        return $post;
+    }
+
+/**
+ * Helper to fetch tags for a specific post
+ */
+    private function getTagsByPostId(int $postId): array
+    {
+        $sql = "SELECT t.name, t.id
+            FROM tags t
+            JOIN post_tags pt ON t.id = pt.tag_id
+            WHERE pt.post_id = :post_id";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['post_id' => $postId]);
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

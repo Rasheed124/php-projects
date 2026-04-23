@@ -11,12 +11,13 @@
     <title>BlogNest</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="assets/frontend/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo asset('frontend/vendor/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
 
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="assets/frontend/css/fontawesome.css">
-    <link rel="stylesheet" href="assets/frontend/css/templatemo-stand-blog.css">
-    <link rel="stylesheet" href="assets/frontend/css/owl.css">
+    <link rel="stylesheet" href="<?php echo asset('frontend/css/fontawesome.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('frontend/css/templatemo-stand-blog.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('frontend/css/owl.css'); ?>">
+
 
   </head>
 
@@ -127,15 +128,18 @@
     </footer>
 
     <!-- Bootstrap core JavaScript -->
-    <script src="assets/frontend/vendor/jquery/jquery.min.js"></script>
-    <script src="assets/frontend/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo asset('frontend/vendor/jquery/jquery.min.js'); ?>"></script>
+    <script src="<?php echo asset('frontend/vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+
 
     <!-- Additional Scripts -->
-    <script src="assets/frontend/js/custom.js"></script>
-    <script src="assets/frontend/js/owl.js"></script>
-    <script src="assets/frontend/js/slick.js"></script>
-    <script src="assets/frontend/js/isotope.js"></script>
-    <script src="assets/frontend/js/accordions.js"></script>
+    
+    <script src="<?php echo asset('frontend/js/custom.js'); ?>"></script>
+    <script src="<?php echo asset('frontend/js/owl.js'); ?>"></script>
+    <script src="<?php echo asset('frontend/js/slick.js'); ?>"></script>
+    <script src="<?php echo asset('frontend/js/isotope.js'); ?>"></script>
+    <script src="<?php echo asset('frontend/js/accordions.js'); ?>"></script>
+
 
     <script language="text/Javascript">
       cleared[0] = cleared[1] = cleared[2] = 0; //set a cleared flag for each field

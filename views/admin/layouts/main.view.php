@@ -60,7 +60,7 @@
 
 <script>
   tinymce.init({
-    selector: '#post_content_editor',
+selector: '#post_content_editor, #page_content_edit',
     height: 500,
     plugins: [
       'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',

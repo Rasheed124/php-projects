@@ -17,24 +17,43 @@ class PagesController extends AbstractFrontendController
     public function showPage($slug)
     {
         $page = $this->pagesRepository->fetchBySlug($slug);
-        if (empty($page)) {
+
+        if (! $page) {
             $this->error404();
             return;
         }
 
         $data = ['page' => $page];
 
+        // logic for specific pages
         if ($slug === 'index') {
             $data['featuredPosts'] = $this->postsRepository->all(['limit' => 3]);
             $data['latestPosts']   = $this->postsRepository->all(['limit' => 6]);
-
-            $data['recentPosts'] = $this->postsRepository->all(['limit' => 3]);
-            $data['categories']  = $this->postsRepository->getActiveCategories();
-            $data['tags']        = $this->postsRepository->getActiveTags();
+            $data['recentPosts']   = $this->postsRepository->all(['limit' => 3]);
+            $data['categories']    = $this->postsRepository->getActiveCategories();
+            $data['tags']          = $this->postsRepository->getActiveTags();
+            $view                  = 'pages/index';
+        } elseif ($slug === 'contact-us') {
+            $view = 'pages/contact';
+        } else {
+            $view = 'pages/show';
         }
 
-        $view = ($slug === 'index' ? 'pages/index' : 'pages/show');
-
         $this->render($view, $data);
+    }
+    public function showSinglePost($slug)
+    {
+        $post = $this->postsRepository->fetchBySlug($slug);
+        if (! $post) {$this->error404();return;}
+
+        $data = [
+            'post'        => $post,
+            'page'        => (object) ['slug' => 'blog'],
+            'recentPosts' => $this->postsRepository->all(['limit' => 3]),
+            'categories'  => $this->postsRepository->getActiveCategories(),
+            'tags'        => $this->postsRepository->getActiveTags(),
+        ];
+
+        $this->render('pages/post', $data);
     }
 }

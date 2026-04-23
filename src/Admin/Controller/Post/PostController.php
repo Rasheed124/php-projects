@@ -12,7 +12,7 @@ class PostController extends AbstractAdminController
     public function __construct(
         AdminSupport $sessionController,
         ProfileRepository $profileRepository,
-        private PostsRepository $postsRepository 
+        private PostsRepository $postsRepository
     ) {
         parent::__construct($sessionController, $profileRepository);
     }
@@ -409,18 +409,61 @@ class PostController extends AbstractAdminController
         return $post;
     }
 
+    // private function uploadPostImage()
+    // {
+    //     if ($_FILES['file']) {
+    //         $file        = $_FILES['file'];
+    //         $uploadDir   = 'uploads/posts/';
+    //         $fileName    = uniqid() . '_' . $file['name'];
+    //         $destination = $uploadDir . $fileName;
+
+    //         if (move_uploaded_file($file['tmp_name'], $destination)) {
+    //             // TinyMCE expects a JSON response with the location
+    //             echo json_encode(['location' => url($destination)]);
+    //         }
+    //     }
+    // }
+
     private function uploadPostImage()
     {
-        if ($_FILES['file']) {
-            $file        = $_FILES['file'];
-            $uploadDir   = 'uploads/posts/';
-            $fileName    = uniqid() . '_' . $file['name'];
-            $destination = $uploadDir . $fileName;
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || ! isset($_FILES['file'])) {
+            header("HTTP/1.1 400 Bad Request");
+            echo json_encode(['error' => 'Invalid request.']);
+            return;
+        }
 
-            if (move_uploaded_file($file['tmp_name'], $destination)) {
-                // TinyMCE expects a JSON response with the location
-                echo json_encode(['location' => url($destination)]);
-            }
+        $file      = $_FILES['file'];
+        $uploadDir = 'uploads/posts/';
+
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        $finfo        = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType     = $finfo->file($file['tmp_name']);
+
+        if (! in_array($mimeType, $allowedMimes)) {
+            header("HTTP/1.1 403 Forbidden");
+            echo json_encode(['error' => 'Invalid file type. Only JPG, PNG, WEBP, and GIF are allowed.']);
+            return;
+        }
+
+     
+        $extension   = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $safeName    = uniqid('post_', true) . '.' . $extension;
+        $destination = $uploadDir . $safeName;
+
+        // 4. Create directory if it doesn't exist
+        if (! is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        // 5. Final Move and Response
+        if (move_uploaded_file($file['tmp_name'], $destination)) {
+            header('Content-Type: application/json');
+            echo json_encode(['location' => url($destination)]);
+            exit;
+        } else {
+            header("HTTP/1.1 500 Internal Server Error");
+            echo json_encode(['error' => 'Upload failed on the server.']);
+            return;
         }
     }
 

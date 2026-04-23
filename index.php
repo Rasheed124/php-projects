@@ -178,7 +178,13 @@ elseif ($segments[0] === 'admin') {
     }
 }
 
-// 3. FRONTEND DYNAMIC PAGES
+elseif ($segments[0] === 'post' && !empty($segments[1])) {
+    $slug = $segments[1];
+    // die($slug);
+    $container->get('pagesController')->showSinglePost($slug);
+}
+    
+// 4. FRONTEND DYNAMIC PAGES (About, Contact, etc.)
 else {
     $slug = $segments[0];
     $container->get('pagesController')->showPage($slug);

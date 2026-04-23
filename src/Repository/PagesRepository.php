@@ -10,9 +10,26 @@ class PagesRepository
     public function __construct(private PDO $pdo)
     {}
 
+    // public function fetchNavigation(): array
+    // {
+    //     return $this->getPages();
+    // }
+
+    // public function fetchBySlug(string $slug): ?PageModel
+    // {
+    //     $sql  = "SELECT * FROM pages WHERE slug = :slug AND status = 'published' LIMIT 1";
+    //     $stmt = $this->pdo->prepare($sql);
+    //     $stmt->execute(['slug' => $slug]);
+    //     $page = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    //     return $page ?: null;
+    // }
+
     public function fetchNavigation(): array
     {
-        return $this->getPages();
+
+        $sql = "SELECT * FROM pages WHERE show_in_menu = 1 ORDER BY `id`  ASC";
+        return $this->pdo->query($sql)->fetchAll(\PDO::FETCH_CLASS, PageModel::class);
     }
 
     public function getPages(): array
@@ -150,7 +167,5 @@ class PagesRepository
 
         return $stmt->execute();
     }
-
-    
 
 }
