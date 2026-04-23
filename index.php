@@ -59,6 +59,7 @@ $container->bind('pagesController', function () use ($container) {
     return new \App\Frontend\Controller\PagesController(
         $container->get('pagesRepository'),
         $container->get('AdminSupport'),
+        $container->get('postRepository'),
 
     );
 });

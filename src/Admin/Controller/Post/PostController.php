@@ -12,9 +12,8 @@ class PostController extends AbstractAdminController
     public function __construct(
         AdminSupport $sessionController,
         ProfileRepository $profileRepository,
-        private PostsRepository $postsRepository // Post-specific repo
+        private PostsRepository $postsRepository 
     ) {
-        // Pass the required ones to the AbstractAdminController
         parent::__construct($sessionController, $profileRepository);
     }
 
@@ -27,6 +26,7 @@ class PostController extends AbstractAdminController
             case 'delete':return $this->deletePost();
             case 'create':return $this->createPost();
             case 'edit':return $this->editPost();
+            case 'upload-post-image':return $this->uploadPostImage();
             default: return $this->error404();
         }
     }
@@ -407,6 +407,21 @@ class PostController extends AbstractAdminController
         }
 
         return $post;
+    }
+
+    private function uploadPostImage()
+    {
+        if ($_FILES['file']) {
+            $file        = $_FILES['file'];
+            $uploadDir   = 'uploads/posts/';
+            $fileName    = uniqid() . '_' . $file['name'];
+            $destination = $uploadDir . $fileName;
+
+            if (move_uploaded_file($file['tmp_name'], $destination)) {
+                // TinyMCE expects a JSON response with the location
+                echo json_encode(['location' => url($destination)]);
+            }
+        }
     }
 
     // =================================== CATEGORY AND TAGS ========================== \\

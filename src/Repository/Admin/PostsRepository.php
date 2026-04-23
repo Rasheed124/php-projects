@@ -12,6 +12,34 @@ class PostsRepository
     {
     }
 
+    public function all(array $options = []): array
+    {
+        $limit  = $options['limit'] ?? 10;
+        $status = $options['status'] ?? 'published';
+
+        $sql = "SELECT
+                    p.*,
+                    c.name as category_name,
+                    u.username as author_name
+                FROM posts p
+                LEFT JOIN categories c ON p.category_id = c.id
+                LEFT JOIN users u ON p.user_id = u.id
+                WHERE p.status = :status
+                AND p.deleted_at IS NULL
+                ORDER BY p.created_at DESC
+                LIMIT :limit";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        // PDO::PARAM_INT is necessary for the LIMIT clause in some SQL modes
+        $stmt->bindValue(':status', $status, \PDO::PARAM_STR);
+        $stmt->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function slugExists(string $slug): bool
     {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM posts WHERE slug = :slug");
@@ -333,8 +361,6 @@ class PostsRepository
     // ===================================  TAGS ========================== \\
     //============================================================================== \\
 
- 
-
     public function createTag($name)
     {
         $stmt = $this->pdo->prepare("INSERT INTO tags (name) VALUES (:name)");
@@ -344,7 +370,7 @@ class PostsRepository
     public function updateTag($id, $name)
     {
         $stmt = $this->pdo->prepare("UPDATE tags SET name = :name, WHERE id = :id");
-        return $stmt->execute(['name' => $name,  'id' => $id]);
+        return $stmt->execute(['name' => $name, 'id' => $id]);
     }
 
     public function deleteTag($id)
