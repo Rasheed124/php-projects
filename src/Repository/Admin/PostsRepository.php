@@ -459,7 +459,7 @@ class PostsRepository
     $sql = "SELECT p.*, c.name as category_name, u.username as author_name 
             FROM posts p
             LEFT JOIN categories c ON p.category_id = c.id
-            LEFT JOIN users u ON p.author_id = u.id";
+            LEFT JOIN users u ON p.user_id = u.id";
 
     $conditions = ["p.status = 'published'", "p.deleted_at IS NULL"];
     $params = [];

@@ -59,7 +59,7 @@ class PagesController extends AbstractFrontendController
 
     public function showByCategory($slug)
     {
-        $posts = $this->postsRepository->all(['category_slug' => $slug]);
+        $posts = $this->postsRepository->allPostByTagAndCat(['category_slug' => $slug]);
 
         // We pass a 'page' object so the header doesn't break,
         // and a 'title' so the user knows what they are looking at.
@@ -77,7 +77,7 @@ class PagesController extends AbstractFrontendController
 
     public function showByTag($slug)
     {
-        $posts = $this->postsRepository->all(['tag_slug' => $slug]);
+        $posts = $this->postsRepository->allPostByTagAndCat(['tag_slug' => $slug]);
 
         $data = [
             'posts'       => $posts,
