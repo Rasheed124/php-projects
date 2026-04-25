@@ -12,28 +12,91 @@ class PostsRepository
     {
     }
 
-    public function all(array $options = []): array
+    public function getTotalCount(array $options = []): int
     {
-        $limit  = $options['limit'] ?? 10;
-        $status = $options['status'] ?? 'published';
+        $sql = "SELECT COUNT(*) FROM posts p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.status = 'published' AND p.deleted_at IS NULL";
 
-        $sql = "SELECT
-                    p.*,
-                    c.name as category_name,
-                    u.username as author_name
-                FROM posts p
-                LEFT JOIN categories c ON p.category_id = c.id
-                LEFT JOIN users u ON p.user_id = u.id
-                WHERE p.status = :status
-                AND p.deleted_at IS NULL
-                ORDER BY p.created_at DESC
-                LIMIT :limit";
+        $params = [];
+
+        if (! empty($options['search'])) {
+            $sql              .= " AND (p.title LIKE :search OR p.content LIKE :search)";
+            $params['search']  = '%' . $options['search'] . '%';
+        }
 
         $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return (int) $stmt->fetchColumn();
+    }
 
-        // PDO::PARAM_INT is necessary for the LIMIT clause in some SQL modes
+    public function all(array $options = []): array
+    {
+        // 1. Setup Defaults
+        $limit  = isset($options['limit']) ? (int) $options['limit'] : 10;
+        $offset = isset($options['offset']) ? (int) $options['offset'] : 0;
+        $status = $options['status'] ?? 'published';
+
+        // 2. Base Query
+        $sql = "SELECT
+                p.*,
+                c.name as category_name,
+                c.slug as category_slug,
+                u.username as author_name
+            FROM posts p
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN users u ON p.user_id = u.id";
+
+        // 3. Dynamic Conditions
+        $conditions = [
+            "p.status = :status",
+            "p.deleted_at IS NULL",
+        ];
+
+        // Filter by Category Slug
+        if (! empty($options['category_slug'])) {
+            $conditions[] = "c.slug = :category_slug";
+        }
+
+        // Filter by Tag Name/Slug
+        if (! empty($options['tag_slug'])) {
+            $sql .= " JOIN post_tags pt ON p.id = pt.post_id
+                  JOIN tags t ON pt.tag_id = t.id";
+            $conditions[]  = "t.name = :tag_slug";
+        }
+
+        // NEW: Search Logic (Title or Content)
+        if (! empty($options['search'])) {
+            $conditions[] = "(p.title LIKE :search OR p.content LIKE :search )";
+        }
+
+        // 4. Assemble SQL
+        $sql .= " WHERE " . implode(" AND ", $conditions);
+        $sql .= " ORDER BY p.created_at DESC";
+        $sql .= " LIMIT :limit OFFSET :offset";
+
+        // 5. Prepare and Bind
+        $stmt = $this->pdo->prepare($sql);
+
+        // Standard Binds
         $stmt->bindValue(':status', $status, \PDO::PARAM_STR);
-        $stmt->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+
+        // Dynamic Binds
+        if (! empty($options['category_slug'])) {
+            $stmt->bindValue(':category_slug', $options['category_slug'], \PDO::PARAM_STR);
+        }
+
+        if (! empty($options['tag_slug'])) {
+            $stmt->bindValue(':tag_slug', $options['tag_slug'], \PDO::PARAM_STR);
+        }
+
+        if (! empty($options['search'])) {
+            // We wrap the search term in % wildcards for partial matches
+            $searchTerm = '%' . $options['search'] . '%';
+            $stmt->bindValue(':search', $searchTerm, \PDO::PARAM_STR);
+        }
 
         $stmt->execute();
 
@@ -453,39 +516,70 @@ class PostsRepository
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-
     public function allPostByTagAndCat(array $filters = []): array
-{
-    $sql = "SELECT p.*, c.name as category_name, u.username as author_name 
+    {
+        $limit  = isset($filters['limit']) ? (int) $filters['limit'] : 10;
+        $offset = isset($filters['offset']) ? (int) $filters['offset'] : 0;
+
+        $sql = "SELECT p.*, c.name as category_name, u.username as author_name
             FROM posts p
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN users u ON p.user_id = u.id";
 
-    $conditions = ["p.status = 'published'", "p.deleted_at IS NULL"];
-    $params = [];
+        $conditions = ["p.status = 'published'", "p.deleted_at IS NULL"];
+        $params     = [];
 
-    if (isset($filters['category_slug'])) {
-        $conditions[] = "c.slug = :c_slug";
-        $params['c_slug'] = $filters['category_slug'];
+        if (isset($filters['category_slug'])) {
+            $conditions[]     = "c.slug = :c_slug";
+            $params['c_slug'] = $filters['category_slug'];
+        }
+
+        if (isset($filters['tag_slug'])) {
+            $sql              .= " JOIN post_tags pt ON p.id = pt.post_id JOIN tags t ON pt.tag_id = t.id";
+            $conditions[]      = "t.name = :t_slug";
+            $params['t_slug']  = $filters['tag_slug'];
+        }
+
+        $sql .= " WHERE " . implode(" AND ", $conditions);
+        $sql .= " ORDER BY p.created_at DESC";
+        $sql .= " LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        // Bind all params
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    if (isset($filters['tag_slug'])) {
-        $sql .= " JOIN post_tags pt ON p.id = pt.post_id JOIN tags t ON pt.tag_id = t.id";
-        $conditions[] = "t.name = :t_slug"; // or t.slug if you have a slug column
-        $params['t_slug'] = $filters['tag_slug'];
+    public function getCountByFilter(array $filters = []): int
+    {
+        $sql = "SELECT COUNT(DISTINCT p.id) FROM posts p
+            LEFT JOIN categories c ON p.category_id = c.id";
+
+        $conditions = ["p.status = 'published'", "p.deleted_at IS NULL"];
+        $params     = [];
+
+        if (isset($filters['category_slug'])) {
+            $conditions[]     = "c.slug = :c_slug";
+            $params['c_slug'] = $filters['category_slug'];
+        }
+
+        if (isset($filters['tag_slug'])) {
+            $sql              .= " JOIN post_tags pt ON p.id = pt.post_id JOIN tags t ON pt.tag_id = t.id";
+            $conditions[]      = "t.name = :t_slug";
+            $params['t_slug']  = $filters['tag_slug'];
+        }
+
+        $sql  .= " WHERE " . implode(" AND ", $conditions);
+        $stmt  = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return (int) $stmt->fetchColumn();
     }
 
-    $sql .= " WHERE " . implode(" AND ", $conditions);
-    $sql .= " ORDER BY p.created_at DESC";
-
-    if (isset($filters['limit'])) {
-        $sql .= " LIMIT " . (int)$filters['limit'];
-    }
-
-    $stmt = $this->pdo->prepare($sql);
-    $stmt->execute($params);
-    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-}
-
-    
 }

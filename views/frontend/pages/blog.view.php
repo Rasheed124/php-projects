@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="text-content">
-                        <h4>Archive</h4>
+                        <h4>Blog Entries</h4>
                         <h2><?php echo e($title); ?></h2>
                     </div>
                 </div>
@@ -18,17 +18,19 @@
         <div class="row">
             <div class="col-lg-8">
                 <div class="all-blog-posts">
-                     <div class="row">
-                        <?php if (! empty($posts)): ?>
+                    <div class="row">
+                        <?php if (!empty($posts)): ?>
                             <?php foreach ($posts as $post): ?>
                                 <div class="col-lg-6">
                                     <div class="blog-post">
                                         <div class="blog-thumb">
-                                            <img src="<?php echo url($post['thumbnail']); ?>" alt="">
+                                            <img src="<?php echo url($post['thumbnail'] ?? 'assets/images/default.jpg'); ?>" alt="">
                                         </div>
                                         <div class="down-content">
-                                            <span><?php echo e($post['category_name']); ?></span>
-                                            <a href="<?php echo url('post/' . $post['slug']); ?>"><h4><?php echo e($post['title']); ?></h4></a>
+                                            <span><?php echo e($post['category_name'] ?? 'Uncategorized'); ?></span>
+                                            <a href="<?php echo url('post/' . $post['slug']); ?>">
+                                                <h4><?php echo e($post['title']); ?></h4>
+                                            </a>
                                             <p><?php echo substr(strip_tags($post['content']), 0, 100); ?>...</p>
                                         </div>
                                     </div>
@@ -42,7 +44,7 @@
                                     <?php endif; ?>
 
                                     <?php for ($i = 1; $i <= $pagination['total_pages']; $i++): ?>
-                                        <li class="<?php echo($i == $pagination['current']) ? 'active' : ''; ?>">
+                                        <li class="<?php echo ($i == $pagination['current']) ? 'active' : ''; ?>">
                                             <a href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
                                         </li>
                                     <?php endfor; ?>
@@ -55,15 +57,15 @@
 
                         <?php else: ?>
                             <div class="col-lg-12">
-                                <p>No posts found in this section.</p>
+                                <p>No posts found.</p>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
 
-               <div class="col-lg-4">
-                <?php require FRONTEND_VIEWS_PATH . '/partials/sidebar.view.php'; ?>
+            <div class="col-lg-4">
+                <?php  require FRONTEND_VIEWS_PATH . '/partials/sidebar.view.php'; ?>
             </div>
         </div>
     </div>

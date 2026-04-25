@@ -81,11 +81,11 @@
                 </a>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="<?php echo url('admin', 'auth', 'logout'); ?>">
+            <!-- <li class="nav-item">
+                <a class="nav-link" href="<?php //echo url('admin', 'auth', 'logout'); ?>">
                     Logout
                 </a>
-            </li>
+            </li> -->
 
         <?php else: ?>
 
