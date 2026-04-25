@@ -185,6 +185,8 @@ elseif ($segments[0] === 'admin') {
     $container->get('pagesController')->showByTag($segments[1]);
 } elseif ($segments[0] === 'search') {
     $container->get('pagesController')->search();
+} elseif ($segments[0] === 'contact-submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $container->get('pagesController')->handleContact();
 }
 
 // 4. FRONTEND DYNAMIC PAGES (About, Contact, etc.)

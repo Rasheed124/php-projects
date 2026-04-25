@@ -10,6 +10,25 @@ class AdminSupport
         }
     }
 
+
+    public function setFlash($key, $message)
+    {
+        $this->ensureSession();
+        $_SESSION['flash'][$key] = $message;
+    }
+
+
+    public function getFlash($key)
+    {
+        $this->ensureSession();
+        if (isset($_SESSION['flash'][$key])) {
+            $message = $_SESSION['flash'][$key];
+            unset($_SESSION['flash'][$key]);
+            return $message;
+        }
+        return null;
+    }
+
     public function isLoggedIn()
     {
         $this->ensureSession();
@@ -60,8 +79,5 @@ class AdminSupport
         $this->ensureSession();
         return isset($_SESSION['user_id']) && ! empty($_SESSION['user_id']);
     }
-
-
-
 
 }

@@ -229,6 +229,11 @@ $container->bind('pagesController', function () use ($container) {
     );
 });
 
+
+whri kixu gghw ginh
+
+
+
 $container->bind('notFoundFrontendController', function () use ($container) {
     return new \BlogApp\Frontend\Controller\NotFoundFrontendController(
         $container->get('pagesRepository'),

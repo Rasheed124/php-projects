@@ -6,6 +6,10 @@ use App\Frontend\Controller\AbstractFrontendController;
 use App\Repository\Admin\PostsRepository;
 use App\Repository\PagesRepository;
 
+//
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+
 class PagesController extends AbstractFrontendController
 {
     public function __construct(
@@ -177,5 +181,67 @@ class PagesController extends AbstractFrontendController
         ], $this->getSidebarData());
 
         $this->render('pages/blog', $data);
+    }
+
+    public function handleContact()
+    {
+        // 1. Security Check (Honeypot)
+        if (! empty($_POST['website_url'])) {
+            die("Bot detected.");
+        }
+
+        // 2. Input Validation
+        $name    = trim($_POST['name'] ?? '');
+        $email   = filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL);
+        $subject = trim($_POST['subject'] ?? '');
+        $message = nl2br(htmlspecialchars(trim($_POST['message'] ?? '')));
+
+        if (! $name || ! $email || ! $subject || ! $message) {
+            $this->sessionController->setFlash('error', 'All fields are required.');
+            header('Location: ' . url('contact-us'));
+            exit;
+        }
+
+        // 3. PHPMailer Setup
+        $mail = new PHPMailer(true);
+
+        try {
+            // Server Settings
+
+            // $mail->SMTPDebug = 2;
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com'; // e.g., smtp.gmail.com or SendGrid
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'rashdevatrealglobe@gmail.com';
+            $mail->Password   = 'whrikixugghwginh';          // Use App Password for Gmail
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+            $mail->Port       = 465;
+
+            // Recipients
+            $mail->setFrom('rashdevatrealglobe@gmail.com', 'Tech Design Space Contact');
+            $mail->addAddress('techdesignspace01@gmail.com'); // Where you receive mail
+            $mail->addReplyTo($email, $name);
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = "New Inquiry: " . $subject;
+            $mail->Body    = "
+            <h3>New Message from Tech Design Space</h3>
+            <p><strong>Name:</strong> {$name}</p>
+            <p><strong>Email:</strong> {$email}</p>
+            <p><strong>Subject:</strong> {$subject}</p>
+            <hr>
+            <p><strong>Message:</strong><br>{$message}</p>
+        ";
+
+            $mail->send();
+            $this->sessionController->setFlash('success', 'Your message has been sent successfully!');
+        } catch (Exception $e) {
+            // Log the error $mail->ErrorInfo if needed
+            $this->sessionController->setFlash('error', "Message could not be sent. Please try again.");
+        }
+
+        header('Location: ' . url('contact-us'));
+        exit;
     }
 }
