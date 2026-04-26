@@ -68,6 +68,12 @@ class AdminSupport
         return $_SESSION['user_id'] ?? null;
     }
 
+    public function getUserName()
+    {
+        $this->ensureSession();
+        return $_SESSION['user_name'] ?? null;
+    }
+
     public function isAdmin()
     {
         $this->ensureSession();

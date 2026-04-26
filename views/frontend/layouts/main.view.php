@@ -19,6 +19,10 @@
     <link rel="stylesheet" href="<?php echo asset('frontend/css/owl.css'); ?>">
 
 
+    <style>
+      
+    </style>
+
   </head>
 
   <body>
@@ -151,6 +155,10 @@
           t.style.color='#fff';
         }
       }
+
+
+
+      
     </script>
 
   </body>

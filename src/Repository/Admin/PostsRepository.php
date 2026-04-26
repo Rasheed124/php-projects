@@ -582,4 +582,214 @@ class PostsRepository
         return (int) $stmt->fetchColumn();
     }
 
+    // ======================================================== COMMMENTS ==============================================//
+
+    // public function getAdminComments($status, $limit, $offset, $postAuthorId = null)
+    // {
+    //     $where  = [];
+    //     $params = [];
+
+    //     if ($status !== 'all') {
+    //         $where[]  = "c.is_approved = ?";
+    //         $params[] = $status;
+    //     }
+
+    //     if ($postAuthorId) {
+    //         $where[]  = "p.user_id = ?";
+    //         $params[] = $postAuthorId;
+    //     }
+
+    //     $whereSql = ! empty($where) ? "WHERE " . implode(" AND ", $where) : "";
+
+    //     $sql = "SELECT c.*, p.title as post_title, p.slug as post_slug, u.username as auth_name
+    //         FROM comments c
+    //         JOIN posts p ON c.post_id = p.id
+    //         LEFT JOIN users u ON c.user_id = u.id
+    //         $whereSql
+    //         ORDER BY c.created_at DESC LIMIT $limit OFFSET $offset";
+
+    //     $stmt = $this->pdo->prepare($sql);
+    //     $stmt->execute($params);
+    //     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    // }
+
+    public function getAdminCommentsGrouped($status, $limit, $offset, $postAuthorId = null)
+    {
+        $where  = [];
+        $params = [];
+
+        if ($status !== 'all') {
+            $where[]  = "c.is_approved = ?";
+            $params[] = $status;
+        }
+        if ($postAuthorId) {
+            $where[]  = "p.user_id = ?";
+            $params[] = $postAuthorId;
+        }
+
+        $whereSql = ! empty($where) ? "WHERE " . implode(" AND ", $where) : "";
+
+        // We fetch everything joined, but ordered by post so we can group them
+        $sql = "SELECT c.*, p.title as post_title, p.slug as post_slug, u.username as auth_name
+            FROM comments c
+            JOIN posts p ON c.post_id = p.id
+            LEFT JOIN users u ON c.user_id = u.id
+            $whereSql
+            ORDER BY p.id DESC, c.created_at ASC
+            LIMIT $limit OFFSET $offset";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getCommentStatusCounts($postAuthorId = null)
+    {
+        $userIdFilter = $postAuthorId ? "WHERE p.user_id = $postAuthorId" : "";
+
+        $sql = "SELECT
+                COUNT(*) as all_count,
+                SUM(CASE WHEN c.is_approved = 1 THEN 1 ELSE 0 END) as approved,
+                SUM(CASE WHEN c.is_approved = 0 THEN 1 ELSE 0 END) as pending
+            FROM comments c
+            JOIN posts p ON c.post_id = p.id
+            $userIdFilter";
+
+        $data = $this->pdo->query($sql)->fetch(\PDO::FETCH_ASSOC);
+        return [
+            'all' => $data['all_count'] ?? 0,
+            '1'   => $data['approved'] ?? 0,
+            '0'   => $data['pending'] ?? 0,
+        ];
+    }
+
+    public function getAdminCommentsCount($status, $postAuthorId = null)
+    {
+        $where  = [];
+        $params = [];
+
+        if ($status !== 'all') {
+            $where[]  = "c.is_approved = ?";
+            $params[] = $status;
+        }
+
+        if ($postAuthorId) {
+            // We join posts to filter by the user who owns the post
+            $where[]  = "p.user_id = ?";
+            $params[] = $postAuthorId;
+        }
+
+        $whereSql = ! empty($where) ? "WHERE " . implode(" AND ", $where) : "";
+
+        $sql = "SELECT COUNT(*) FROM comments c
+            JOIN posts p ON c.post_id = p.id
+            $whereSql";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function updateCommentStatus($id, $status)
+    {
+        $stmt = $this->pdo->prepare("UPDATE comments SET is_approved = ? WHERE id = ?");
+        return $stmt->execute([$status, (int) $id]);
+    }
+
+    public function deleteComment($id)
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM comments WHERE id = ?");
+        return $stmt->execute([(int) $id]);
+    }
+
+    public function getCommentWithPostAuthor($commentId)
+    {
+        $sql = "SELECT c.*, p.user_id as post_author_id
+            FROM comments c
+            JOIN posts p ON c.post_id = p.id
+            WHERE c.id = ?";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([(int) $commentId]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function updateCommentAndReply($id, $comment, $reply)
+    {
+        $sql  = "UPDATE comments SET comment = ?, reply = ? WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$comment, $reply, (int) $id]);
+    }
+
+    // public function getCommentsByPost($postId, $currentUserId = null)
+    // {
+
+    //     $sql = "SELECT c.*, u.username as auth_name
+    //         FROM comments c
+    //         LEFT JOIN users u ON c.user_id = u.id
+    //         WHERE c.post_id = ? AND (c.is_approved = 1 OR c.user_id = ?)
+    //         ORDER BY c.created_at ASC";
+
+    //     $stmt = $this->pdo->prepare($sql);
+    //     $stmt->execute([(int) $postId, $currentUserId]);
+    //     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    // }
+
+    public function getCommentsByPost($postId, $currentUserId = null, $guestEmail = null)
+    {
+        // Fetches approved comments OR comments belonging to the current logged-in user
+        // OR comments belonging to a guest with the same email stored in session.
+        $sql = "SELECT c.*, u.username as auth_name
+            FROM comments c
+            LEFT JOIN users u ON c.user_id = u.id
+            WHERE c.post_id = ?
+            AND (c.is_approved = 1 OR c.user_id = ? OR (c.guest_email = ? AND c.guest_email IS NOT NULL))
+            ORDER BY c.created_at ASC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([(int) $postId, $currentUserId, $guestEmail]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // public function saveComment(array $data)
+    // {
+    //     $sql = "INSERT INTO comments
+    //         (post_id, parent_id, user_id, guest_name, guest_email, comment, is_approved, created_at)
+    //         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+
+    //     $stmt = $this->pdo->prepare($sql);
+
+    //     return $stmt->execute([
+    //         $data['post_id'],
+    //         $data['parent_id'], // Will be null if not a reply
+    //         $data['user_id'],   // Will be null for guests
+    //         $data['guest_name'],
+    //         $data['guest_email'],
+    //         $data['comment'],
+    //         $data['is_approved'],
+    //     ]);
+    // }
+
+    public function saveComment(array $data)
+    {
+        $sql = "INSERT INTO comments
+            (post_id, parent_id, user_id, guest_name, guest_email, comment, is_approved, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $success = $stmt->execute([
+            $data['post_id'],
+            $data['parent_id'], // Correctly remains NULL if not a reply
+            $data['user_id'],   // Correctly remains NULL for guests
+            $data['guest_name'],
+            $data['guest_email'],
+            $data['comment'],
+            $data['is_approved'],
+        ]);
+
+        // Return the ID of the new comment on success, otherwise false
+        return $success ? $this->pdo->lastInsertId() : false;
+    }
+
 }

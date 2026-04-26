@@ -76,16 +76,27 @@ class PagesController extends AbstractFrontendController
     public function showSinglePost($slug)
     {
         $post = $this->postsRepository->fetchBySlug($slug);
-        if (! $post) {$this->error404();return;}
+        if (! $post) {
+            $this->error404();
+            return;
+        }
+
+                                                                // 1. Get identifiers for the current visitor
+        $currentUserId = $this->sessionController->getUserID(); // null if guest
+        $guestEmail    = $_SESSION['guest_email'] ?? null;      // email stored in store()
+
+        // 2. Fetch comments with "Persistence" logic
+        // This allows the user to see their own unapproved comments after a refresh
+        $comments = $this->postsRepository->getCommentsByPost($post['id'], $currentUserId, $guestEmail);
 
         $data = array_merge([
-            'post' => $post,
-            'page' => (object) ['slug' => 'blog'],
+            'post'     => $post,
+            'page'     => (object) ['slug' => 'blog'],
+            'comments' => $comments,
         ], $this->getSidebarData());
 
         $this->render('pages/post', $data);
     }
-
     public function showByCategory($slug)
     {
         $limit       = 2;
@@ -213,8 +224,8 @@ class PagesController extends AbstractFrontendController
             $mail->Host       = 'smtp.gmail.com'; // e.g., smtp.gmail.com or SendGrid
             $mail->SMTPAuth   = true;
             $mail->Username   = 'rashdevatrealglobe@gmail.com';
-            $mail->Password   = 'whrikixugghwginh';          // Use App Password for Gmail
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+            $mail->Password   = 'whrikixugghwginh'; // Use App Password for Gmail
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
 
             // Recipients

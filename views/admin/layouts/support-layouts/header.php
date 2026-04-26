@@ -141,6 +141,7 @@
                 <li><a class="nav-link" href="<?php echo url('admin/posts') ?>">All Post</a></li>
                 <li><a class="nav-link" href="<?php echo url('admin/posts/create') ?>">Create Post</a></li>
                 <li><a class="nav-link" href="<?php echo url('admin/taxonomy') ?>">Mange Category & Tag</a></li>
+                <li><a class="nav-link" href="<?php echo url('admin/comments') ?>">Mange Comments</a></li>
 
               </ul>
             </li>

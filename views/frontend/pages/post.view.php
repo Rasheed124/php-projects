@@ -53,7 +53,7 @@
                                         <li><a href="javascript:void(0)"><?php echo date('M d, Y', strtotime($post['created_at'])); ?></a></li>
                                         <li><a href="javascript:void(0)">0 Comments</a></li>
                                     </ul>
-                                    
+
                                     <div class="post-description mt-4">
                                         <?php echo $post['content']; ?>
                                     </div>
@@ -63,20 +63,20 @@
                                             <div class="col-6">
                                                 <ul class="post-tags">
                                                     <li><i class="fa fa-tags"></i></li>
-                                                    <?php 
-                                                    // Assuming you pass a 'post_tags' array in your controller
-                                                    if(!empty($post_tags)): 
-                                                        foreach($post_tags as $ptag): ?>
-                                                            <li><a href="<?php echo url('tag/'.urlencode($ptag['name'])); ?>"><?php echo e($ptag['name']); ?></a>,</li>
-                                                        <?php endforeach; 
-                                                    endif; ?>
+                                                    <?php
+                                                        // Assuming you pass a 'post_tags' array in your controller
+                                                        if (! empty($post_tags)):
+                                                        foreach ($post_tags as $ptag): ?>
+                                                            <li><a href="<?php echo url('tag/' . urlencode($ptag['name'])); ?>"><?php echo e($ptag['name']); ?></a>,</li>
+                                                        <?php endforeach;
+                                                        endif; ?>
                                                 </ul>
                                             </div>
                                             <div class="col-6">
                                                 <ul class="post-share">
                                                     <li><i class="fa fa-share-alt"></i></li>
-                                                    <li><a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode(url('post/'.$post['slug'])); ?>" target="_blank">Facebook</a>,</li>
-                                                    <li><a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(url('post/'.$post['slug'])); ?>" target="_blank">Twitter</a></li>
+                                                    <li><a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode(url('post/' . $post['slug'])); ?>" target="_blank">Facebook</a>,</li>
+                                                    <li><a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(url('post/' . $post['slug'])); ?>" target="_blank">Twitter</a></li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -85,12 +85,10 @@
                             </div>
                         </div>
 
+                         <!-- COMMENTS AREA -->
+                          <?php $comments = $comments ?? []; ?>
                         <div class="col-lg-12">
-                            <div class="sidebar-item comments">
-                                <div class="sidebar-heading">
-                                    <h2>0 comments</h2>
-                                </div>
-                                </div>
+                             <?php require FRONTEND_VIEWS_PATH . '/partials/comments.view.php'; ?>
                         </div>
 
                     </div>
@@ -98,76 +96,16 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="sidebar">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="sidebar-item search">
-                                <form id="search_form" name="gs" method="GET" action="<?php echo url('search'); ?>">
-                                    <input type="text" name="q" class="searchText" placeholder="type to search..." autocomplete="on">
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-12">
-                            <div class="sidebar-item recent-posts">
-                                <div class="sidebar-heading">
-                                    <h2>Recent Posts</h2>
-                                </div>
-                                <div class="content">
-                                    <ul>
-                                        <?php foreach ($recentPosts as $rp): ?>
-                                        <li>
-                                            <a href="<?php echo url('post/' . $rp['slug']); ?>">
-                                                <h5><?php echo e($rp['title']); ?></h5>
-                                                <span><?php echo date('M d, Y', strtotime($rp['created_at'])); ?></span>
-                                            </a>
-                                        </li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-12">
-                            <div class="sidebar-item categories">
-                                <div class="sidebar-heading">
-                                    <h2>Categories</h2>
-                                </div>
-                                <div class="content">
-                                    <ul>
-                                        <?php foreach ($categories as $cat): ?>
-                                        <li>
-                                            <a href="<?php echo url('category/' . $cat['slug']); ?>">
-                                                - <?php echo e($cat['name']); ?> (<?php echo $cat['post_count']; ?>)
-                                            </a>
-                                        </li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-12">
-                            <div class="sidebar-item tags">
-                                <div class="sidebar-heading">
-                                    <h2>Tag Clouds</h2>
-                                </div>
-                                <div class="content">
-                                    <ul>
-                                        <?php foreach ($tags as $tag): ?>
-                                        <li>
-                                            <a href="<?php echo url('tag/' . urlencode($tag['name'])); ?>">
-                                                <?php echo e($tag['name']); ?>
-                                            </a>
-                                        </li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+               <!-- SIDEBAR -->
             </div>
+
+
+
+
+
             </div>
     </div>
 </section>
+
+
+

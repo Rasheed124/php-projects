@@ -90,6 +90,14 @@ $container->bind('postController', function () use ($container) {
 
     );
 });
+$container->bind('commentController', function () use ($container) {
+    return new \App\Admin\Controller\Post\CommentController(
+        $container->get('AdminSupport'),
+        $container->get('profileRepository'),
+        $container->get('postRepository'),
+
+    );
+});
 $container->bind('taxonomyController', function () use ($container) {
     return new \App\Admin\Controller\Post\TaxonomyController(
         $container->get('AdminSupport'),
@@ -173,6 +181,9 @@ elseif ($segments[0] === 'admin') {
     } elseif ($subAction === 'taxonomy') {
         $action = isset($segments[3]) ? $segments[2] . '/' . $segments[3] : ($segments[2] ?? 'index');
         $container->get('taxonomyController')->handleAction($action);
+    } elseif ($subAction === 'comments') {
+        // Admin management of comments
+        $container->get('commentController')->handleAction($segments[2] ?? 'index');
     } else {
         $container->get('notFoundAdminController')->error404();
     }
@@ -185,6 +196,10 @@ elseif ($segments[0] === 'admin') {
     $container->get('pagesController')->showByTag($segments[1]);
 } elseif ($segments[0] === 'search') {
     $container->get('pagesController')->search();
+}
+
+elseif ($segments[0] === 'comment' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $container->get('commentController')->handleAction('store');
 } elseif ($segments[0] === 'contact-submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $container->get('pagesController')->handleContact();
 }
