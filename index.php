@@ -15,6 +15,8 @@ $container->bind('AdminSupport', function () use ($container) {
     return new \App\Admin\Support\AdminSupport();
 });
 
+
+
 // ===============================  Repositories ============================= //
 
 $container->bind('pagesRepository', function () use ($container) {
@@ -196,9 +198,7 @@ elseif ($segments[0] === 'admin') {
     $container->get('pagesController')->showByTag($segments[1]);
 } elseif ($segments[0] === 'search') {
     $container->get('pagesController')->search();
-}
-
-elseif ($segments[0] === 'comment' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+} elseif ($segments[0] === 'comment' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $container->get('commentController')->handleAction('store');
 } elseif ($segments[0] === 'contact-submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $container->get('pagesController')->handleContact();

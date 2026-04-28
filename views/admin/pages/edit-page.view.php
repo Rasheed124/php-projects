@@ -11,6 +11,8 @@
                         </div>
 
                         <form action="<?php echo url('/admin/pages/edit') ?>?id=<?php echo $page->id; ?>" method="POST" enctype="multipart/form-data">
+                              <?php $adminSupport->csrfField(); ?>
+
                             <div class="card-body">
                                 <?php if (!empty($errors)): ?>
                                     <div class="alert alert-danger">
@@ -22,14 +24,14 @@
                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Title</label>
                                     <div class="col-sm-12 col-md-7">
                                         <input type="text" name="title" class="form-control" 
-                                               value="<?php echo e($_POST['title'] ?? $page->title); ?>" required>
+                                               value="<?php echo e($_POST['title'] ?? $page->title); ?>" >
                                     </div>
                                 </div>
 
                                 <div class="form-group row mb-4" >
                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Content</label>
                                     <div class="col-sm-12 col-md-7">
-                                        <textarea name="content" id="page_content_edit" class="summernote-simple" style="width: 100%;" required><?php echo e($_POST['content'] ?? $page->content); ?></textarea>
+                                        <textarea name="content" id="page_content_edit" class="summernote-simple" style="width: 100%;" ><?php echo e($_POST['content'] ?? $page->content); ?></textarea>
                                     </div>
                                 </div>
 

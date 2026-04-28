@@ -28,8 +28,14 @@
         <ul id="comment-list">
             <?php foreach ($mainComments as $c): ?>
                 <li class="<?php echo($c['status'] === 'pending') ? 'is-pending' : ''; ?>">
+
                     <div class="author-thumb">
-                        <img src="<?php echo asset('frontend/images/default-non-auth-user.jpg'); ?>" alt="">
+                        <?php
+                            $avatar = (! empty($c['profile_image']))
+                                ? asset('uploads/users/' . $c['profile_image'])
+                                : asset('frontend/images/default-non-auth-user.jpg');
+                        ?>
+                        <img src="<?php echo $avatar; ?>" alt="" style="width: 100px; height: 100px; object-fit: cover;">
                     </div>
                     <div class="right-content">
                         <h4><?php echo e($c['auth_name'] ?? $c['author_name']); ?><span><?php echo date('M d, Y', strtotime($c['created_at'])); ?></span></h4>
@@ -44,8 +50,13 @@
 
                 <?php foreach ($replies as $r): if ($r['parent_id'] == $c['id']): ?>
                     <li class="replied <?php echo($r['status'] === 'pending') ? 'is-pending' : ''; ?>">
-                        <div class="author-thumb">
-                            <img src="<?php echo asset('images/admin-avatar.jpg'); ?>" alt="">
+                       <div class="author-thumb">
+                            <?php
+                                    $replyAvatar = (!empty($r['profile_image']))
+                                            ? '/app/blog/' . ltrim($r['profile_image'], '/') 
+                                            :asset('frontend/images/default-non-auth-user.jpg');
+                            ?>
+                            <img src="<?php echo $replyAvatar; ?>" alt="" style="width: 80px; height: 80px; object-fit: cover; ">
                         </div>
                         <div class="right-content">
                             <h4><?php echo e($r['auth_name'] ?? $r['author_name']); ?><span><?php echo date('M d, Y', strtotime($r['created_at'])); ?></span></h4>

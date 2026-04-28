@@ -13,6 +13,7 @@
 
                   <!-- ============================ FORM AREA -->
                    <form id="createForm" action="<?php echo url('/admin/pages/create') ?>" method="POST" enctype="multipart/form-data">
+                         <?php $adminSupport->csrfField(); ?>
                         <div class="card-body">
                             <?php if (! empty($errors)): ?>
                                 <div class="alert alert-danger">
@@ -27,7 +28,7 @@
                            <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Title</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <input type="text" id="post-create-title" name="title" class="form-control" value="<?php echo isset($_POST['title']) ? e($_POST['title']) : ''; ?>" required>
+                                    <input type="text" id="post-create-title" name="title" class="form-control" value="<?php echo isset($_POST['title']) ? e($_POST['title']) : ''; ?>" >
                                 </div>
                             </div>
 
@@ -37,7 +38,7 @@
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Content</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <textarea name="content" class="summernote-simple" style="width: 100%;" required><?php echo isset($_POST['content']) ? e($_POST['content']) : ''; ?></textarea>
+                                    <textarea name="content" class="summernote-simple" style="width: 100%;" ><?php echo isset($_POST['content']) ? e($_POST['content']) : ''; ?></textarea>
                                 </div>
                             </div>
 

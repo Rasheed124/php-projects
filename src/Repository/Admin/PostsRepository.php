@@ -751,42 +751,51 @@ class PostsRepository
         $stmt->execute([(int) $commentId]);
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
-    public function updateCommentAndReply($id, $commentContent, $replyText)
+
+    public function updateCommentAndReply($id, $commentContent, $replyText, $adminId)
     {
         try {
             $this->pdo->beginTransaction();
 
-            // 1. Update the original comment text
+            // 1. Update the original comment text (using 'content' column)
             $stmt = $this->pdo->prepare("UPDATE comments SET content = ? WHERE id = ?");
             $stmt->execute([$commentContent, (int) $id]);
 
             // 2. Handle the Reply
             if (! empty($replyText)) {
-                // Get the original comment to know the post_id and author
-                $original = $this->findById($id);
-                $adminId  = $_SESSION['user_id'] ?? null; // The person replying
+                // Get original comment details to sync post_id
+                $stmt = $this->pdo->prepare("SELECT post_id FROM comments WHERE id = ?");
+                $stmt->execute([(int) $id]);
+                $original = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-                // Check if a reply by this admin already exists for this parent_id
-                $checkSql  = "SELECT id FROM comments WHERE parent_id = ? AND user_id = ? LIMIT 1";
-                $checkStmt = $this->pdo->prepare($checkSql);
-                $checkStmt->execute([(int) $id, $adminId]);
-                $existingReply = $checkStmt->fetch();
+                if ($original) {
+                    // Check if a reply by this admin already exists for this parent_id
+                    $checkStmt = $this->pdo->prepare("SELECT id FROM comments WHERE parent_id = ? AND user_id = ? LIMIT 1");
+                    $checkStmt->execute([(int) $id, $adminId]);
+                    $existingReply = $checkStmt->fetch();
 
-                if ($existingReply) {
-                    // Update existing reply
-                    $updateReply = $this->pdo->prepare("UPDATE comments SET content = ? WHERE id = ?");
-                    $updateReply->execute([$replyText, $existingReply['id']]);
-                } else {
-                    // Insert as a new nested comment
-                    $insertReply = $this->pdo->prepare("INSERT INTO comments
-                    (post_id, parent_id, user_id, content, status, created_at)
-                    VALUES (?, ?, ?, ?, 'approved', NOW())");
-                    $insertReply->execute([
-                        $original['post_id'],
-                        (int) $id,
-                        $adminId,
-                        $replyText,
-                    ]);
+                    if ($existingReply) {
+                        // Update existing reply
+                        $updateReply = $this->pdo->prepare("UPDATE comments SET content = ?, status = 'approved' WHERE id = ?");
+                        $updateReply->execute([$replyText, $existingReply['id']]);
+                    } else {
+                        // Insert as a new nested comment
+                        // We force 'approved' so it appears on the frontend immediately
+                        $insertReply = $this->pdo->prepare("INSERT INTO comments
+                        (post_id, parent_id, user_id, author_name, content, status, created_at)
+                        VALUES (?, ?, ?, ?, ?, 'approved', NOW())");
+
+                        // We can use 'Admin' or the logged-in user's name as fallback
+                        $authorName = $_SESSION['username'] ?? 'Admin';
+
+                        $insertReply->execute([
+                            $original['post_id'],
+                            (int) $id,
+                            $adminId,
+                            $authorName,
+                            $replyText,
+                        ]);
+                    }
                 }
             }
 
@@ -794,7 +803,8 @@ class PostsRepository
             return true;
         } catch (\Exception $e) {
             $this->pdo->rollBack();
-            error_log("UpdateCommentAndReply Error: " . $e->getMessage());
+            // This will help you see the error in your XAMPP/PHP logs
+            error_log("DB Error in updateCommentAndReply: " . $e->getMessage());
             return false;
         }
     }

@@ -8,15 +8,15 @@ abstract class AbstractAdminController
 {
     public function __construct(
         protected AdminSupport $sessionController,
-        protected ProfileRepository $profileRepository // Added here
+        protected ProfileRepository $profileRepository 
     ) {}
 
     protected function render($view, $params = [])
     {
-        // 1. Fetch current user data from the session/database
-        // Assuming your sessionController has a method to get the full user object/array
+
         $params['authUser'] = $this->profileRepository->getUser();
 
+        $adminSupport = $this->sessionController;
         extract($params);
 
         ob_start();

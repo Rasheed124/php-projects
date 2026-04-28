@@ -68,7 +68,7 @@
                                             <td>
                                                 <strong><?php echo e($p['title']); ?></strong>
                                                 <div class="table-links">
-                                                    <a href="<?php echo url('page/'.$p['slug']); ?>" target="_blank">View</a>
+                                                    <a href="<?php echo url($p['slug']); ?>" target="_blank">View</a>
                                                     <div class="bullet"></div>
                                                     <a href="<?php echo url('admin/pages/edit'); ?>?id=<?php echo $p['id']; ?>">Edit</a>
                                                     <div class="bullet"></div>

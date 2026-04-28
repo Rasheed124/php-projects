@@ -97,6 +97,8 @@
 
             <div class="col-lg-4">
                <!-- SIDEBAR -->
+                <?php require FRONTEND_VIEWS_PATH . '/partials/sidebar.view.php'; ?>
+
             </div>
 
 
