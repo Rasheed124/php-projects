@@ -14,6 +14,8 @@
                 <div class="col-12">
                     <div class="card">
                         <form action="<?php echo url('admin/comments/update'); ?>?id=<?php echo $comment['id']; ?>" method="post">
+                            <?php $adminSupport->csrfField(); ?>
+
                             <div class="card-body">
                                 
                                 <div class="form-group row mb-4">

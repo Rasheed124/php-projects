@@ -113,7 +113,7 @@
                                                 <?php endif; ?>
 
                                             <?php else: ?>
-                                                <a href="#">View</a>
+                                                <a href="<?php echo url('post/'.$post['slug']); ?>">View</a>
                                                 
                                                 <?php if ($hasAccess): ?>
                                                     <div class="bullet"></div>

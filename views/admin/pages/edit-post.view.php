@@ -12,6 +12,7 @@
                         </div>
 
                         <form id="editForm" action="<?php echo url('/admin/posts/edit') ?>?id=<?php echo $post['id']; ?>" method="POST" enctype="multipart/form-data">
+                            <?php $adminSupport->csrfField(); ?>
                             <div class="card-body">
                                 <?php if (! empty($errors)): ?>
                                     <div class="alert alert-danger">

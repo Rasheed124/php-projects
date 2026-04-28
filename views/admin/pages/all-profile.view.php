@@ -91,20 +91,46 @@
                                     <td>
                                         <strong><?php echo e($u['username']); ?></strong>
                                         <div class="table-links">
-                                            <a href="<?php echo url('admin/profile/view?id='.$u['id']); ?>">View</a>
-                                            <?php if ($this->sessionController->isAdmin()): ?>
-                                                <div class="bullet"></div>
-                                                <?php if ($currentStatus === 'trash'): ?>
-                                                    <a href="<?php echo url('admin/profile/restore?id='.$u['id']); ?>" class="text-success">Restore</a>
-                                                    <div class="bullet"></div>
-                                                    <a href="<?php echo url('admin/profile/delete?id='.$u['id']); ?>" class="text-danger" onclick="return confirm('Delete forever?')">Delete</a>
-                                                <?php else: ?>
-                                                    <a href="<?php echo url('admin/profile/edit?id='.$u['id']); ?>">Edit</a>
-                                                    <div class="bullet"></div>
-                                                    <a href="<?php echo url('admin/profile/trash?id='.$u['id']); ?>" class="text-danger">Trash</a>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-                                        </div>
+    <a href="<?php echo url('admin/profile/view?id='.$u['id']); ?>">View</a>
+    
+    <?php 
+    $isSelf = ((int)$u['id'] === (int)$this->sessionController->getUserId());
+    
+    if ($this->sessionController->isAdmin()): ?>
+        <div class="bullet"></div>
+        
+        <?php if ($currentStatus === 'trash'): ?>
+            <a href="<?php echo url('admin/profile/restore?id='.$u['id']); ?>" class="text-success">Restore</a>
+            <?php if (!$isSelf): ?>
+                <div class="bullet"></div>
+               <form action="<?php echo url('admin/profile/delete'); ?>?id=<?php echo $u['id']; ?>" 
+              method="POST" 
+              style="display:inline;" 
+              id="delete-form-<?php echo $u['id']; ?>">
+            
+            <?php echo $adminSupport->csrfField(); ?>
+            
+            <a href="javascript:void(0);" 
+               class="text-danger" 
+               onclick="if(confirm('Are you sure you want to delete this user forever? This cannot be undone.')) { document.getElementById('delete-form-<?php echo $u['id']; ?>').submit(); }">
+               Delete
+            </a>
+        </form>
+            <?php endif; ?>
+
+        <?php else: ?>
+            <a href="<?php echo url('admin/profile/view?id='.$u['id']).'#settings'; ?>">Edit</a>
+            
+            <?php if (!$isSelf): ?>
+                <div class="bullet"></div>
+                <a href="<?php echo url('admin/profile/trash?id='.$u['id']); ?>" class="text-danger" onclick="return confirm('Move to trash?')">Trash</a>
+            <?php else: ?>
+                <div class="bullet"></div>
+                <span class="text-muted" title="You cannot trash yourself">Owner</span>
+            <?php endif; ?>
+        <?php endif; ?>
+    <?php endif; ?>
+</div>
                                     </td>
                                      <td><?php echo e($u['email']); ?></td>
                                     <td><?php echo e($u['role']); ?></td>

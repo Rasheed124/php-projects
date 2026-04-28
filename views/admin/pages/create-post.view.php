@@ -13,6 +13,8 @@
 
                   <!-- ============================ FORM AREA -->
                    <form id="createForm" action="<?php echo url('/admin/posts/create') ?>" method="POST" enctype="multipart/form-data">
+                            <?php $adminSupport->csrfField(); ?>
+
                         <div class="card-body">
                             <?php if (! empty($errors)): ?>
                                 <div class="alert alert-danger">
@@ -27,7 +29,7 @@
                            <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Title</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <input type="text" id="post-create-title" name="title" class="form-control" value="<?php echo isset($_POST['title']) ? e($_POST['title']) : ''; ?>" required>
+                                    <input type="text" id="post-create-title" name="title" class="form-control" value="<?php echo isset($_POST['title']) ? e($_POST['title']) : ''; ?>" >
                                 </div>
                             </div>
 
@@ -44,7 +46,7 @@
     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Category</label>
     <div class="col-sm-12 col-md-7">
         <select name="category" class="form-control selectric"
-            <?php if (empty($categories)): ?> disabled <?php else: ?> required <?php endif; ?>>
+            <?php if (empty($categories)): ?> disabled <?php else: ?>  <?php endif; ?>>
 
             <option value="">Select a category</option>
 
@@ -89,7 +91,7 @@
             id="post-create-tag-select"
             class="form-control js-choice"
             multiple
-            <?php echo empty($tags) ? 'disabled' : 'required'; ?>
+            <?php echo empty($tags) ? 'disabled' : ''; ?>
         >
             <?php if (! empty($tags)): ?>
                 <?php foreach ($tags as $tag): ?>
@@ -122,7 +124,7 @@
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Content</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <textarea name="content" class="summernote-simple" style="width: 100%;" required><?php echo isset($_POST['content']) ? e($_POST['content']) : ''; ?></textarea>
+                                    <textarea name="content" class="summernote-simple" style="width: 100%;" ><?php echo isset($_POST['content']) ? e($_POST['content']) : ''; ?></textarea>
                                 </div>
                             </div>
 

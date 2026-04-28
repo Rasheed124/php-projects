@@ -17,8 +17,11 @@ abstract class AbstractFrontendController
         extract($params);
 
         ob_start();
+        $adminSupport = $this->sessionController;
+
         require FRONTEND_VIEWS_PATH . '/' . $view . '.view.php';
         $contents = ob_get_clean();
+
 
         $isLoggedIn      = $this->sessionController->isLoggedIn();
         $isUserIdSession = $this->sessionController->isUserIdSession();

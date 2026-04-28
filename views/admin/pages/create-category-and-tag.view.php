@@ -29,6 +29,8 @@
                 <div class="col-12 col-md-6">
                     <div class="card">
                         <form action="<?php echo url('admin/taxonomy/categories/save'); ?>" method="POST">
+                            <?php $adminSupport->csrfField(); ?>
+
                             <div class="card-header">
                                 <h4 id="cat-form-title">Create Category</h4>
                             </div>
@@ -36,7 +38,7 @@
                                 <input type="hidden" name="id" id="cat-id" value="0">
                                 <div class="form-group">
                                     <label>Name</label>
-                                    <input type="text" name="name" id="cat-name" class="form-control" required>
+                                    <input type="text" name="name" id="cat-name" class="form-control" >
                                 </div>
                                 <div class="table-responsive mt-4">
                                     <table class="table table-sm table-striped">
@@ -71,6 +73,8 @@
                 <div class="col-12 col-md-6">
                     <div class="card">
                         <form action="<?php echo url('admin/taxonomy/tags/save'); ?>" method="POST">
+                            <?php $adminSupport->csrfField(); ?>
+
                             <div class="card-header">
                                 <h4 id="tag-form-title">Create Tag</h4>
                             </div>
@@ -78,7 +82,7 @@
                                 <input type="hidden" name="id" id="tag-id" value="0">
                                 <div class="form-group">
                                     <label>Name</label>
-                                    <input type="text" name="name" id="tag-name" class="form-control" required>
+                                    <input type="text" name="name" id="tag-name" class="form-control" >
                                 </div>
                                 <div class="table-responsive mt-4">
                                     <table class="table table-sm table-striped">

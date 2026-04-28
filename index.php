@@ -15,7 +15,8 @@ $container->bind('AdminSupport', function () use ($container) {
     return new \App\Admin\Support\AdminSupport();
 });
 
-
+$adminSupport = $container->get('AdminSupport');
+// $adminSupport->validateCsrf();
 
 // ===============================  Repositories ============================= //
 

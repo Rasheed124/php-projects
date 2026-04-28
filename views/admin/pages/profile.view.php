@@ -1,7 +1,6 @@
 <?php
     require __DIR__ . '/../../../views/admin/layouts/support-layouts/header.php';
 
-    // Logic to determine if the current viewer can see the settings tab
     $currentLoggedInId = (int) $this->sessionController->getUserId();
     $isAdmin           = $this->sessionController->isAdmin();
     $isOwner           = ($user->id == $currentLoggedInId);
@@ -74,6 +73,7 @@
                                 <?php if ($canEdit): ?>
                                 <div class="tab-pane fade" id="settings" role="tabpanel">
                                     <form action="<?php echo url('admin/profile/edit'); ?>" method="post" enctype="multipart/form-data" class="needs-validation">
+                                        <?php $adminSupport->csrfField(); ?>
                                         <input type="hidden" name="id" value="<?php echo $user->id; ?>">
 
                                         <div class="card-header"><h4>Edit Profile</h4></div>

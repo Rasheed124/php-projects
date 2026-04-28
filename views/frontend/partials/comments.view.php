@@ -104,6 +104,7 @@ document.getElementById('ajax-comment-form').addEventListener('submit', function
     e.preventDefault();
     const btn = document.getElementById('form-submit');
     const formData = new FormData(this);
+    formData.append('_csrf', document.querySelector('meta[name="csrf-token"]').content);
 
     btn.innerText = "Sending...";
 
