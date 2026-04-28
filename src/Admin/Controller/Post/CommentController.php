@@ -36,6 +36,7 @@ class CommentController extends AbstractAdminController
 
     private function index()
     {
+        // Default to 'all', or specific enum values
         $status = $_GET['status'] ?? 'all';
         $page   = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
         $limit  = 10;
@@ -43,7 +44,7 @@ class CommentController extends AbstractAdminController
 
         $currentUserId = $this->sessionController->isAdmin() ? null : $this->sessionController->getUserID();
 
-        // Fetch comments filtered by post ownership if not admin
+        // Updated Repository calls to handle enum logic
         $comments = $this->postsRepository->getAdminCommentsGrouped($status, $limit, $offset, $currentUserId);
         $total    = $this->postsRepository->getAdminCommentsCount($status, $currentUserId);
 
@@ -52,17 +53,30 @@ class CommentController extends AbstractAdminController
             'currentStatus' => $status,
             'page'          => $page,
             'limit'         => $limit,
-            'totalPages'    => $total,
+            'totalPages'    => ceil($total / $limit),
             'counts'        => $this->postsRepository->getCommentStatusCounts($currentUserId),
         ]);
     }
+    // private function updateStatus($id, $status)
+    // {
+    //     $this->checkCommentAccess($id);
+    //     $this->postsRepository->updateCommentStatus($id, $status);
 
-    private function updateStatus($id, $status)
+    //     $_SESSION['success'] = "Comment status updated successfully.";
+    //     header("Location: " . url('admin/comments/index'));
+    //     exit;
+    // }
+
+    private function updateStatus($id, $actionType)
     {
         $this->checkCommentAccess($id);
-        $this->postsRepository->updateCommentStatus($id, $status);
 
-        $_SESSION['success'] = "Comment status updated successfully.";
+        // Map 1/0 to enum 'approved'/'pending'
+        $newStatus = ($actionType == 1) ? 'approved' : 'pending';
+
+        $this->postsRepository->updateCommentStatus($id, $newStatus);
+
+        $_SESSION['success'] = "Comment marked as " . ucfirst($newStatus);
         header("Location: " . url('admin/comments/index'));
         exit;
     }
@@ -122,210 +136,88 @@ class CommentController extends AbstractAdminController
             exit;
         }
 
-        $this->postsRepository->updateCommentAndReply($id, $commentText, $replyText);
+        // Get the current admin/user ID from the session via the support controller
+        $currentAdminId = $this->sessionController->getUserID();
 
-        $_SESSION['success'] = "Comment and response updated.";
+        // Pass the admin ID so the repository can assign it to the new reply row
+        $updated = $this->postsRepository->updateCommentAndReply($id, $commentText, $replyText, $currentAdminId);
+
+        if ($updated) {
+            $_SESSION['success'] = "Comment and response updated successfully.";
+        } else {
+            $_SESSION['error'] = "Something went wrong while updating the comment.";
+        }
+
         header("Location: " . url('admin/comments/index'));
         exit;
     }
-
     public function store()
     {
         header('Content-Type: application/json');
 
-        // 1. Request Method Validation
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            echo json_encode(['success' => false, 'error' => 'Invalid request method.']);
-            exit;
-        }
+        // 1. Gather Basic Info
+        $currentUserId = $this->sessionController->getUserID();
+        $postId        = (int) ($_POST['post_id'] ?? 0);
+        $message       = trim($_POST['message'] ?? '');
+        $parentId      = ! empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
 
-        // 2. Input Collection & Strict Sanitization
-        $postId = (int) ($_POST['post_id'] ?? 0);
-
-        // Ensure parent_id is null if empty, 0, or non-numeric
-        $rawParentId = $_POST['parent_id'] ?? '';
-        $parentId    = (is_numeric($rawParentId) && (int) $rawParentId > 0) ? (int) $rawParentId : null;
-
-        $message = trim($_POST['message'] ?? '');
-        $userId  = $this->sessionController->getUserID();
-        $name    = trim($_POST['name'] ?? '');
-        $email   = trim($_POST['email'] ?? '');
-
-        // 3. Essential Validations
-        if ($postId <= 0) {
-            echo json_encode(['success' => false, 'error' => 'Post reference is missing.']);
-            exit;
-        }
-
-        if (empty($message)) {
-            echo json_encode(['success' => false, 'error' => 'Please enter a comment message.']);
-            exit;
-        }
-
-        // Check if the post actually exists before attempting to save a comment
+        // 2. Fetch Post to check ownership for auto-approval
         $post = $this->postsRepository->findById($postId);
         if (! $post) {
-            echo json_encode(['success' => false, 'error' => 'The post you are commenting on does not exist.']);
+            echo json_encode(['success' => false, 'error' => 'Post not found.']);
             exit;
         }
 
-        // Guest Validation
-        if (! $userId) {
-            if (empty($name) || empty($email)) {
+        // 3. Validation
+        if (empty($message)) {
+            echo json_encode(['success' => false, 'error' => 'Comment cannot be empty.']);
+            exit;
+        }
+
+        // 4. Determine Status (Auto-approve if Admin OR Post Owner)
+        $isAdmin     = $this->sessionController->isAdmin();
+        $isPostOwner = ($currentUserId !== null && $post['user_id'] == $currentUserId);
+        $status      = ($isAdmin || $isPostOwner) ? 'approved' : 'pending';
+
+        // 5. Prepare Data Object
+        $data = [
+            'post_id'      => $postId,
+            'parent_id'    => $parentId,
+            'content'      => htmlspecialchars($message, ENT_QUOTES, 'UTF-8'),
+            'user_id'      => $currentUserId ?: null,
+            'author_name'  => $currentUserId ? null : trim($_POST['name'] ?? ''),
+            'author_email' => $currentUserId ? null : trim($_POST['email'] ?? ''),
+            'status'       => $status,
+        ];
+
+        // 6. Guest Security Check
+        if (! $currentUserId) {
+            if (empty($data['author_name']) || empty($data['author_email'])) {
                 echo json_encode(['success' => false, 'error' => 'Name and Email are required for guests.']);
                 exit;
             }
-            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                echo json_encode(['success' => false, 'error' => 'Please provide a valid email address.']);
-                exit;
-            }
-
-            // Persist guest info in session for "Show pending after refresh" feature
-            $_SESSION['guest_email'] = $email;
-            $_SESSION['guest_name']  = $name;
+            // CRITICAL: Save guest email to session for persistence/viewing unapproved comments
+            $_SESSION['guest_email'] = $data['author_email'];
         }
 
-        // 4. Auto-Approval Logic
-        $isApproved = 0;
-        // Auto-approve if user is Admin OR the owner of the post being commented on
-        if ($userId && ($this->sessionController->isAdmin() || $userId == $post['user_id'])) {
-            $isApproved = 1;
-        }
+        // 7. Database Execution
+        $id = $this->postsRepository->save($data);
 
-        // 5. Data Preparation
-        $data = [
-            'post_id'     => $postId,
-            'parent_id'   => $parentId, // Strictly integer or null
-            'user_id'     => $userId,   // null for guests
-            'guest_name'  => $userId ? null : $name,
-            'guest_email' => $userId ? null : $email,
-            'comment'     => htmlspecialchars($message, ENT_QUOTES, 'UTF-8'),
-            'is_approved' => $isApproved,
-        ];
-
-        // 6. Database Execution
-        try {
-            $commentId = $this->postsRepository->saveComment($data);
-
-            if ($commentId) {
-                echo json_encode([
-                    'success'  => true,
-                    'message'  => $isApproved ? 'Comment posted successfully!' : 'Comment submitted and awaiting moderation.',
-                    'approved' => $isApproved,
-                    'data'     => [
-                        'id'      => $commentId,
-                        'name'    => $userId ? $this->sessionController->getUserName() : $name,
-                        'comment' => $data['comment'],
-                        'date'    => date('M d, Y'),
-                    ],
-                ]);
-            } else {
-                echo json_encode(['success' => false, 'error' => 'Failed to save comment to database.']);
-            }
-        } catch (\Exception $e) {
-            // Log error here in a real production app: error_log($e->getMessage());
+        if ($id) {
+            echo json_encode([
+                'success' => true,
+                'message' => ($status === 'approved') ? 'Comment posted!' : 'Comment submitted and awaiting moderation.',
+                'data'    => [
+                    'name'     => $currentUserId ? $this->sessionController->getUserName() : $data['author_name'],
+                    'content'  => $data['content'],
+                    'date'     => date('M d, Y'),
+                    'status'   => $data['status'],
+                    'approved' => ($status === 'approved'),
+                ],
+            ]);
+        } else {
             echo json_encode(['success' => false, 'error' => 'A server error occurred. Please try again later.']);
         }
-        exit;
     }
 
-    // public function store()
-    // {
-    //     header('Content-Type: application/json');
-
-    //     // 1. Request Method Validation
-    //     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    //         echo json_encode(['success' => false, 'error' => 'Invalid request.']);
-    //         exit;
-    //     }
-
-    //     // 2. Input Collection & Sanitization
-    //     $postId   = (int) ($_POST['post_id'] ?? 0);
-    //     $parentId = ! empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
-    //     $message  = trim($_POST['message'] ?? '');
-
-    //     $userId = $this->sessionController->getUserID();
-    //     $name   = trim($_POST['name'] ?? '');
-    //     $email  = trim($_POST['email'] ?? '');
-
-    //     // 3. Validation
-    //     if (empty($message)) {
-    //         echo json_encode(['success' => false, 'error' => 'Message cannot be empty.']);
-    //         exit;
-    //     }
-
-    //     if ($postId <= 0) {
-    //         echo json_encode(['success' => false, 'error' => 'Invalid post ID.']);
-    //         exit;
-    //     }
-
-    //     if (! $userId) {
-    //         if (empty($name) || empty($email)) {
-    //             echo json_encode(['success' => false, 'error' => 'Name and Email are required.']);
-    //             exit;
-    //         }
-    //         if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    //             echo json_encode(['success' => false, 'error' => 'Invalid email format.']);
-    //             exit;
-    //         }
-
-    //         // PERSISTENCE FIX: Store guest email in session so the repository
-    //         // can fetch their pending comments after a refresh.
-    //         $_SESSION['guest_email'] = $email;
-    //         $_SESSION['guest_name']  = $name;
-    //     }
-
-    //     // 4. Approval Logic
-    //     $isApproved = 0;
-    //     $post       = $this->postsRepository->findById($postId);
-
-    //     // Auto-approve if user is Admin or the Post Author
-    //     if ($userId && ($this->sessionController->isAdmin() || $userId == $post['user_id'])) {
-    //         $isApproved = 1;
-    //     }
-
-    //     // 5. Data Preparation
-    //     $data = [
-    //         'post_id'     => $postId,
-    //         'parent_id'   => $parentId,
-    //         'user_id'     => $userId,
-    //         'guest_name'  => $userId ? null : $name,
-    //         'guest_email' => $userId ? null : $email,
-    //         'comment'     => htmlspecialchars($message), // Security scrubbing
-    //         'is_approved' => $isApproved,
-    //     ];
-
-    //     // 6. Database Execution
-    //     try {
-    //         $save = $this->postsRepository->saveComment($data);
-
-    //         if ($save) {
-    //             echo json_encode([
-    //                 'success'  => true,
-    //                 'message'  => $isApproved ? 'Comment posted!' : 'Comment submitted for moderation.',
-    //                 'approved' => $isApproved,
-    //                 // Return data for immediate AJAX display
-    //                 'data'     => [
-    //                     'name'    => $userId ? $this->sessionController->getUserName() : $name,
-    //                     'comment' => $data['comment'],
-    //                     'date'    => date('M d, Y'),
-    //                 ],
-    //             ]);
-    //         } else {
-    //             echo json_encode(['success' => false, 'error' => 'Could not save comment.']);
-    //         }
-    //     } catch (\Exception $e) {
-    //         echo json_encode(['success' => false, 'error' => 'Server error: ' . $e->getMessage()]);
-    //     }
-    //     exit;
-    // }
-
-    // private function ensureAdmin()
-    // {
-    //     if (! $this->sessionController->isAdmin()) {
-    //         $_SESSION['error'] = "Access Denied: Only administrators can manage categories and tags.";
-    //         header("Location: " . url('admin/dashboard'));
-    //         exit;
-    //     }
-    // }
 }

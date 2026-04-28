@@ -1,24 +1,7 @@
-<?php
+<?php 
     $mainComments = array_filter($comments, fn($c) => is_null($c['parent_id']));
-    $replies      = array_filter($comments, fn($c) => ! is_null($c['parent_id']));
+    $replies = array_filter($comments, fn($c) => !is_null($c['parent_id']));
 ?>
-
-<style>
-    .pending-notice {
-        display: inline-block;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #f48840;
-        background: rgba(244, 136, 64, 0.1);
-        padding: 2px 8px;
-        border-radius: 4px;
-        margin-top: 5px;
-    }
-    .is-pending {
-        opacity: 0.8;
-    }
-</style>
 
 <div class="sidebar-item comments">
     <div class="sidebar-heading">
@@ -27,37 +10,27 @@
     <div class="content">
         <ul id="comment-list">
             <?php foreach ($mainComments as $c): ?>
-                <li class="<?php echo($c['status'] === 'pending') ? 'is-pending' : ''; ?>">
+                <li>
                     <div class="author-thumb">
-                        <img src="<?php echo asset('frontend/images/default-non-auth-user.jpg'); ?>" alt="">
+                        <img src="<?php echo asset('images/default-avatar.jpg'); ?>" alt="">
                     </div>
                     <div class="right-content">
                         <h4><?php echo e($c['auth_name'] ?? $c['author_name']); ?><span><?php echo date('M d, Y', strtotime($c['created_at'])); ?></span></h4>
-
-                        <?php if ($c['status'] === 'pending'): ?>
-                            <span class="pending-notice">Awaiting Moderation</span>
-                        <?php endif; ?>
-
                         <p><?php echo e($c['content']); ?></p>
                     </div>
                 </li>
 
                 <?php foreach ($replies as $r): if ($r['parent_id'] == $c['id']): ?>
-                    <li class="replied <?php echo($r['status'] === 'pending') ? 'is-pending' : ''; ?>">
+                    <li class="replied">
                         <div class="author-thumb">
                             <img src="<?php echo asset('images/admin-avatar.jpg'); ?>" alt="">
                         </div>
                         <div class="right-content">
                             <h4><?php echo e($r['auth_name'] ?? $r['author_name']); ?><span><?php echo date('M d, Y', strtotime($r['created_at'])); ?></span></h4>
-
-                            <?php if ($r['status'] === 'pending'): ?>
-                                <span class="pending-notice">Awaiting Moderation</span>
-                            <?php endif; ?>
-
                             <p><?php echo e($r['content']); ?></p>
                         </div>
                     </li>
-                <?php endif;endforeach; ?>
+                <?php endif; endforeach; ?>
             <?php endforeach; ?>
         </ul>
     </div>
@@ -69,7 +42,7 @@
         <form id="ajax-comment-form">
             <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
             <div class="row">
-                <?php if (! $currentUserId): ?>
+                <?php if(!$currentUserId): ?>
                     <div class="col-md-6 col-sm-12">
                         <fieldset><input name="name" type="text" placeholder="Your name" required></fieldset>
                     </div>
@@ -100,20 +73,16 @@ document.getElementById('ajax-comment-form').addEventListener('submit', function
     .then(res => res.json())
     .then(res => {
         if(res.success) {
-            // Match the new HTML structure with the persistent PHP logic
-            const statusBadge = res.data.status === 'pending' ? '<span class="pending-notice">Awaiting Moderation</span>' : '';
-            const pendingClass = res.data.status === 'pending' ? 'is-pending' : '';
-
+            // Append the new comment immediately to the UI
             const newHtml = `
-                <li class="${pendingClass}">
-                    <div class="author-thumb"><img src="<?php echo asset('frontend/images/default-non-auth-user.jpg'); ?>"></div>
+                <li>
+                    <div class="author-thumb"><img src="assets/images/default-avatar.jpg"></div>
                     <div class="right-content">
                         <h4>${res.data.name} <span>${res.data.date}</span></h4>
-                        ${statusBadge}
                         <p>${res.data.content}</p>
+                        ${res.data.status === 'pending' ? '<small style="color:orange">Awaiting moderation</small>' : ''}
                     </div>
                 </li>`;
-
             document.getElementById('comment-list').insertAdjacentHTML('beforeend', newHtml);
             this.reset();
         } else {

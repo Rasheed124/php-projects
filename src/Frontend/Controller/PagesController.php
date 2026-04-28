@@ -57,6 +57,7 @@ class PagesController extends AbstractFrontendController
                 'offset' => $offset,
             ]);
 
+
             $data['pagination'] = [
                 'current'     => $currentPage,
                 'total_pages' => ceil($totalPosts / $limit),
@@ -93,10 +94,13 @@ class PagesController extends AbstractFrontendController
             'post'     => $post,
             'page'     => (object) ['slug' => 'blog'],
             'comments' => $comments,
+            'currentUserId' => $currentUserId,
+
         ], $this->getSidebarData());
 
         $this->render('pages/post', $data);
     }
+
     public function showByCategory($slug)
     {
         $limit       = 2;

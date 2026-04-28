@@ -86,7 +86,7 @@
                         </div>
 
                          <!-- COMMENTS AREA -->
-                          <?php $comments = $comments ?? []; ?>
+                       
                         <div class="col-lg-12">
                              <?php require FRONTEND_VIEWS_PATH . '/partials/comments.view.php'; ?>
                         </div>
