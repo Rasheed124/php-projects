@@ -124,7 +124,7 @@
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Content</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <textarea name="content" class="summernote-simple" style="width: 100%;" ><?php echo isset($_POST['content']) ? e($_POST['content']) : ''; ?></textarea>
+                                    <textarea name="content" class="summernote-simple" id="page_content_edit" style="width: 100%;" ><?php echo isset($_POST['content']) ? e($_POST['content']) : ''; ?></textarea>
                                 </div>
                             </div>
 

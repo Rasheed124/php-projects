@@ -8,7 +8,7 @@ require_once ROOT_PATH . '/src/Support/EnvLoader.php';
 define('ADMIN_VIEWS_PATH', ROOT_PATH . '/views/admin');
 define('FRONTEND_VIEWS_PATH', ROOT_PATH . '/views/frontend');
 
-define('TINY_MCE_KEY', $_ENV['TINY_MCE_KEY'] ?? 'kb3lys78ua2nrx6j6c7btgwpeipbrfmiu2qwm9o8dotstazc');
+define('TINY_MCE_KEY', $_ENV['TINY_MCE_KEY'] ?? 'kb3lykefjnjsfwnelcloceemflm9o8dotstazc');
 
 
 
