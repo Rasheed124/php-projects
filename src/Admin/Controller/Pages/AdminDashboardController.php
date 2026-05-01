@@ -14,22 +14,26 @@ class AdminDashboardController extends AbstractAdminController
         protected PagesRepository $pagesRepository,
 
     ) {
-     parent::__construct($sessionController, $profileRepository);
+        parent::__construct($sessionController, $profileRepository);
     }
 
     public function index()
     {
+        $userId  = $this->sessionController->getUserID(); 
+        $isAdmin = $this->sessionController->isAdmin(); 
 
-        $error   = $_SESSION['error'] ?? null;
-        $success = $_SESSION['success'] ?? null;
-        unset($_SESSION['error'], $_SESSION['success']);
+        // Pass the ID and the Role check to the repo
+        $stats = $this->pagesRepository->getCounts($userId, $isAdmin);
 
-        $errors = [];
         $this->render('pages/dashboard', [
-            'error'   => $error,
-            'success' => $success,
+            'stats'   => $stats,
+            'isAdmin' => $isAdmin,
+            'error'   => $_SESSION['error'] ?? null,
+            'success' => $_SESSION['success'] ?? null,
         ]);
-
+        unset($_SESSION['error'], $_SESSION['success']);
     }
+
+
 
 }

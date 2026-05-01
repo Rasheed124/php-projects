@@ -46,7 +46,7 @@ class AdminSupport
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $token = $_POST['_csrf'] ?? '';
             if (! $token || $token !== ($_SESSION['csrf_token'] ?? '')) {
-                http_response_code(419); 
+                http_response_code(419);
                 die("Security Error: CSRF token mismatch. Please refresh and try again.");
             }
         }
@@ -66,17 +66,6 @@ class AdminSupport
         $token = $this->generateCsrfToken();
         echo '<input type="hidden" name="_csrf" value="' . $token . '">';
     }
-
-    // public function setUserSession($user_id, $user_name, $user_email, $user_role)
-    // {
-    //     $this->ensureSession();
-    //     $_SESSION['user_id']   = $user_id;
-    //     $_SESSION['user_name'] = $user_name;
-    //     $_SESSION['email']     = $user_email;
-    //     $_SESSION['user_role'] = $user_role;
-    //     $_SESSION['logged_in'] = true;
-    //     session_regenerate_id();
-    // }
 
     public function setUserSession($user_id, $user_name, $user_email, $user_role)
     {
@@ -109,6 +98,12 @@ class AdminSupport
     {
         $this->ensureSession();
         return $_SESSION['user_id'] ?? null;
+    }
+
+    public function getUser()
+    {
+        $this->ensureSession();
+        return $_SESSION['user_name'] ?? null;
     }
 
     public function getUserName()

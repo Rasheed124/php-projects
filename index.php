@@ -1,7 +1,8 @@
 <?php
 require __DIR__ . '/inc/all.inc.php';
 
-
+ob_start(); 
+session_start();
 
 
 // Create the container instance
@@ -133,7 +134,7 @@ $container->bind('loginController', function () use ($container) {
     );
 });
 $container->bind('signupController', function () use ($container) {
-    return new \App\Admin\Controller\Auth\SignupController(
+    return new \App\Admin\Controller\Auth\SignUpController(
         $container->get('AdminSupport'),
         $container->get('profileRepository'),
 

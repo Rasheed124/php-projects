@@ -57,7 +57,6 @@ class PagesController extends AbstractFrontendController
                 'offset' => $offset,
             ]);
 
-
             $data['pagination'] = [
                 'current'     => $currentPage,
                 'total_pages' => ceil($totalPosts / $limit),
@@ -91,9 +90,9 @@ class PagesController extends AbstractFrontendController
         $comments = $this->postsRepository->getCommentsByPost($post['id'], $currentUserId, $guestEmail);
 
         $data = array_merge([
-            'post'     => $post,
-            'page'     => (object) ['slug' => 'blog'],
-            'comments' => $comments,
+            'post'          => $post,
+            'page'          => (object) ['slug' => 'blog'],
+            'comments'      => $comments,
             'currentUserId' => $currentUserId,
 
         ], $this->getSidebarData());
@@ -217,42 +216,65 @@ class PagesController extends AbstractFrontendController
             exit;
         }
 
-        // 3. PHPMailer Setup
         $mail = new PHPMailer(true);
 
         try {
-            // Server Settings
-
-            // $mail->SMTPDebug = 2;
             $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com'; // e.g., smtp.gmail.com or SendGrid
+            $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'rashdevatrealglobe@gmail.com';
-            $mail->Password   = 'whrikixugghwginh'; // Use App Password for Gmail
+            $mail->Password   = 'whrikixugghwginh';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
 
-            // Recipients
             $mail->setFrom('rashdevatrealglobe@gmail.com', 'Tech Design Space Contact');
-            $mail->addAddress('techdesignspace01@gmail.com'); // Where you receive mail
+            $mail->addAddress('techdesignspace01@gmail.com');
             $mail->addReplyTo($email, $name);
 
-            // Content
             $mail->isHTML(true);
             $mail->Subject = "New Inquiry: " . $subject;
             $mail->Body    = "
-            <h3>New Message from Tech Design Space</h3>
-            <p><strong>Name:</strong> {$name}</p>
-            <p><strong>Email:</strong> {$email}</p>
-            <p><strong>Subject:</strong> {$subject}</p>
-            <hr>
-            <p><strong>Message:</strong><br>{$message}</p>
+            <div style='font-family: Arial, sans-serif; border: 1px solid #eee; padding: 20px;'>
+                <h3 style='color: #f48840;'>New Message Received</h3>
+                <p><strong>Name:</strong> {$name}</p>
+                <p><strong>Email:</strong> {$email}</p>
+                <p><strong>Subject:</strong> {$subject}</p>
+                <hr style='border: 0; border-top: 1px solid #eee;'>
+                <p><strong>Message:</strong><br>{$message}</p>
+            </div>
         ";
 
             $mail->send();
-            $this->sessionController->setFlash('success', 'Your message has been sent successfully!');
+
+                                 
+            $mail->clearAddresses(); 
+            $mail->clearReplyTos();
+            $mail->addAddress($email, $name); 
+
+            $mail->Subject = "Thank you for contacting Tech Design Space";
+            $mail->Body    = "
+            <div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                <h2 style='color: #f48840;'>Hello {$name},</h2>
+                <p>Thank you for reaching out to <strong>Tech Design Space</strong>! We have received your inquiry regarding <em>'{$subject}'</em>.</p>
+                <p>Our team is currently reviewing your message and will get back to you within 24-48 business hours.</p>
+                <div style='background: #f9f9f9; padding: 15px; border-left: 4px solid #f48840; margin: 20px 0;'>
+                    <strong>Your Message Summary:</strong><br>
+                    <span style='font-style: italic; color: #666;'>\"{$subject}\"</span>
+                </div>
+                <p>In the meantime, feel free to visit our <a href='" . url('blog') . "'>blog</a> for the latest updates in tech and design.</p>
+                <br>
+                <p>Best regards,<br>
+                <strong>The Tech Design Space Team</strong></p>
+                <hr style='border: 0; border-top: 1px solid #eee;'>
+                <small style='color: #999;'>This is an automated response. Please do not reply directly to this email.</small>
+            </div>
+        ";
+
+            $mail->send();
+
+            $this->sessionController->setFlash('success', 'Your message has been sent successfully! Check your email for confirmation.');
+
         } catch (Exception $e) {
-            // Log the error $mail->ErrorInfo if needed
             $this->sessionController->setFlash('error', "Message could not be sent. Please try again.");
         }
 

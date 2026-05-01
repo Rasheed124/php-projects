@@ -10,6 +10,45 @@ class PagesRepository
     public function __construct(private PDO $pdo)
     {}
 
+    public function getDashboardStats(int $userId, bool $isAdmin): array
+    {
+        // Define tables we want to count from
+        $tables = ['pages', 'posts', 'comments'];
+        $stats  = [];
+
+        foreach ($tables as $table) {
+            $sql = "SELECT COUNT(*) FROM `$table`";
+
+            // If not admin, filter by user_id
+            if (! $isAdmin) {
+                $sql .= " WHERE user_id = :user_id";
+            }
+
+            $stmt = $this->pdo->prepare($sql);
+
+            if (! $isAdmin) {
+                $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+            }
+
+            $stmt->execute();
+            $stats[$table] = (int) $stmt->fetchColumn();
+        }
+
+        // Optional: Add view count logic if you have a views table/column
+        // For now, setting a placeholder or fetching from a 'posts' sum
+        $viewSql  = "SELECT SUM(views) FROM `posts`" . (! $isAdmin ? " WHERE user_id = :user_id" : "");
+        $viewStmt = $this->pdo->prepare($viewSql);
+        if (! $isAdmin) {
+            $viewStmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        }
+
+        $viewStmt->execute();
+
+        $stats['views'] = (int) $viewStmt->fetchColumn() ?: 0;
+
+        return $stats;
+    }
+
     public function fetchNavigation(): array
     {
 
@@ -151,6 +190,49 @@ class PagesRepository
         }
 
         return $stmt->execute();
+    }
+
+    public function getCounts(int $userId, bool $isAdmin): array
+    {
+        $tables = ['pages', 'posts', 'comments'];
+        $stats  = [];
+
+        foreach ($tables as $table) {
+            $sql = "SELECT COUNT(*) FROM `$table`";
+
+            if (! $isAdmin) {
+                $sql .= " WHERE user_id = :user_id";
+            }
+
+            $stmt = $this->pdo->prepare($sql);
+
+            if (! $isAdmin) {
+                $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+            }
+
+            $stmt->execute();
+            $stats[$table] = (int) $stmt->fetchColumn();
+        }
+
+  
+        $publishedSql = "SELECT COUNT(*) FROM `posts` WHERE status = 'published'";
+
+        if (! $isAdmin) {
+            $publishedSql .= " AND user_id = :user_id";
+        }
+
+        $publishedStmt = $this->pdo->prepare($publishedSql);
+
+        if (! $isAdmin) {
+            $publishedStmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        }
+
+        $publishedStmt->execute();
+
+     
+        $stats['views'] = (int) $publishedStmt->fetchColumn() ?: 0;
+
+        return $stats;
     }
 
 }

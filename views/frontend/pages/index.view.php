@@ -3,17 +3,22 @@
         <div class="owl-banner owl-carousel">
             <?php if (!empty($featuredPosts)): ?>
                 <?php foreach ($featuredPosts as $post): ?>
+                    <?php 
+                        $rawTitle = $post['title'] ?? 'Untitled Post';
+                        $shortTitle = mb_strimwidth($rawTitle, 0, 30, "..."); 
+                    ?>
                     <div class="item">
-                        <img style="width: auto; height: 310px; object-fit: cover;" 
-                             src="<?php echo url($post['thumbnail'] ?: 'assets/frontend/images/default.jpg'); ?>" 
-                             alt="<?php echo e($post['title']); ?>">
+                        <img style="width: 100%; height: 310px; object-fit: cover;" 
+                            src="<?php echo url($post['thumbnail'] ?: '/assets/frontend/images/default.jpg'); ?>" 
+                            alt="<?php echo e($rawTitle); ?>">
                         <div class="item-content">
                             <div class="main-content">
                                 <div class="meta-category">
                                     <span><?php echo e($post['category_name'] ?? 'General'); ?></span>
                                 </div>
                                 <a href="<?php echo url('post/' . ($post['slug'] ?? '#')); ?>">
-                                    <h4><?php echo e($post['title'] ?? 'Untitled Post'); ?></h4>
+                                    <!-- Display the truncated title -->
+                                    <h4><?php echo e($shortTitle); ?></h4>
                                 </a>
                                 <ul class="post-info">
                                     <li><a href="#"><?php echo e($post['author_name'] ?? 'Admin'); ?></a></li>
@@ -25,7 +30,7 @@
                 <?php endforeach; ?>
             <?php else: ?>
                 <div class="item">
-                    <img style="width: auto; height: 310px;" src="<?php echo url('assets/frontend/images/default.jpg'); ?>" alt="No Content">
+                    <img style="width: 100%; height: 310px; object-fit: cover;" src="<?php echo url('assets/frontend/images/default.jpg'); ?>" alt="No Content">
                     <div class="item-content">
                         <div class="main-content">
                             <div class="meta-category"><span>News</span></div>

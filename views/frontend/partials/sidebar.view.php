@@ -1,15 +1,22 @@
   <div class="sidebar">
               <div class="row">
 
-              <!-- SEARCH AREA -->
-                <div class="col-lg-12">
-                  <div class="sidebar-item search">
-                    <form id="search_form" name="gs" method="GET" action="<?php echo url('search'); ?>">
-                            <?php $adminSupport->csrfField(); ?>
+           
 
-                         <input type="text" name="q" class="searchText" placeholder="type to search..." value="<?php echo $_GET['q'] ?? ''; ?>">
-                    </form>
-                  </div>
+                <!-- SEARCH AREA -->
+                <div class="col-lg-12">
+                    <div class="sidebar-item search">
+                        <form id="search_form" name="gs" method="GET" action="<?php echo url('search'); ?>" style="position: relative;">
+                        <?php $adminSupport->csrfField(); ?>
+
+                        <input type="text" name="q" id="search_input" class="searchText" placeholder="type to search..." value="<?php echo $_GET['q'] ?? ''; ?>" autocomplete="off">
+
+                        <!-- The dynamic button -->
+                        <button type="submit" id="search_button" style="display: block; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: none; cursor: pointer;">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        </form>
+                    </div>
                 </div>
 
                 <!-- RECENT POSTS -->

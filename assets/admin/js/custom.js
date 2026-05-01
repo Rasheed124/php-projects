@@ -60,4 +60,12 @@ function resetTagForm() {
     document.getElementById('tag-name').value = '';
     document.getElementById('tag-submit-btn').innerText = 'Save Tag';
 }
+
+
+
+
+
+
+
+
 });

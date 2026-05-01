@@ -94,15 +94,3 @@ jQuery( document ).ready(function( $ ) {
 
 
 
-function setReply(id, name) {
-    document.getElementById('parent_id').value = id;
-    document.getElementById('respond-title').innerText = "Replying to " + name;
-    document.getElementById('cancel-reply').style.display = "inline";
-    document.getElementById('message').focus();
-}
-
-function cancelReply() {
-    document.getElementById('parent_id').value = "";
-    document.getElementById('respond-title').innerText = "Your comment";
-    document.getElementById('cancel-reply').style.display = "none";
-}

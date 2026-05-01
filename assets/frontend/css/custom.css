@@ -1,0 +1,13 @@
+.sidebar-item.search input {
+  padding-right: 40px; /* Make space so text doesn't go under the icon */
+}
+
+#search_button i {
+  color: #f48840; /* Match your brand color */
+  font-size: 18px;
+  transition: 0.3s;
+}
+
+#search_button:hover i {
+  color: #000;
+}

@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="<?php echo asset('frontend/css/fontawesome.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset('frontend/css/templatemo-stand-blog.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset('frontend/css/owl.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('frontend/css/custom.css'); ?>">
 
   </head>
 
@@ -50,7 +51,7 @@
         <?php if (! empty($navigation)): ?>
 
             <?php foreach ($navigation as $pageNav): ?>
-                
+
              <li class="nav-item <?php echo(isset($page->slug) && $page->slug !== '' && $pageNav->slug == $page->slug ? 'active' : ''); ?>">
 
                     <a class="nav-link" href="<?php echo url($pageNav->slug); ?>">
@@ -108,26 +109,42 @@
     <?php echo $contents ?>
 
     <!-- Footer -->
-    <footer>
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12">
-            <ul class="social-icons">
-              <li><a href="#">Facebook</a></li>
-              <li><a href="#">Twitter</a></li>
-              <li><a href="#">Behance</a></li>
-              <li><a href="#">Linkedin</a></li>
-              <li><a href="#">Dribbble</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-12">
-            <div class="copyright-text">
-              <p>Copyright 2026 BlogNext</p>
-            </div>
-          </div>
+   <footer>
+  <div class="container">
+    <div class="row">
+      <!-- Bio Section -->
+      <div class="col-lg-12">
+        <div class="blognest-bio" style="margin-bottom: 25px; color: #fff;">
+          <h4 style="color: #f48840; margin-bottom: 10px;">About BLOGNEST</h4>
+          <p style="max-width: 600px; margin: 0 auto; line-height: 1.6; opacity: 0.8;">
+            BLOGNEST is a dynamic platform dedicated to sharing insightful content on web development,
+            brand identity, and modern design trends. We empower creators with the tools and
+            knowledge to build a standard, top-notch digital presence.
+          </p>
         </div>
       </div>
-    </footer>
+
+      <!-- Social Icons -->
+      <div class="col-lg-12">
+        <ul class="social-icons">
+     
+          <li><a href="https://github.com/Rasheed124" target="_blank">Github</a></li>
+          <li><a href="https://linkedin.com/in/rasheed-tolulope" target="_blank">Linkedin</a></li>
+        </ul>
+      </div>
+
+      <!-- Copyright & Profile Link -->
+      <div class="col-lg-12">
+        <div class="copyright-text">
+          <p>
+            Copyright &copy; <?php echo date('Y'); ?> <strong>BLOGNEST</strong>
+            | Developed by <a href="https://rasheedtolulope.vercel.app/" target="_blank">Rasheed Tolulope</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
 
     <!-- Bootstrap core JavaScript -->
     <script src="<?php echo asset('frontend/vendor/jquery/jquery.min.js'); ?>"></script>
@@ -135,7 +152,7 @@
 
 
     <!-- Additional Scripts -->
-    
+
     <script src="<?php echo asset('frontend/js/custom.js'); ?>"></script>
     <script src="<?php echo asset('frontend/js/owl.js'); ?>"></script>
     <script src="<?php echo asset('frontend/js/slick.js'); ?>"></script>
@@ -155,7 +172,33 @@
 
 
 
-      
+
+
+    </script>
+
+    <script>
+            document.addEventListener('DOMContentLoaded', function() {
+
+
+    const searchInput = document.getElementById('search_input');
+    const searchButton = document.getElementById('search_button');
+
+    // Function to toggle button visibility
+    function toggleButton() {
+        if (searchInput.value.trim().length > 0) {
+            searchButton.style.display = 'block';
+        } else {
+            searchButton.style.display = 'none';
+        }
+    }
+
+    // Run on page load (in case there's already a value from a previous search)
+    toggleButton();
+
+    // Run whenever the user types
+    searchInput.addEventListener('input', toggleButton);
+});
+
     </script>
 
   </body>

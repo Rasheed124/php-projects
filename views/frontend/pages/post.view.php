@@ -43,7 +43,7 @@
                         <div class="col-lg-12">
                             <div class="blog-post">
                                 <div class="blog-thumb">
-                                    <img src="<?php echo url($post['thumbnail'] ?: 'assets/frontend/images/default-post.jpg'); ?>" alt="<?php echo e($post['title']); ?>">
+                                    <img src="<?php echo url($post['thumbnail'] ?: 'assets/frontend/images/default-post.jpg'); ?>" alt="<?php echo 'post-banner-image'; ?>">
                                 </div>
                                 <div class="down-content">
                                     <span><?php echo e($post['category_name']); ?></span>

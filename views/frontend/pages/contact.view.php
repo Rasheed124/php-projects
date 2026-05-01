@@ -15,9 +15,6 @@
 
 
 
-
-
-
    <section class="contact-us">
       <div class="container">
         <div class="row">
@@ -78,9 +75,7 @@
                 </div>
                 <div class="col-lg-4">
                   <div class="sidebar-item contact-information">
-                    <!-- <div class="sidebar-heading">
-                      <h2>contact information</h2>
-                    </div> -->
+                  
 
                         <div class="content">
                             <?php if (! empty($page->content)): ?>
@@ -105,7 +100,7 @@
 
           <div class="col-lg-12">
             <div id="map">
-              <iframe src="https://maps.google.com/maps?q=Av.+L%C3%BAcio+Costa,+Rio+de+Janeiro+-+RJ,+Brazil&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="450px" frameborder="0" style="border:0" allowfullscreen></iframe>
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63432.56370736635!2d3.380540520670456!3d6.4536549349704275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103bf4cc9b07cf55%3A0xc4ae10b395418b9b!2sLagos%20Island!5e0!3m2!1sen!2sng!4v1777564316820!5m2!1sen!2sng"  height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" width="100%" height="450px" frameborder="0" style="border:0" allowfullscreen></iframe>
             </div>
           </div>
 
