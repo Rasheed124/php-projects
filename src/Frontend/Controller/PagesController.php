@@ -5,8 +5,6 @@ use App\Admin\Support\AdminSupport;
 use App\Frontend\Controller\AbstractFrontendController;
 use App\Repository\Admin\PostsRepository;
 use App\Repository\PagesRepository;
-
-//
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -27,7 +25,7 @@ class PagesController extends AbstractFrontendController
         ];
     }
 
-    public function showPage($slug)
+    public function showPage(string $slug)
     {
         $page = $this->pagesRepository->fetchBySlug($slug);
         if (! $page) {
@@ -246,10 +244,9 @@ class PagesController extends AbstractFrontendController
 
             $mail->send();
 
-                                 
-            $mail->clearAddresses(); 
+            $mail->clearAddresses();
             $mail->clearReplyTos();
-            $mail->addAddress($email, $name); 
+            $mail->addAddress($email, $name);
 
             $mail->Subject = "Thank you for contacting Tech Design Space";
             $mail->Body    = "

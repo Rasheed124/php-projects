@@ -8,11 +8,12 @@ abstract class AbstractFrontendController
 {
 
     public function __construct(
-        protected PagesRepository $pagesRepository, 
+        protected PagesRepository $pagesRepository,
         protected AdminSupport $sessionController) {
 
     }
-    protected function render($view, $params)
+
+    protected function render(string $view, array $params = [])
     {
         extract($params);
 
@@ -22,11 +23,9 @@ abstract class AbstractFrontendController
         require FRONTEND_VIEWS_PATH . '/' . $view . '.view.php';
         $contents = ob_get_clean();
 
-
         $isLoggedIn      = $this->sessionController->isLoggedIn();
         $isUserIdSession = $this->sessionController->isUserIdSession();
-        $navigation = $this->pagesRepository->fetchNavigation();
-
+        $navigation      = $this->pagesRepository->fetchNavigation();
 
         require FRONTEND_VIEWS_PATH . '/layouts/main.view.php';
 
